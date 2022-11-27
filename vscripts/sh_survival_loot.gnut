@@ -604,6 +604,7 @@ void function SURVIVAL_Loot_InitShared()
 
 			int col = GetDataTableColumnByName( attachmentMatrix, data.baseWeapon )
 
+			// WEAPON FRAMEWORK
 			// commented out because it caused errors for custom weapons.
 			// You might be able to move this to the if section below.
 			/*string colFeatureFlagRef = GetDataTableString( attachmentMatrix, featureFlagRowIdx, col )
@@ -612,6 +613,7 @@ void function SURVIVAL_Loot_InitShared()
 				//printf( "Skipping weapon attachment data for %s because feature flag %s is off.", data.baseWeapon, colFeatureFlagRef )
 				continue
 			}*/
+			//END WEAPON FRAMEWORK
 
 			if ( col != -1 )
 			{
@@ -2824,6 +2826,9 @@ void function Dev_SpawnBotWithIncapShieldToView( int shieldTier )
 		case 4:
 			shieldType = "incapshield_pickup_lv4_selfrevive"
 			break
+		case 5:
+			shieldType = "incapshield_pickup_lv5"
+			break
 		default:
 			shieldType = "incapshield_pickup_lv1"
 			break
@@ -2858,10 +2863,6 @@ void function Inventory_RegisterNetworking()
 {
 	Remote_RegisterClientFunction( "ServerCallback_PickedupItem", "entity", "int", 0, 256, "int", 0, 256 )
 	Remote_RegisterClientFunction( "ServerCallback_DroppedItem", "entity", "int", 0, 256 )
-	// Yes. This was changed.
-	// It's because if we don't, the game will flop itself when you pick certain items up.
-	// If there's a better solution, you're welcome to suggest it.
-	// They shouldn't have added ranges into this.
 	Remote_RegisterClientFunction( "ServerCallback_AttachedMod", "int", 0, 100, "int", 0, 256 )
 }
 #endif // CLIENT || SERVER
@@ -3376,15 +3377,21 @@ int function SURVIVAL_GetArmorShieldCapacity( int tier )
 {
 	switch ( tier )
 	{
-		case 0:
+		case eLootTier.NONE:
 			return 0
-		case 1:
+
+		case eLootTier.COMMON:
 			return 50
-		case 2:
+
+		case eLootTier.RARE:
 			return 75
-		case 3:
-		case 4:
+
+		case eLootTier.EPIC:
+		case eLootTier.LEGENDARY:
 			return 100
+
+		case eLootTier.HEIRLOOM:
+			return 125
 	}
 
 	return 0
@@ -3402,19 +3409,21 @@ int function SURVIVAL_GetCharacterShieldHealthMaxForArmor( entity player, LootDa
 
 	switch ( tier )
 	{
-		case 0:
+		case eLootTier.NONE:
 			shieldMaxHealth += 0
-			break
-		case 1:
+
+		case eLootTier.COMMON:
 			shieldMaxHealth += 50
-			break
-		case 2:
+
+		case eLootTier.RARE:
 			shieldMaxHealth += 75
-			break
-		case 3:
-		case 4:
+
+		case eLootTier.EPIC:
+		case eLootTier.LEGENDARY:
 			shieldMaxHealth += 100
-			break
+
+		case eLootTier.HEIRLOOM:
+			shieldMaxHealth += 125
 		default:
 			Assert( 0, "Invalid armor tier" )
 			shieldMaxHealth += 0

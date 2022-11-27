@@ -28,8 +28,8 @@ WeaponData
 	"stat_rof"										"80"
 
 	// Models
-	"viewmodel"   									"mdl/weapons/rampart_turret/ptpov_rampart_turret.rmdl"
-	"playermodel" 									"mdl/weapons/rampart_turret/w_rampart_turret.rmdl"
+	"viewmodel"   									"mdl/Weapons/rampart_turret/ptpov_rampart_turret.rmdl"
+	"playermodel" 									"mdl/Weapons/rampart_turret/w_rampart_turret.rmdl"
 	"holster_type"									"rifle"
 
 	"chroma_color"									".4 .8 1"

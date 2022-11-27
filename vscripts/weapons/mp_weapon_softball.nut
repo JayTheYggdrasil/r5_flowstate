@@ -45,7 +45,7 @@ void function FireGrenade( entity weapon, WeaponPrimaryAttackParams attackParams
 	fireGrenadeParams.pos = attackParams.pos
 	fireGrenadeParams.vel = attackParams.dir
 	fireGrenadeParams.angVel = angularVelocity
-	fireGrenadeParams.fuseTime = 15.0
+	//fireGrenadeParams.fuseTime = 15.0
 	fireGrenadeParams.scriptTouchDamageType = damageType // when a grenade "bonks" something, that shouldn't count as explosive.explosive
 	fireGrenadeParams.scriptExplosionDamageType = damageType
 	fireGrenadeParams.clientPredicted = !isNPCFiring
@@ -59,26 +59,6 @@ void function FireGrenade( entity weapon, WeaponPrimaryAttackParams attackParams
 		#if SERVER
 			EmitSoundOnEntity( nade, "Weapon_softball_Grenade_Emitter" )
 			Grenade_Init( nade, weapon )
-
-			thread function () : ( nade )
-			{
-                while( IsValid( nade ) )
-				{
-					if( IsValid( nade ) && LengthSqr( nade.GetSmoothedVelocity() ) <= 6000 )
-					{
-						wait FUSE_TIME
-						if( IsValid( nade ) && LengthSqr( nade.GetSmoothedVelocity() ) <= 6000 )
-						    break
-					}
-
-                    WaitFrame()
-				}
-
-				wait FUSE_TIME
-				if ( IsValid( nade ) )
-					nade.GrenadeExplode( ZERO_VECTOR )
-
-			}()
 		#else
 			entity weaponOwner = weapon.GetWeaponOwner()
 			SetTeam( nade, weaponOwner.GetTeam() )
@@ -86,26 +66,55 @@ void function FireGrenade( entity weapon, WeaponPrimaryAttackParams attackParams
 	}
 }
 
+bool function PlantProjectileThatBouncesOffWalls( entity ent, table collisionParams, float bounceDot, vector angleOffset = <0, 0, 0> )
+{
+	// Satchel hit the world
+	float dot = expect vector( collisionParams.normal ).Dot( <0, 0, 1> )
+
+	var hitent = collisionParams.hitEnt
+    if(IsValid( hitent ) && hitent.IsNPC() || IsValid( hitent ) && hitent.IsPlayer()) {}
+	else if ( dot < bounceDot )
+		return false
+
+
+	return PlantStickyEntity( ent, collisionParams, angleOffset )
+}
+
 void function OnProjectileCollision_weapon_softball( entity projectile, vector pos, vector normal, entity hitEnt, int hitbox, bool isCritical )
 {
-	bool didStick = PlantSuperStickyGrenade( projectile, pos, normal, hitEnt, hitbox )
+    table collisionParams =
+    {
+        pos = pos,
+        normal = normal,
+        hitEnt = hitEnt,
+        hitbox = hitbox
+    }
 
-	#if SERVER
-	projectile.SetGrenadeTimer( FUSE_TIME )
-	#endif
-
-	if ( !didStick )
+	int bounceCount = projectile.GetProjectileWeaponSettingInt( eWeaponVar.grenade_arc_indicator_bounce_count )
+	if ( projectile.proj.projectileBounceCount >= bounceCount + 1)
+	{
+		projectile.GrenadeExplode( projectile.GetForwardVector() )
 		return
+	}
 
-	#if SERVER
-		if ( IsAlive( hitEnt ) && hitEnt.IsPlayer() )
-		{
-			EmitSoundOnEntityOnlyToPlayer( projectile, hitEnt, "weapon_softball_grenade_attached_1P" )
-			EmitSoundOnEntityExceptToPlayer( projectile, hitEnt, "weapon_softball_grenade_attached_3P" )
-		}
-		else
-		{
-			EmitSoundOnEntity( projectile, "weapon_softball_grenade_attached_3P" )
-		}
-	#endif
+	projectile.proj.projectileBounceCount++
+
+	if ( PlantProjectileThatBouncesOffWalls( projectile, collisionParams, 0.2 ) )
+	{
+	    #if SERVER
+	    projectile.SetGrenadeTimer( FUSE_TIME )
+	    #endif
+
+	    #if SERVER
+	    	if ( IsAlive( hitEnt ) && hitEnt.IsPlayer() )
+	    	{
+	    		EmitSoundOnEntityOnlyToPlayer( projectile, hitEnt, "weapon_softball_grenade_attached_1P" )
+	    		EmitSoundOnEntityExceptToPlayer( projectile, hitEnt, "weapon_softball_grenade_attached_3P" )
+	    	}
+	    	else
+	    	{
+	    		EmitSoundOnEntity( projectile, "weapon_softball_grenade_attached_3P" )
+	    	}
+	    #endif
+	}
 }

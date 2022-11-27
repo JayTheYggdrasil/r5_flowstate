@@ -884,6 +884,9 @@ Scripts:
 	weapons/mp_weapon_mobile_hmg.nut
 	weapons/mp_weapon_throwingknife.nut
 	weapons/mp_weapon_softball.nut
+	weapons/mp_weapon_softball.nut
+	weapons/mp_weapon_smr.nut
+	weapons/mp_weapon_rocket_launcher.nut
 
 ]
 

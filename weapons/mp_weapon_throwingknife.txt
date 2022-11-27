@@ -13,14 +13,13 @@ WeaponData
 	"is_toss_weapon"								"1"
 	"menu_category"                                 "pistol"
 	"menu_anim_class"                               "small"
-	"ammo_pool_type"								"bullet"
+	"ammo_pool_type"								""
 	"holster_type"									"pistol"
     "secondary_ammo_pool_type"                      ""
 
 	"trophy_system_ignores"                         "always"
 	"minimap_reveal_distance"						"32000"
 	"leveled_pickup"								"1"
-	"dev_menu_type"									"offhand"
 	"show_grenade_indicator"						"1"
 	"show_grenade_indicator_to_owner"				"1"
     "hide_when_holstered"							"0"
@@ -41,7 +40,7 @@ WeaponData
 	// Menu Stats
 
 	// Models
-	"viewmodel"									"mdl/weapons/throwingknife/ptpov_throwing_knife.rmdl"
+	"viewmodel"									    "mdl/weapons/throwingknife/ptpov_throwing_knife.rmdl"
 	"playermodel"									"mdl/weapons/throwingknife/w_throwing_knife.rmdl"
 	"projectilemodel"								"mdl/weapons/throwingknife/w_throwing_knife.rmdl"
 	"projectile_lifetime" 							"15"
@@ -287,6 +286,8 @@ WeaponData
 	// WeaponED Unhandled Key/Values and custom script Key/Values
 	"fire_anim_rate"  								"1"
 	//"sprintcycle_time"								".55"
+
+
 	"ammo_clip_size"								"1"
 	//"ammo_default_total"							"1"
 	"ammo_display"									"count"
@@ -330,15 +331,6 @@ WeaponData
 
         survival_finite_ordnance
         {
-            "ammo_clip_size"								"100"
-            "ammo_default_total"							"0"
-            "ammo_display"									"count"
-            "ammo_min_to_fire"								"1"
-            "ammo_per_shot"									"1"
-            "ammo_stockpile_max"							"0"
-            "regen_ammo_refill_rate"						"0"
-            "regen_ammo_refill_start_delay"					"0.0"
-            "ammo_no_remove_from_stockpile"					"1"
         }
 	}
 

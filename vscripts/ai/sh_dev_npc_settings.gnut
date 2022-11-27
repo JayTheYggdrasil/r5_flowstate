@@ -28,7 +28,10 @@ void function SetupChangeSurvivalCharacterClass()
 		}
 		
 		//DEV Loba
-		SetupDevCommand( "DEV: Loba", "script DEV_UseLobaCharacter()" )
+		SetupDevCommand( "DEV: R2 Pilot", "script DEV_UsePilotCharacter()" )
+		SetupDevCommand( "DEV: Loba", "script DEV_UseLobaCharacter()" )		
+		SetupDevCommand( "DEV: Revenant", "script DEV_UseRevenantCharacter()" )
+		SetupDevCommand( "DEV: Rampart", "script DEV_UseRampartCharacter()" )	
 	#endif
 }
 
@@ -97,6 +100,11 @@ void function SetupWeapons()
 	SetupDevCommand( "Grenade: Frag", "give mp_weapon_frag_grenade" )
 	SetupDevCommand( "Grenade: Thermite", "give mp_weapon_thermite_grenade" )
 
+	// Explosives/Launchers
+	SetupDevCommand( "Anti-Titan: Softball", "give mp_weapon_softball" )
+	SetupDevCommand( "Anti-Titan: Archer", "give mp_weapon_rocket_launcher" )
+	SetupDevCommand( "Anti-Titan: Sidewinder SMR", "give mp_weapon_smr" )
+	SetupDevCommand( "Anti-Titan: EPG", "give mp_weapon_epg" )
 	// Dev
 	SetupDevCommand( "Dev: Smart Pistol", "give mp_weapon_smart_pistol" )
 	SetupDevCommand( "Dev: Car SMG", "give mp_weapon_car" )
@@ -105,7 +113,6 @@ void function SetupWeapons()
 	SetupDevCommand( "Dev: Wingman Elite", "give mp_weapon_wingman_n" )
 	SetupDevCommand( "Dev: Throwing Knife", "give mp_weapon_throwingknife" )
 	SetupDevCommand( "Dev: Sheila", "give mp_weapon_mobile_hmg" )
-	SetupDevCommand( "Dev: Softball", "give mp_weapon_softball" )
 	SetupDevCommand( "Dev: Energy Sword", "give mp_weapon_energysword" )
 	#endif
 }

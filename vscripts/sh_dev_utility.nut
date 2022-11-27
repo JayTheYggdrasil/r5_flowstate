@@ -44,7 +44,6 @@ void function ShDevUtility_Init()
 void function DEV_UseLobaCharacter()
 {
 	entity player = gp()[0]
-	Message(player, "R5R Flowstate", "DEV: Loba - Ported by CaféFPS, powered by RePak.")
 	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
 			
 	player.SetBodyModelOverride($"mdl/Humans/class/medium/pilot_medium_loba.rmdl")
@@ -59,6 +58,37 @@ void function DEV_UseLobaCharacter()
 	player.GiveOffhandWeapon( "melee_bolo_sword", OFFHAND_MELEE )
 }
 
+void function DEV_UsePilotCharacter()
+{
+	entity player = gp()[0]
+	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
+			
+	player.SetBodyModelOverride($"mdl/humans/pilots/pilot_medium_reaper_m.rmdl" )
+	player.SetArmsModelOverride($"mdl/humans/pilots/pov_pilot_medium_reaper_m.rmdl" )
+
+	player.TakeOffhandWeapon(OFFHAND_MELEE)
+	player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_2 )
+	player.GiveWeapon( "mp_weapon_data_knife_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2 )
+	player.GiveOffhandWeapon( "melee_data_knife", OFFHAND_MELEE )
+}
+
+void function DEV_UseRampartCharacter()
+{
+	entity player = gp()[0]
+	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
+			
+	player.SetBodyModelOverride($"mdl/Humans/class/medium/pilot_medium_rampart.rmdl" )
+	player.SetArmsModelOverride($"mdl/Weapons/arms/pov_pilot_medium_rampart.rmdl" )
+}
+
+void function DEV_UseRevenantCharacter()
+{
+	entity player = gp()[0]
+	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
+			
+	player.SetBodyModelOverride($"mdl/humans/class/heavy/pilot_heavy_revenant.rmdl" )
+	player.SetArmsModelOverride($"mdl/Weapons/arms/pov_pilot_heavy_revenant.rmdl" )
+}
 void function SetupHeirloom( int heirloomIndex )
 {
 	entity player = gp()[0]
