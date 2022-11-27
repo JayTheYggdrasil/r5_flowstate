@@ -457,10 +457,6 @@ void function SURVIVAL_Loot_RegFromDataTable(var dt)
 		#endif
 	}
 
-	foreach(string icon in icons)
-	{
-
-	}
 	RegisterCustomWeapons()
 
 	#if(UI)

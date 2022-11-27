@@ -4,10 +4,6 @@ global function ShDevWeapons_Init
 #if SERVER
 global function DEV_ToggleAkimboWeapon
 global function DEV_ToggleAkimboWeaponAlt
-global function BecomeLoba
-global function BecomeRampart
-global function BecomeRevenant
-global function BecomePilot
 #endif
 
 

@@ -612,12 +612,12 @@ void function DamageTypes_Init()
 		[ eDamageSourceId.mp_weapon_softball ] 						= "Softball",
 		[ eDamageSourceId.mp_weapon_epg ] 							= "EPG",
 		[ eDamageSourceId.mp_weapon_smr ] 							= "Sidewinder SMR",
-		[ eDamageSourceId.mp_weapon_rocket_launcher ] 						= "Softball",
+		[ eDamageSourceId.mp_weapon_rocket_launcher ] 				= "Softball",
 		[ eDamageSourceId.mp_weapon_car ] 							= "Car SMG",
 		[ eDamageSourceId.mp_ability_birds ] 						= "Arthur's Revenge",
 		[ eDamageSourceId.mp_weapon_3030 ] 							= "30-30 Repeater",
 		[ eDamageSourceId.mp_weapon_energysword ] 					= "Energy Sword",
-		[ eDamageSourceId.mp_weapon_dragon_lmg ] 					= "Rampage LMG"		
+		[ eDamageSourceId.mp_weapon_dragon_lmg ] 					= "Rampage LMG",		
 		[ eDamageSourceId.mp_weapon_smart_pistol ] 	 				= "Smart Pistol",
 		[ eDamageSourceId.mp_weapon_grenade_electric_smoke ] 	 	= "Electric Smoke",
 		[ eDamageSourceId.mp_weapon_grenade_gravity ] 	 			= "Gravity Star"	
