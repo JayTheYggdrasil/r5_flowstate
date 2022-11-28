@@ -488,6 +488,7 @@ void function CodeCallback_OnMeleeStartActivity( entity attacker, entity meleeAt
 		entity lungeTarget = GetMeleeAttackLungeTarget( attacker, meleeAttackWeapon )
 		if ( IsValid( lungeTarget ) && lungeTarget.IsPlayer() || IsValid( lungeTarget ) && lungeTarget.IsNPC())
 		{
+			printt(meleeAttackWeapon.GetWeaponClassName(), meleeAttackWeapon.HasMod( "energysword" ), attacker.GetActiveWeapon( eActiveInventorySlot.mainHand ).GetWeaponClassName())
 			bool lungeStartWasSuccessful
 			
 			if(!meleeAttackWeapon.HasMod( "energysword" ))
@@ -500,9 +501,9 @@ void function CodeCallback_OnMeleeStartActivity( entity attacker, entity meleeAt
 			}
 			else
 			{
-				attacker.Lunge_SetTargetPosition( <lungeTarget.GetOrigin().x, lungeTarget.GetOrigin().y, lungeTarget.GetWorldSpaceCenter().z - 52 > +  AnglesToForward(attacker.GetAngles())*100)
-				attacker.Lunge_SetSmoothTime( 0 )
-				attacker.Lunge_EnableFlying()
+				attacker.Lunge_SetTargetPosition( <lungeTarget.GetOrigin().x, lungeTarget.GetOrigin().y, lungeTarget.GetOrigin().z> +  AnglesToForward(attacker.GetAngles())*100)
+				//attacker.Lunge_SetSmoothTime( 0 )
+				//attacker.Lunge_EnableFlying()
 				// attacker.Lunge_SetMaxEndSpeed(100)
 				// if(attacker.IsOnGround())
 					// attacker.Lunge_LockPitch( true )
