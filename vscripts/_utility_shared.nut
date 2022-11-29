@@ -117,6 +117,7 @@ void function InitWeaponScripts()
 {
 	
 	//Custom
+	MpWeaponNeedler_Init()
 	MpWeaponEmoteProjector_Init()
 	MpWeaponGuidedMissile_Init()
 	MpWeaponFanatic_Init()
@@ -5413,4 +5414,29 @@ void function WaitForGameState(int state) {
 	{
 		WaitFrame()
 	}
+}
+
+void function movementTestFunct()
+{
+//by cafefps
+	
+	entity player = gp()[0]
+	
+	string anim
+	float timer
+	float oldtime
+	while(true)
+	{
+		anim = player.GetCurrentSequenceName()
+		WaitFrame()
+		
+		if(player.GetCurrentSequenceName() != anim)
+			{
+			printt("ai.Anim_PlayOnly(\"" + player.GetCurrentSequenceName() + "\")")
+			printt("ai.SetVelocity(" + player.GetVelocity() + ")")
+			printt("wait " + (Time() - oldtime))
+			oldtime = Time()
+			}
+	}
+	
 }

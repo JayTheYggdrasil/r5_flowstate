@@ -2434,3 +2434,12 @@ string function StripRuiStringFormatting( string text )
 
 	return newText
 }
+
+#if CLIENT
+void function ShowDamageFlyout(entity hitEnt, float damagetodeal)
+//By Retículo Endoplasmático#5955 (CaféDeColombiaFPS)//
+{
+if(!IsValid(hitEnt)) return
+DamageFlyout( damagetodeal, hitEnt.GetWorldSpaceCenter(), hitEnt, eHitType.NORMAL)
+}
+#endif

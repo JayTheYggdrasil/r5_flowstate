@@ -1,0 +1,128 @@
+npc_leviathan
+{
+	AIClass							dummie
+	TraverseAnimType				spectre
+
+	//title							"TURRET"
+	useSequenceBounds				1
+
+	aiEnemy_usePriorityDist			1000
+	aiEnemy_immediateThreatDist		1000
+
+	AimAngularSpeed					7
+
+	ArmorType						normal
+
+	BaseClass						"npc_dummie"
+	BodyType						human
+
+	footstep_type					"human"
+	mechanical						1
+
+	BehaviorSelector				"behavior_leviathan"
+	LocationScoringCriteria			"CommonShootWithLos"
+
+	allowCower						0
+	allowUseCover					1
+
+
+	traverseCostFactor				2.0
+	minGoalRadius					1000
+
+	DefaultModelName				"mdl/creatures/leviathan/leviathan_kingscanyon_preview_animated.rmdl"
+
+	DefaultWeapon					"mp_weapon_hemlok"
+	WeaponCapacity					"FromLoadout"
+
+    //Precision
+    aimingPrecisionMin              1
+    aimingPrecisionMax              1
+    aimingPrecisionIncreaseRate     0.175
+    aimingPrecisionDecreaseRate     0.125
+
+	enemyAimAtMeWidth				100
+
+	faceEnemyStrictToleranceAngle	10
+	faceEnemyWhileMovingDist		1000
+
+	FOV_Alert_Far_Horz		100
+	FOV_Alert_Far_Vert		60
+	FOV_Alert_Near_Horz		130
+	FOV_Alert_Near_Vert		180
+	FOV_Combat_Far_Horz		100
+	FOV_Combat_Far_Vert		60
+	FOV_Combat_Near_Horz	130
+	FOV_Combat_Near_Vert	180
+	FOV_Idle_Far_Horz		100
+	FOV_Idle_Far_Vert		60
+	FOV_Idle_Near_Horz		130
+	FOV_Idle_Near_Vert		180
+
+	NoticeForgetPostTime	5.0
+	NoticeForgetPreTime		1.0
+
+	NoticeDistNear_Alert	300
+	NoticeDistNear_Combat	300
+	NoticeDistNear_Idle		300
+	NoticeDistFar_Alert		1000
+	NoticeDistFar_Combat	1000
+	NoticeDistFar_Idle		1000
+	NoticeTimeNear_Alert	0.1
+	NoticeTimeNear_Combat	0.0
+	NoticeTimeNear_Idle		0.1
+	NoticeTimeFar_Alert		1.0
+	NoticeTimeFar_Combat	1.0
+	NoticeTimeFar_Idle		1.0
+	NoticeTimePeripheral_Alert	0.7
+	NoticeTimePeripheral_Combat 0.2
+	NoticeTimePeripheral_Idle	0.7
+
+	FOV_Near_Dist			300		// distance at which we transition between near and far FOV values
+	FOV_Far_Dist			1000	// use far values after this distance, interpolate horizontal in between, use far for vertical
+	FOV_Vert_Offset			-20		// looking down instead of up... better for pilots on high ground feeling
+
+	HullType						"HULL_HUMAN"
+	leechAnimSet					spectre
+	leechMaxDist					150
+	magneticRange					125
+	MaxArrivalDist					170
+
+	aimassist_adspull_centerAttachmentName		"HEADSHOT"
+	aimassist_adspull_centerRadius				11.0
+	aimassist_adspull_headshotAttachmentName	"HEADSHOT"
+	aimassist_adspull_headshotRadius			7.0
+
+	MeleeDamageMax					25
+	MeleeDamageMin					25
+
+	Health							100
+
+	PainOnHeavyDamageThreshold		9999 // 32
+	PainOnRepeatDamageThreshold		9999 // 70
+
+	MinForceWalkDist				0
+	MinStartMoveDist				100
+	MoveYawSpeed					12
+
+	DrawEnemyHealthBar				0
+	DrawTargetHealthBar				0
+
+	resetBurstOnStopShootOverlay	0
+	restrictAimGunToValidSequences	1
+
+	showFriendlyIcon				1
+	showTitle						1
+
+	ui_targetinfo					"ui/targetinfo_npc_simple"
+
+	smartAmmoLockAttachmentName0	HEADFOCUS
+	waitBetweenWeaponBurst			0
+	suppressLSP_duration			1.5
+	reactChanceDefault				90
+
+//////////////////////
+	chancetohit_spread_ontarget		15.0
+	disableMeleeExecution		0	
+//////////////////////
+
+}

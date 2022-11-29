@@ -1,0 +1,222 @@
+#base "_base_ability_ultimate.txt"
+
+WeaponData
+{
+	// General
+	//
+	"printname"                                "DEATHREAPER"
+	"shortprintname"                           "DEATHREAPER"
+	"description"                              "the deathstar laser gun"
+	"longdesc"                                 "the deathstar laser gun"
+	
+	"weapon_type_flags"								"WPT_ULTIMATE"
+	"weaponClass" 									"human"
+	"fire_mode"   									"offhand"
+
+	"menu_icon"										"rui/weapon_icons/r5/weapon_sniper"
+	"hud_icon"										"rui/weapon_icons/r5/weapon_sniper"
+
+	// UI - Menu
+	"stat_damage"                              "90"
+	"stat_accuracy"                            "84"
+	"stat_range"                               "100"
+	"stat_rof"                                 "30"
+	"sound_weapon_ready"							"survival_ui_tactical_ready"
+	"sound_dryfire"									"Survival_UI_Ability_NotReady"
+	"dev_menu_type"									"offhand" // fire_mode isn't readable from script
+	"offhand_default_inventory_slot"				"4"
+	// Models
+	"playermodel"									"mdl/weapons/empty_handed/w_empty_handed_human.rmdl"
+	"projectilemodel" 								"mdl/dev/empty_model.rmdl"
+	
+	"OnWeaponPrimaryAttack"							"OnWeaponPrimaryAttack_Unibeam"
+	
+	// Charge settings By Colombia
+	"charge_time" 									"2"
+	"charge_remain_full_when_fired" 				"1"
+	"charge_require_input"							"1"
+	"charge_cooldown_time"							"0.5"
+	"charge_cooldown_delay"   						"0.1"
+	"charge_end_forces_fire"						"0"
+	"charge_attack_requires_full_charge"    		"1"
+	
+
+	"charge_effect_1p"								"P_wpn_defender_charge"
+	"charge_effect_3p"								"P_wpn_defender_charge"
+	"charge_effect_attachment"						"def_c_underChin"
+	"charge_effect_attachment_scoped"				"def_c_underChin"
+	"charge_effect2_3p"								"P_wpn_defender_charge"
+	"charge_effect2_attachment"						"def_c_underChin"
+	"charge_effect2_attachment_scoped"				"def_c_underChin"
+	
+	"charge_sound_1p"								"Weapon_Havoc_WindUp_1P"
+	"charge_sound_3p"								"Weapon_Havoc_WindUp_3P"
+	
+	// Script - Callbacks
+	//"OnClientAnimEvent"                        "OnClientAnimEvent_weapon_dmr"
+
+	// Behavior - Firing
+	//
+	"fire_rate"                                "1.2"
+
+	// Behavior - Animation
+	"deployfirst_time"                         "1.6"
+	//setting to "0" so it's tunable in Bakery
+	"sprintcycle_time"								"0"
+
+	// Damage
+	"damage_near_value"                        "130"
+	"damage_far_value"                         "130"
+	"damage_very_far_value"                    "130"
+	"damage_near_value_titanarmor"             "130"
+	"damage_far_value_titanarmor"              "130"
+	"damage_very_far_value_titanarmor"         "130"
+
+	"damage_rodeo"                             "900"
+
+	// Damage - Behavior
+	"damage_flags"                             "DF_SNIPER | DF_BULLET | DF_KNOCK_BACK | DF_DISMEMBERMENT"
+	"pass_through_depth"                       "64"
+	"pass_through_damage_preserved_scale"      "0.8"
+
+    "damage_headshot_scale"                    "1.3"
+	"damage_leg_scale"                         "0.8"
+
+	// Projectile
+
+	"projectiles_per_shot" 							"11"
+	"blast_pattern"									"energy_shotgun"
+	"blast_pattern_zero_distance"        			"512.0"
+	"blast_pattern_default_scale"        			"0.3"
+	"blast_pattern_npc_scale"            			"1"  // scales on top of the default
+
+	"tracer_effect"   								"P_wpn_defender_beam"
+	"tracer_effect_first_person"  					"P_wpn_defender_beam"
+	"impact_effect_table" 							"exp_emp"        
+	"ballistic_type"								"hitscan"
+	"fire_sound_3_player_1p"						"Weapon_ChargeRifle_Fire_1P"
+	"fire_sound_3_player_3p"						"Weapon_ChargeRifle_Fire_3P"
+	"fire_sound_3_npc"								"Weapon_ChargeRifle_Fire_NPC"
+
+    "bolt_hitsize_grow1_time"				    "0.133"  //~100m
+    "bolt_hitsize_grow1_size"				    "0.33"
+    "bolt_hitsize_grow2_time"				    "0.267"  //~200m
+    "bolt_hitsize_grow2_size"				    "1.25"
+    "bolt_hitsize_growfinal_lerptime"		    "0.400"  //~300m
+    "bolt_hitsize_growfinal_size"               "2.0"
+
+	 //"fx_muzzle_flash_view"			"P_bhaxe_impact_base"
+	 //"fx_muzzle_flash_world"			"P_bhaxe_impact_base"
+	 //"fx_muzzle_flash_attach_scoped"            "VDU"
+
+
+	"explosion_shake_radius"						"320"
+	"explosion_shake_amplitude"						"2"
+	"explosion_shake_frequency"						"35"
+	"explosion_shake_duration"						"0.5"
+
+	"explosion_damages_owner"						"0"
+	"explosion_inner_radius"  						"150"
+	"explosionradius" 								"350"
+	"impulse_force_explosions"   								"3750"
+	"cooldown_time"									"0.0"
+	"explosion_damage"								"666"
+	"explosion_damage_heavy_armor"					"700"
+
+	// Ammo
+	//
+   "ammo_clip_size"								"300"
+    "ammo_default_total"							"0"
+    "ammo_display"									"count"
+    "ammo_min_to_fire"								"300"
+    "ammo_per_shot"									"300"
+    "ammo_stockpile_max"							"300"
+    "regen_ammo_refill_rate"						"50"
+    "regen_ammo_refill_start_delay"					"0"
+    "ammo_no_remove_from_stockpile"					"0"
+    "ammo_no_remove_from_clip"						"0"
+
+	// "reload_time"                              "3.2"
+	// "reload_time_late1"                        "1.95"
+	// "reload_time_late2"                        "1.95"
+	// "reloadempty_time"                         "4.3"
+	// "reloadempty_time_late1"                   "3.13"
+	// "reloadempty_time_late2"                   "2.08"
+	// "reloadempty_time_late3"                   "0.65"
+	// "allow_empty_click"                        "1"
+	// "empty_reload_only"                        "0"
+	// "rechamber_time"                           "1.60"
+
+	// Viewkick Spring
+	//
+	"viewkick_spring"                          "dmr"
+
+	// Viewkick - Pitch
+	"viewkick_pitch_base"                      "-1.06"
+	"viewkick_pitch_random"                    "0.5"
+	"viewkick_pitch_softScale"                 "1.0"
+	"viewkick_pitch_hardScale"                 "0.9"
+
+	// Viewkick - Yaw
+	"viewkick_yaw_base"                        "-0.55"
+	"viewkick_yaw_random"                      "0.35"
+	"viewkick_yaw_softScale"                   "1.0"
+	"viewkick_yaw_hardScale"                   "0.5"
+
+	// Viewkick - Roll
+	"viewkick_roll_base"                       "0.1"
+	"viewkick_roll_randomMin"                  "0.5"
+	"viewkick_roll_randomMax"                  "0.5"
+	"viewkick_roll_softScale"                  "0.2"
+	"viewkick_roll_hardScale"                  "1.75"
+
+	// Viewkick - Fractions
+	"viewkick_hipfire_weaponFraction"          "0.0"
+	"viewkick_hipfire_weaponFraction_vmScale"  "0.0"
+	"viewkick_ads_weaponFraction"              "0.0"
+	"viewkick_ads_weaponFraction_vmScale"      "0.0"
+
+	// Viewkick - Scale
+	"viewkick_scale_min_hipfire" 				"0.0"
+	"viewkick_scale_max_hipfire"             	"0.0"
+	"viewkick_scale_min_ads" 					"0.0"
+	"viewkick_scale_max_ads" 					"0.0"
+
+	// Sound - Firing
+	//
+	"fire_sound_1_npc"                         ""
+	"fire_sound_2_npc"                         "Weapon_Kraber_Fire_npc"
+	"fire_sound_1_player_1p"                   ""
+	"fire_sound_2_player_1p"                   "Weapon_Kraber_Fire_1P"
+	"fire_sound_1_player_3p"                   ""
+	"fire_sound_2_player_3p"                   "Weapon_Kraber_Fire_3P"
+
+	RUI_CrosshairData
+	{
+		DefaultArgs
+		{
+			adjustedSpread				weapon_spread
+			adsFrac 					player_zoomFrac
+			isSprinting					player_is_sprinting
+			isReloading					weapon_is_reloading
+			teamColor					crosshair_team_color
+			isAmped						weapon_is_amped
+			crosshairMovementX          crosshair_movement_x
+			crosshairMovementY          crosshair_movement_y
+		}
+
+		Crosshair_1
+		{
+			"ui"						"ui/crosshair_circle2"
+			"base_spread"				"0.0"
+			Args
+			{
+				isFiring				weapon_is_firing
+			}
+		}
+	}
+	Mods
+	{
+
+	}
+}

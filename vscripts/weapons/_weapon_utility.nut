@@ -302,6 +302,8 @@ void function WeaponUtility_Init()
 	PrecacheImpactEffectTable( CLUSTER_ROCKET_FX_TABLE )
 
 	#if SERVER
+		AddDamageCallbackSourceID( eDamageSourceId.mp_weapon_grenade_cryonade, Cryonade_DamagedPlayerOrNPC )
+		
 		if(!GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false ))
 		{
 			AddDamageCallbackSourceID( eDamageSourceId.mp_weapon_grenade_emp, EMP_DamagedPlayerOrNPC )

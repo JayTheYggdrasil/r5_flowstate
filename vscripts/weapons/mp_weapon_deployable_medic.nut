@@ -6,7 +6,18 @@ global function OnWeaponTossPrep_weapon_deployable_medic
 
 #if CLIENT
 global function CanDeployHealDrone
+global function ServerCallback_DocDroneHighlight
 #endif
+
+///////////CONFIGS//////////
+const float FOLLOW_REFRESH_TIME = 0.5 // 0.5 supports running, 0.6 will unparent while running for more than 2 seconds
+const float DAMAGE_TO_DEAL = 3 //each tick
+const float GOTOLOCATION_REFRESH_TIME = 0.2
+const bool FOLLOW_FIRST_HEAL_TARGET_MODE = false
+const bool GUIDED_MODE = true
+const asset ONACTTACK_EFFECT = $"P_impact_doubletake"
+const asset TESLA_TRAP_LINK_FX = $"P_tesla_trap_link_CP"
+////////////////////////////
 
 const asset DEPLOYABLE_MEDIC_DRONE_MODEL = $"mdl/props/lifeline_drone/lifeline_drone.rmdl"
 
@@ -46,10 +57,10 @@ global const string DEPLOYABLE_MEDIC_DEPLOY_SOUND 		= ""
 const vector DRONE_MINS = <-9, -9, -10>
 const vector DRONE_MAXS = <9, 9, 10>
 
-const FX_DRONE_MEDIC_OPEN				= $"P_LL_med_drone_open"
-const FX_DRONE_MEDIC_JET_CTR			= $"P_LL_med_drone_jet_ctr_loop"
-const FX_DRONE_MEDIC_EYE				= $"P_LL_med_drone_eye"
-const FX_DRONE_MEDIC_JET_LOOP			= $"P_LL_med_drone_jet_loop"
+global const FX_DRONE_MEDIC_OPEN				= $"P_LL_med_drone_open"
+global const FX_DRONE_MEDIC_JET_CTR			= $"P_LL_med_drone_jet_ctr_loop"
+global const FX_DRONE_MEDIC_EYE				= $"P_LL_med_drone_eye"
+global const FX_DRONE_MEDIC_JET_LOOP			= $"P_LL_med_drone_jet_loop"
 
 const FX_DRONE_MEDIC_HEAL_COCKPIT_FX	= $"P_heal_loop_screen"
 
@@ -100,7 +111,7 @@ void function MpWeaponDeployableMedic_Init()
 	RegisterSignal( "DeployableMedic_Attached" )
 	RegisterSignal( "DeployableMedic_LeftHealingTrigger" )
 	RegisterSignal( "CleanupAllDroneMedics" )
-
+	RegisterSignal( "DocDroneMove_Stop")
 	PrecacheModel( DEPLOYABLE_MEDIC_DRONE_MODEL )
 	PrecacheMaterial(  $"models/cable/drone_medic_cable"  )
 
@@ -108,19 +119,26 @@ void function MpWeaponDeployableMedic_Init()
 	PrecacheParticleSystem( FX_DRONE_MEDIC_JET_CTR )
 	PrecacheParticleSystem( FX_DRONE_MEDIC_EYE )
 	PrecacheParticleSystem( FX_DRONE_MEDIC_JET_LOOP	)
-
+	PrecacheParticleSystem( $"P_impact_exp_xo_shield_med_CP")
+	PrecacheParticleSystem(ONACTTACK_EFFECT)
+	PrecacheParticleSystem($"P_xo_armor_break_CP")
+	PrecacheParticleSystem($"P_armor_body_CP")
 	PrecacheParticleSystem( FX_DRONE_MEDIC_HEAL_COCKPIT_FX	)
 
 	#if SERVER
 		AddDamageCallback( "player", DeployableMedic_PlayerOnDamage )
+
+		AddClientCommandCallback( "MoveDocDrone", ClientCommand_MoveDocDrone )
+
 	#endif
 
 	#if CLIENT
 		AddCreateCallback( "script_mover", DeployableMedic_OnPropScriptCreated )
-
+		RegisterConCommandTriggeredCallback( "+scriptCommand5", AttemptDocDroneMove )
 		StatusEffect_RegisterEnabledCallback( eStatusEffect.drone_healing, DeployableMedic_HealVisualsEnabled )
 		StatusEffect_RegisterDisabledCallback( eStatusEffect.drone_healing, DeployableMedic_HealVisualsDisabled )
 	#endif
+	
 }
 
 
@@ -168,12 +186,15 @@ var function OnWeaponTossReleaseAnimEvent_weapon_deployable_medic( entity weapon
 
 entity function ReleaseDrone( entity weapon, WeaponPrimaryAttackParams attackParams, float throwPower, void functionref(entity) deployFunc, vector ornull angularVelocity = null )
 {
+	entity player = weapon.GetWeaponOwner()
 	#if CLIENT
+	thread DisplayDocDroneMoveHint()
+
 		if ( !weapon.ShouldPredictProjectiles() )
 			return null
 	#endif
 
-	entity player = weapon.GetWeaponOwner()
+	
 
 	vector attackPos
 	if ( IsValid( player ) )
@@ -186,7 +207,7 @@ entity function ReleaseDrone( entity weapon, WeaponPrimaryAttackParams attackPar
 	if ( angularVelocity == null )
 		angularVelocity = <600, RandomFloatRange( -300, 300 ), 0>
 	expect vector( angularVelocity )
-
+	
 	float fuseTime = 0.0    // infinite
 
 	bool isPredicted = PROJECTILE_PREDICTED
@@ -296,17 +317,19 @@ void function DeployMedicCanister( entity projectile )
 	}
 
 	entity droneMedic = CreateEntity( "script_mover" )
-	droneMedic.kv.solid = SOLID_VPHYSICS
+	droneMedic.kv.solid = 0
+	if(FOLLOW_FIRST_HEAL_TARGET_MODE || GUIDED_MODE)
+		droneMedic.kv.SpawnAsPhysicsMover = 0
+	else
+		droneMedic.kv.SpawnAsPhysicsMover = 1
 	droneMedic.kv.fadedist = -1
 	droneMedic.SetValueForModelKey( DEPLOYABLE_MEDIC_DRONE_MODEL )
-	droneMedic.e.isDoorBlocker = true
+	droneMedic.e.isDoorBlocker = false
 	droneMedic.SetOrigin( origin )
 	droneMedic.SetAngles( angles )
 	DispatchSpawn( droneMedic )
-
 	droneMedic.EndSignal( "OnDestroy" )
-
-	droneMedic.kv.collisionGroup = TRACE_COLLISION_GROUP_BLOCK_WEAPONS
+	droneMedic.kv.collisionGroup = TRACE_COLLISION_GROUP_NONE
 	droneMedic.DisableHibernation()
 	droneMedic.SetMaxHealth( 100 )
 	droneMedic.SetHealth( 100 )
@@ -326,6 +349,8 @@ void function DeployMedicCanister( entity projectile )
 	droneMedic.AddToOtherEntitysRealms( owner )
 	thread TrapDestroyOnRoundEnd( owner, droneMedic )
 
+	owner.p.lastdocdrone = droneMedic
+	
 	//make npc's fire at their own traps to cut off lanes
 	if ( owner.IsNPC() )
 	{
@@ -345,7 +370,8 @@ void function DeployMedicCanister( entity projectile )
 
 	TrackingVision_CreatePOI( eTrackingVisionNetworkedPOITypes.PLAYER_ABILITY_DEPLOYABLE_MEDIC, owner, droneMedic.GetOrigin(), owner.GetTeam(), owner )
 
-	thread DroneMedicHoverThink( droneMedic, velocity )
+ if(!FOLLOW_FIRST_HEAL_TARGET_MODE && !GUIDED_MODE)
+	 thread DroneMedicHoverThink( droneMedic, velocity )
 
 	thread DroneMedicAnims( droneMedic )
 
@@ -402,8 +428,8 @@ void function DroneMedicAnims( entity droneMedic )
 
 	EmitSoundOnEntity( droneMedic, DEPLOYABLE_MEDIC_HOVER_SOUND )
 
-	waitthread PlayAnim( droneMedic, "lifeline_drone_arming" )
-
+	//waitthread PlayAnim( droneMedic, "lifeline_drone_arming" ) 
+	
 	// still looking for a repro of this. But these lines should stop the servers from crashing.
 	Assert( droneMedic in file.deployableData )
 	if ( !( droneMedic in file.deployableData ) )
@@ -415,12 +441,13 @@ void function DroneMedicAnims( entity droneMedic )
 	file.deployableData[ droneMedic ].particles.append( StartParticleEffectOnEntity_ReturnEntity( droneMedic, GetParticleSystemIndex( FX_DRONE_MEDIC_JET_LOOP ), FX_PATTACH_POINT_FOLLOW, fxID_LR ) )
 
 	droneMedic.Anim_Play( "lifeline_drone_floating" )
+	//droneMedic.Anim_NonScriptedPlay( "mp_drone_lifeline_shock_execution")
 }
 
 void function DroneMedicHoverThink( entity droneMedic, vector velocity )
 {
 	EndSignal( droneMedic, "OnDestroy" )
-
+	EndSignal( droneMedic, "DocDroneMove_Stop")
 	const DECEL_TIME = 0.5
 	const SETTLE_HEIGHT = 24
 	const TRACE_HEIGHT = 128
@@ -483,6 +510,7 @@ void function DroneMedicHoverThink( entity droneMedic, vector velocity )
 	bool wasStuck = false
 	while( true )
 	{
+		printt("hovering")
 		bool isHealing = DeployableMedic_GetHealTargetCount( droneMedic ) > 0
 
 		// trace to ground
@@ -602,7 +630,7 @@ void function DeployableMedic_CreateHealTriggerArea( entity owner, entity droneM
 
 	trigger.SetEnterCallback( OnDeployableMedicHealAreaEnter )
 	trigger.SetLeaveCallback( OnDeployableMedicHealAreaLeave )
-
+	
 	trigger.SetOrigin( origin )
 
 	//Parent trigger to health kit so trigger will follow moving geo.
@@ -623,23 +651,21 @@ void function DeployableMedic_CreateHealTriggerArea( entity owner, entity droneM
 void function OnDeployableMedicHealAreaEnter( entity trigger, entity ent )
 {
 	// this could be removed once the trigger no longer gets triggered by ents in different realms. bug R5DEV-46753
-	if ( !trigger.DoesShareRealms( ent ) )
-		return
+	// if ( !trigger.DoesShareRealms( ent ) )
+		// return
 
-	if ( ent.IsPlayer() )
+	if ( ent.IsNPC() || ent.IsPlayer() )
 	{
 		//	printt( "PLAYER " + ent + " STARTED TOUCHING TRIGGER " + trigger )
 		thread DeployableMedic_PlayerHealUpdate( trigger, ent )
 	}
-	else if ( IsSurvivalTraining() && ent.GetScriptName() == "survival_training_target_dummy" ) // need to check share realm?
-	{
-		thread DeployableMedic_PlayerHealUpdate( trigger, ent )
-	}
+
 }
 
 void function OnDeployableMedicHealAreaLeave( entity trigger, entity ent )
 {
-	SignalSignalStruct( trigger, ent, "DeployableMedic_LeftHealingTrigger" )
+	// printt("leaving heal/attack trigger")
+	// SignalSignalStruct( trigger, ent, "DeployableMedic_LeftHealingTrigger" )
 }
 
 SignalStruct function CreateSignalStruct( entity trigger, entity player )
@@ -669,7 +695,8 @@ void function DestroySignalStruct( SignalStruct singalStruct )
 void function DeployableMedic_PlayerHealUpdate( entity trigger, entity player )
 {
 	Assert ( IsNewThread(), "Must be threaded off." )
-
+	entity drone = trigger.GetOwner()
+	
 	printt( "STARTING HEAL UPDATE FOR PLAYER " + player + " FOR TRIGGER " + trigger )
 	//printt( "PLAYER " + player + " IS PHASESHIFTED: " + player.IsPhaseShifted() )
 
@@ -682,11 +709,12 @@ void function DeployableMedic_PlayerHealUpdate( entity trigger, entity player )
 
 	entity droneMedic = trigger.GetOwner()
 	droneMedic.EndSignal( "DeployableMedic_HealDepleated" )
-
+	
 	HealRopeData ropeData = DeployableMedic_CreateHealRope( droneMedic )
-
+	entity mover
+	entity owner = drone.GetOwner()
 	OnThreadEnd(
-		function() : ( player, droneMedic, ropeData, singalStruct )
+		function() : ( player, droneMedic, ropeData, singalStruct, mover )
 		{
 			thread DeployableMedic_RetractHealRope( ropeData )
 			if ( IsValid( player ) && player.IsPlayer() )
@@ -699,16 +727,33 @@ void function DeployableMedic_PlayerHealUpdate( entity trigger, entity player )
 			}
 
 			DestroySignalStruct( singalStruct )
+			
+			if(IsValid(droneMedic)) 
+				// droneMedic.ClearParent()
+			
+			if(IsValid(mover))
+				mover.Destroy()
 		}
 	)
-
+	
+	if(FOLLOW_FIRST_HEAL_TARGET_MODE){
+		mover = CreateScriptMover( droneMedic.GetOrigin() )
+		mover.kv.solid = 0
+		//mover.kv.collisionGroup = TRACE_COLLISION_GROUP_NONE
+		mover.SetAngles(droneMedic.GetAngles())
+		droneMedic.SetParent(mover)
+	}
+	
 	float startTime = Time()
 
 	while( trigger.IsTouching( player ) )
 	{
-		//printt( "PLAYER " + player + " IS TOUCHING TRIGGER" )
+		printt( "PLAYER " + player + " IS TOUCHING TRIGGER" )
 		WaitFrame()
-
+		
+		
+		// droneMedic.SetOrigin(player.GetOrigin() + player.GetForwardVector()*10 + <0,0,100>)
+		
 		//Wait until a heal slot opens up for this player.
 		if ( DeployableMedic_GetHealTargetCount( droneMedic ) >= DEPLOYABLE_MEDIC_HEAL_MAX_TARGETS || !DeployableMedic_ShouldAttemptHeal( player, droneMedic ) )
 		{
@@ -723,44 +768,226 @@ void function DeployableMedic_PlayerHealUpdate( entity trigger, entity player )
 		}
 		else
 		{
-			//Claim this player as a heal target
-			EmitSoundOnEntity( droneMedic, DEPLOYABLE_MEDIC_DEPLOY_CABLE_SOUND )
-			DeployableMedic_ClaimPlayerAsHealTarget( droneMedic, player )
-			thread DeployableMedic_DeployHealRope( ropeData, player )
-			if ( player.IsPlayer() )
+			//Claim this player as a heal target only if is from same team as owner Colombia
+			if(player.GetTeam() == owner.GetTeam()){
+				EmitSoundOnEntity( droneMedic, DEPLOYABLE_MEDIC_DEPLOY_CABLE_SOUND )
+				DeployableMedic_ClaimPlayerAsHealTarget( droneMedic, player )
+				thread DeployableMedic_DeployHealRope( ropeData, player )
+				
+				if ( player.IsPlayer() )
 				ropeData.statusEffectHandle = StatusEffect_AddEndless( player, eStatusEffect.drone_healing, 1 )
+			}
+			
+			else if (!player.e.isBeingAttackedByDroneMedic) thread SuperDroneAttackEnemy(player, owner, droneMedic)
+			
+			
 		}
 
-		waitthread DeployableMedic_WaitForHeal( player, droneMedic, ropeData, trigger )
+		if(player.GetTeam() == owner.GetTeam()){
+			waitthread DeployableMedic_WaitForHeal( player, droneMedic, ropeData, trigger, mover )
 
-		//Release this player as a heal target.
-		DeployableMedic_ReleasePlayerAsHealTarget( droneMedic, player )
-		thread DeployableMedic_RetractHealRope( ropeData )
-		if ( player.IsPlayer() )
-			StatusEffect_Stop( player, ropeData.statusEffectHandle )
-		startTime = Time()
+			//Release this player as a heal target.
+			DeployableMedic_ReleasePlayerAsHealTarget( droneMedic, player )
+			thread DeployableMedic_RetractHealRope( ropeData )
+			if ( player.IsPlayer() )
+				StatusEffect_Stop( player, ropeData.statusEffectHandle )
+			startTime = Time()
+		}
 	}
 }
 
-void function DeployableMedic_WaitForHeal( entity player, entity droneMedic, HealRopeData ropeData, entity trigger )
+void function SuperDroneAttackEnemy(entity pplayer, entity owner, entity droneMedic)
 {
+	entity rayo
+	float timeAttackingEnemy = 1.0
+	float finaltime = Time() + timeAttackingEnemy
+	pplayer.e.isBeingAttackedByDroneMedic = true
+	entity trailFXHandle
+	OnThreadEnd(
+	function() : ( pplayer, droneMedic, trailFXHandle)
+		{
+			if(IsValid(pplayer))
+				pplayer.e.isBeingAttackedByDroneMedic = false
+			if(IsValid(trailFXHandle))
+				trailFXHandle.Destroy()
+			// if(IsValid(droneMedic))
+			//droneMedic.Destroy()
+			
+		}
+	)
+	
+	rayo = StartParticleEffectOnEntity_ReturnEntity(droneMedic, GetParticleSystemIndex( TESLA_TRAP_LINK_FX ), FX_PATTACH_POINT_FOLLOW, droneMedic.LookupAttachment( "EYEGLOW" ))
+	thread AdjustRayoFX(rayo, pplayer)
+	EntFireByHandle( rayo, "Kill", "", timeAttackingEnemy, null, null )
+	EmitSoundOnEntity(droneMedic, "Lifeline_Mvmt_Execution_DroneFinisher_fr149")
+	Remote_CallFunction_Replay( owner, "ServerCallback_DocDroneHighlight", pplayer, owner, timeAttackingEnemy)
+	
+	while(Time() < finaltime)
+		{
+			if(!IsValid(pplayer)) break
+			pplayer.TakeDamage( DAMAGE_TO_DEAL, owner, null, { damageSourceId = eDamageSourceId.damagedef_DocDrone } )
+			trailFXHandle = StartParticleEffectOnEntity_ReturnEntity(pplayer, GetParticleSystemIndex( ONACTTACK_EFFECT), FX_PATTACH_POINT_FOLLOW, pplayer.LookupAttachment( "CHESTFOCUS" ) )
+			trailFXHandle.SetParent(pplayer, "CHESTFOCUS")
+			EffectSetControlPointVector( trailFXHandle, 1, <10, 247, 247> )
+			WaitFrame()
+		}
+	wait 1
+}
+
+// void function Enemy
+	// while(true)
+	// {
+		// entClone = CreateClientSidePropDynamicClone( sonarTarget, sonarTarget.GetModelName() )
+		// if ( !IsValid( entClone ) ) //JFS - Could further investigate why this particular function can return null. Code comment was referring to TF1 stuff.
+			// return
+
+		// PhaseChamberCloneHighlight( entClone )
+		// thread delayedDestroyBecauseYes(entClone)
+		// WaitFrame()
+		// if(IsValid(entClone)) entClone.Destroy()
+	// }
+// }
+
+// void function delayedDestroyBecauseYes(entity entClone)
+// {
+	// WaitFrame()
+	// if(IsValid(entClone)) entClone.Destroy()
+// }
+
+
+void function AdjustRayoFX(entity rayo, entity pplayer)
+{
+	while(IsValid(rayo))
+	{
+		if(!IsValid(pplayer)) break
+		EffectSetControlPointVector( rayo, 1, pplayer.GetOrigin() + <0, 0, 50> )
+		WaitFrame()	
+	}
+}
+void function DeployableMedic_WaitForHeal( entity player, entity droneMedic, HealRopeData ropeData, entity trigger, entity mover)
+{
+	entity owner = droneMedic.GetOwner()
+	
 	EndSignal( player, "DeployableMedic_HealAborted" )
 
 	if ( DeployableMedic_ShouldAttemptHeal( player, droneMedic ) && player.IsPlayer() )
 		EmitSoundOnEntityOnlyToPlayer( player, player, DEPLOYABLE_MEDIC_HEAL_LOOP_SOUND_1P )
-
+	
 	OnThreadEnd(
-	function() : ( player )
+	function() : ( player, mover, droneMedic )
 		{
 			if ( IsValid( player ) )
 				StopSoundOnEntity( player, DEPLOYABLE_MEDIC_HEAL_LOOP_SOUND_1P )
+			
+			// if( IsValid(droneMedic)) 
+				// droneMedic.ClearParent()
+				
+			// if( IsValid(mover))
+				// mover.Destroy()
 		}
 	)
-
-	while( DeployableMedic_ShouldAttemptHeal( player, droneMedic ) && trigger.IsTouching( player ) )
+	
+	while( DeployableMedic_ShouldAttemptHeal( player, droneMedic ) && trigger.IsTouching( player ))
 	{
-		SetRopeLength( player, droneMedic, ropeData )
+		if(player.GetTeam() == owner.GetTeam())
+			SetRopeLength( player, droneMedic, ropeData )
+		
+		if(FOLLOW_FIRST_HEAL_TARGET_MODE && IsValid(mover)){
+		vector entityPos    = mover.GetOrigin()
+		vector distance     = player.GetOrigin() - entityPos
+		float rotY = atan(distance.y / distance.x) * 180.0 / PI
+		
+			if(Distance2D( player.GetOrigin(), droneMedic.GetOrigin() ) > 100){
+			mover.NonPhysicsMoveTo( player.GetOrigin() + < 0,0,20 > + player.GetForwardVector()*20, FOLLOW_REFRESH_TIME, 0, 0 )
+				if (distance.x < 0 ) rotY = rotY + 180.0
+				mover.NonPhysicsRotateTo( < 0, rotY, 0 > , 0.2, 0, 0 )
+			}
+		}
 		WaitFrame()
+	}
+	
+	// while( player.GetTeam() != owner.GetTeam() && trigger.IsTouching( player ))
+	// {
+		// SetRopeLength( player, droneMedic, ropeData )
+		// // if(FOLLOW_FIRST_HEAL_TARGET_MODE && IsValid(mover)){
+		// // vector entityPos    = mover.GetOrigin()
+		// // vector distance     = player.GetOrigin() - entityPos
+		// // float rotY = atan(distance.y / distance.x) * 180.0 / PI
+		
+			// // if(Distance2D( player.GetOrigin(), droneMedic.GetOrigin() ) > 100){
+			// // mover.NonPhysicsMoveTo( player.GetOrigin() + < 0,0,20 > + player.GetForwardVector()*20, FOLLOW_REFRESH_TIME, 0, 0 )
+				// // if (distance.x < 0 ) rotY = rotY + 180.0
+				// // mover.NonPhysicsRotateTo( < 0, rotY, 0 > , 0.2, 0, 0 )
+			// // }
+		// // }
+		// WaitFrame()
+	// }
+}
+
+void function DocDroneMoveThink( entity droneMedic, vector destino, float originalpointz)
+{
+	EndSignal( droneMedic, "DocDroneMove_Stop" )
+	Signal(droneMedic, "DeployableMedic_HealAborted")
+	//EndSignal( "OnDeath" )
+	EndSignal( droneMedic, "OnDestroy" )
+	// if ( DeployableMedic_ShouldAttemptHeal( player, droneMedic ) && player.IsPlayer() )
+		
+// EmitSoundOnEntityOnlyToPlayer( player, player, DEPLOYABLE_MEDIC_HEAL_LOOP_SOUND_1P )
+droneMedic.Anim_Stop()
+		entity mover = CreateScriptMover( droneMedic.GetOrigin() )
+		mover.kv.solid = 0
+		//mover.kv.collisionGroup = TRACE_COLLISION_GROUP_NONE
+		mover.SetAngles(droneMedic.GetAngles())
+		droneMedic.ClearParent()
+		droneMedic.SetParent(mover)
+		
+		
+	OnThreadEnd(
+	function() : ( mover, droneMedic )
+		{
+			// if ( IsValid( player ) )
+				// StopSoundOnEntity( player, DEPLOYABLE_MEDIC_HEAL_LOOP_SOUND_1P )
+
+			if( IsValid(droneMedic)) 
+				droneMedic.ClearParent()
+				
+			if( IsValid(mover))
+				mover.Destroy()
+		}
+	)
+	// thread updateDocBeam(droneMedic, originalpointz)
+	while( Distance2D( mover.GetOrigin(), destino ) > 1)
+	{
+		if(!IsValid(mover)) break
+		 vector distance     = destino - mover.GetOrigin()
+		 float rotY = atan(distance.y / distance.x) * 180.0 / PI
+
+			mover.NonPhysicsMoveTo( destino, 1.5, 0, 0 )
+			printt("moving")
+				 if (distance.x < 0 ) rotY = rotY + 180.0
+				 mover.NonPhysicsRotateTo( < 0, rotY, 0 > , 0.1, 0, 0 )
+		wait 0.1
+	}
+}
+
+void function updateDocBeam(entity droneMedic, float originalpointz)
+{
+	EndSignal( droneMedic, "DocDroneMove_Stop" )
+	
+	int fxID_EYE    = droneMedic.LookupAttachment( "EYEGLOW" )
+	entity beamfx = StartParticleEffectOnEntity_ReturnEntity( droneMedic, GetParticleSystemIndex( $"P_drone_medic_shield_beam"), FX_PATTACH_POINT_FOLLOW, fxID_EYE)
+	
+	OnThreadEnd(
+	function() : ( beamfx  )
+		{
+			if(IsValid(beamfx)) beamfx.Destroy()
+		}
+	)
+	
+
+	while(IsValid(droneMedic)){
+	EffectSetControlPointVector( beamfx, 2, < droneMedic.GetOrigin().x, droneMedic.GetOrigin().y, originalpointz+10> + droneMedic.GetForwardVector()*50)
+	WaitFrame()
 	}
 }
 
@@ -769,14 +996,16 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 	Assert ( IsNewThread(), "Must be threaded off." )
 	trigger.EndSignal( "OnDestroy" )
 	droneMedic.EndSignal( "OnDestroy" )
-
+	entity rayo
 	OnThreadEnd(
-		function() : ( droneMedic )
+		function() : ( droneMedic, rayo )
 		{
+			if(IsValid(rayo)) rayo.Destroy()
+				
 			if ( IsValid( droneMedic ) )
 			{
 				StopSoundOnEntity( droneMedic, DEPLOYABLE_MEDIC_HEAL_LOOP_SOUND_3P )
-
+				
 				array<HealData> healOverTimeArray = file.deployableData[ droneMedic ].healDataArray
 				foreach( healData in healOverTimeArray )
 				{
@@ -790,9 +1019,10 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 
 	int lastTargetCount     = DeployableMedic_GetHealTargetCount( trigger )
 	float droneMedicEndTime = Time() + DEPLOYABLE_MEDIC_MAX_LIFETIME
-
+	entity owner = droneMedic.GetOwner()
 	while ( true )
 	{
+		
 		//If we have heal targets
 		array<entity> playerHealTargetArray = DeployableMedic_GetPlayerHealTargetArray( droneMedic )
 		int targetCount                     = playerHealTargetArray.len()
@@ -812,6 +1042,7 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 				{
 					newHealResource += EntityHealResource_GetRemainingHeals( healData.healTarget, healData.healResourceID )
 					EntityHealResource_Remove( healData.healTarget, healData.healResourceID )
+					printt("aaa5")
 				}
 			}
 
@@ -829,7 +1060,7 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 
 				foreach( player in playerHealTargetArray )
 				{
-					if ( !IsValid( player ) || !player.IsPlayer() )
+					if ( !IsValid( player ) || !player.IsPlayer() || player.GetTeam() != owner.GetTeam())
 						continue
 
 					float healPerSec = healAmount / healDuration
@@ -838,6 +1069,7 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 					healData.healResourceID = EntityHealResource_Add( player, healDuration, healPerSec, 0, "mp_weapon_deployable_medic", droneMedic.GetOwner() )
 					Assert( healData.healResourceID != ENTITY_HEAL_RESOURCE_INVALID )
 					file.deployableData[ droneMedic ].healDataArray.append( healData )
+					printt("aaa6")
 				}
 			}
 			//else
@@ -854,14 +1086,14 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 		float resourceFrac = file.deployableData[ droneMedic ].healResource / float( DEPLOYABLE_MEDIC_HEAL_AMOUNT )
 		droneMedic.SetSoundCodeControllerValue( resourceFrac * 100.0 )
 
-		//if ( resourceFrac >= 0.66 )
-		//	droneMedic.SetSkin( DEPLOYABLE_MEDIC_RESOURCE_FULL_SKIN_INDEX )
-		//else if ( resourceFrac >= 0.33 )
-		//	droneMedic.SetSkin( DEPLOYABLE_MEDIC_RESOURCE_HALF_SKIN_INDEX )
-		//else
-		//	droneMedic.SetSkin( DEPLOYABLE_MEDIC_RESOURCE_LOW_SKIN_INDEX )
-
-		//if we have exausted our heal resource or run out of time, end our update.
+		if ( resourceFrac >= 0.66 )
+			droneMedic.SetSkin( DEPLOYABLE_MEDIC_RESOURCE_FULL_SKIN_INDEX )
+		else if ( resourceFrac >= 0.33 )
+			droneMedic.SetSkin( DEPLOYABLE_MEDIC_RESOURCE_HALF_SKIN_INDEX )
+		else
+			droneMedic.SetSkin( DEPLOYABLE_MEDIC_RESOURCE_LOW_SKIN_INDEX )
+				
+	//if we have exausted our heal resource or run out of time, end our update.
 		if ( ( targetCount == 0 && Time() > droneMedicEndTime ) || file.deployableData[ droneMedic ].healResource <= 0 )
 		{
 			array<HealData> healDataArray = file.deployableData[ droneMedic ].healDataArray
@@ -869,18 +1101,18 @@ void function DeployableMedic_DeployableHealUpdate( entity trigger, entity drone
 			{
 				// due to health being an int and time a float we sometimes have a tiny bit more health left to add before we are done
 				entity target = healData.healTarget
-				if ( IsAlive( target ) )
+				if ( IsAlive( target ) && target.GetTeam() == owner.GetTeam())
 				{
 					int remainingHeal = EntityHealResource_GetRemainingHeals( target, healData.healResourceID )
 					int currentHealth = target.GetHealth()
 					int finalHealth = minint( target.GetMaxHealth(), currentHealth + remainingHeal )
 					target.SetHealth( finalHealth )
-
+					printt("aaa2")
 					// todo(dw): I'm pretty sure this whole part of dishing out the final heal amounts is unnecessary (and complicates this stat hook)
 					int diff = finalHealth - currentHealth
 					if ( diff > 0 )
 						StatsHook_MedicDeployableDrone_OnEntityHealResourceFinished( target, diff, "mp_weapon_deployable_medic", droneMedic.GetOwner() )
-				}
+				} 
 			}
 
 			droneMedic.Signal( "DeployableMedic_HealDepleated" )
@@ -905,28 +1137,34 @@ void function DeployableMedic_PlayerOnDamage( entity player, var damageInfo )
 {
 	Assert( IsValid( player ), "Player ent got a damage callback but it wasn't vaild." )
 
-	int damageSourceID = DamageInfo_GetDamageSourceIdentifier( damageInfo )
+	// int damageSourceID = DamageInfo_GetDamageSourceIdentifier( damageInfo )
+	printt("Player damaged ")
+	Signal( player, "DeployableMedic_HealAborted" )
+	
+	// switch( damageSourceID )
+	// {
+		// case eDamageSourceId.outOfBounds:
+			// if ( DeathField_IsActive() )
+			// {
+				// float stormDist = DeathField_PointDistanceFromFrontier( player.EyePosition() )
+				// if ( stormDist > 0 )
+					// Signal( player, "DeployableMedic_HealAborted" )
+					// break
+			// }
+			// break
 
-	switch( damageSourceID )
-	{
-		case eDamageSourceId.outOfBounds:
-			if ( DeathField_IsActive() )
-			{
-				float stormDist = DeathField_PointDistanceFromFrontier( player.EyePosition() )
-				if ( stormDist > 0 )
-					Signal( player, "DeployableMedic_HealAborted" )
-					break
-			}
-			break
-
-		default:
-			Signal( player, "DeployableMedic_HealAborted" )
-			break
-	}
+		// default:
+			// Signal( player, "DeployableMedic_HealAborted" )
+			// break
+	// }
 }
 
 bool function DeployableMedic_ShouldAttemptHeal( entity player, entity droneMedic )
 {
+	entity owner = droneMedic.GetOwner()
+	if(player.GetTeam() != owner.GetTeam())
+		return true
+	
 	//We can't heal titans
 	if ( player.IsTitan() )
 	{
@@ -962,6 +1200,10 @@ bool function DeployableMedic_ShouldAttemptHeal( entity player, entity droneMedi
 		if ( player.ContextAction_IsMeleeExecution() || player.ContextAction_IsMeleeExecutionTarget() )
 			return false
 	}
+	
+	// //Let's heal players with low health shields FIX THIS
+	// if ( player.GetShieldHealthMax() != player.GetShieldHealth() )
+		// return true
 
 	//We can't heal players who have full health
 	if ( player.GetHealth() == player.GetMaxHealth() )
@@ -1102,12 +1344,16 @@ void function DeployableMedic_DeployHealRope( HealRopeData ropeData, entity play
 		EmitSoundOnEntityOnlyToPlayer( player, player, DEPLOYABLE_MEDIC_ATTACH_SOUND_1P )
 		EmitSoundOnEntityExceptToPlayer( player, player, DEPLOYABLE_MEDIC_ATTACH_SOUND_3P )
 	}
+	while(IsValid(ropeData.playerRopeEndEnt)){
+		ropeData.playerRopeEndEnt.SetOrigin(player.GetOrigin())
+		WaitFrame()
+	}
 }
 
 void function HealRopeInit( entity rope, entity player, bool isPlayerRope )
 {
 	rope.Rope_SetSlack( 0 )
-	rope.Rope_SetCollisionEnabled( true )
+	rope.Rope_SetCollisionEnabled( false )
 	//rope.Rope_SetGravityEnabled( false )
 	rope.Rope_SetTension( .5 )
 	rope.Rope_SetPhysicsDampening( .001 )
@@ -1178,9 +1424,209 @@ void function DeployableMedic_RetractHealRope( HealRopeData ropeData )
 		ropeData.otherRopeEndEnt.Destroy()
 }
 
+bool function ClientCommand_MoveDocDrone( entity player, array<string> args )
+//By Retículo Endoplasmático#5955 (CaféDeColombiaFPS)//
+{
+	if ( !IsAlive( player ) )
+		return true
+
+	entity weapon = player.GetOffhandWeapon( OFFHAND_TACTICAL )
+
+	if ( !IsValid( weapon ) )
+		return true
+
+	if ( weapon.GetWeaponClassName() != "mp_weapon_deployable_medic" )
+		return true
+
+	vector destino
+	destino.x = args[0].tofloat()
+	destino.y = args[1].tofloat()
+	destino.z = args[2].tofloat()
+	Signal(player.p.lastdocdrone, "DocDroneMove_Stop")
+	if(IsValid(player.p.lastdocdrone))
+	thread DocDroneMoveThink(player.p.lastdocdrone,  <destino.x, destino.y, player.p.lastdocdrone.GetOrigin().z>, destino.z)
+	return true
+}
 #endif // SERVER
 
 #if CLIENT
+void function ServerCallback_DocDroneHighlight( entity ent, entity owner, float duration)
+{
+	if(IsValid(ent))
+	thread CloneHighlightDOC( ent, owner )
+	thread HighlightWatcher(duration, owner)
+}
+
+void function HighlightWatcher(float duration, entity owner)
+{
+	wait duration
+	Signal(owner, "EndPhaseChamberHighlight")
+}
+
+const int RARE_R = 58
+const int RARE_G = 133
+const int RARE_B = 176
+const int EPIC_R = 136
+const int EPIC_G = 63
+const int EPIC_B = 162
+const int LEGENDARY_R = 220
+const int LEGENDARY_G = 185
+const int LEGENDARY_B = 39
+const vector LOOT_COLOR_NONE = <0, 0, 0>
+const vector LOOT_COLOR_COMMON = <192, 192, 192>
+const vector LOOT_COLOR_RARE = <RARE_R, RARE_G, RARE_B>
+const vector LOOT_COLOR_EPIC = <EPIC_R, EPIC_G, EPIC_B>
+const vector LOOT_COLOR_LEGENDARY = <LEGENDARY_R, LEGENDARY_G, LEGENDARY_B>
+const vector LOOT_COLOR_HEIRLOOM = <255, 0, 0>
+
+void function CloneHighlightDOC( entity ent, entity owner )
+{
+	entity entClone	
+	owner.EndSignal("OnDeath")
+	owner.EndSignal("EndPhaseChamberHighlight")
+	EndSignal(owner, "EndPhaseChamberHighlight")
+	
+	OnThreadEnd(
+		function() : ( entClone )
+		{
+				if(IsValid(entClone)) entClone.Destroy()
+		}
+	)
+	vector shieldColor
+	
+			if( ent.GetShieldHealthMax() < 50 ){
+				shieldColor = LOOT_COLOR_COMMON/100
+			}
+			else if( ent.GetShieldHealthMax() > 50 && ent.GetShieldHealthMax() <= 75 ) {
+				shieldColor = LOOT_COLOR_RARE/100
+			} else if( ent.GetShieldHealthMax() > 75 && ent.GetShieldHealthMax() <= 100  ) {
+				shieldColor = LOOT_COLOR_EPIC/100
+			} else if( ent.GetShieldHealthMax() > 100 ) {
+				shieldColor = LOOT_COLOR_HEIRLOOM/100
+			}
+			
+	while(true)
+	{
+		if(!IsValid(ent)) break
+		entClone = CreateClientSidePropDynamicClone( ent, ent.GetModelName() )
+		entClone.kv.fadedist = 1
+		if ( !IsValid( entClone ) ) //JFS - Could further investigate why this particular function can return null. Code comment was referring to TF1 stuff.
+			return
+
+		DroneEnemyHighlight( entClone, shieldColor)
+		thread delayedDestroyBecauseYes(entClone)
+		WaitFrame()
+		if(IsValid(entClone)) entClone.Destroy()
+	}
+}
+
+void function delayedDestroyBecauseYes(entity entClone)
+{
+	WaitFrame()
+	if(IsValid(entClone)) entClone.Destroy()
+}
+
+void function DroneEnemyHighlight( entity ent, vector highlightColor = <255,0,0>/100 )
+{
+	int highlightId = ent.Highlight_GetState( HIGHLIGHT_CONTEXT_NEUTRAL )
+	ent.Highlight_SetVisibilityType( HIGHLIGHT_VIS_ALWAYS )
+	ent.Highlight_SetCurrentContext( HIGHLIGHT_CONTEXT_NEUTRAL )
+	ent.Highlight_SetFunctions( HIGHLIGHT_CONTEXT_NEUTRAL, 0, false, 169, 2.0, highlightId, true )
+	ent.Highlight_SetParam( HIGHLIGHT_CONTEXT_NEUTRAL, 0, highlightColor )
+	ent.Highlight_SetFlag( HIGHLIGHT_FLAG_CHECK_OFTEN, true )
+	ent.Highlight_StartOn()
+	ent.Highlight_SetLifeTime( 0.1 )
+}
+
+void function DestroyAfterTime( int fxHandle, float time )
+{
+	OnThreadEnd(
+		function() : ( fxHandle )
+		{
+			if ( !EffectDoesExist( fxHandle ) )
+				return
+
+			EffectStop( fxHandle, true, true )
+		}
+	)
+	wait( time )
+}
+
+void function DisplayDocDroneMoveHint()
+//By Retículo Endoplasmático#5955 (CaféDeColombiaFPS)//
+{
+	entity player = GetLocalViewPlayer()
+
+	if ( !IsValid( player ) )
+		return
+
+	player.EndSignal( "OnDestroy" )
+	player.EndSignal( "RemoveColombianDecoyHint" )
+
+	AddPlayerHint( DECOY_DURATION, 0.15, $"", "Press %scriptCommand5% to move medic drone." )
+
+	OnThreadEnd(
+		function() : ()
+		{
+			HidePlayerHint( "Press %scriptCommand5% to move medic drone." )
+		}
+	)
+
+	WaitForever()
+}
+
+void function AttemptDocDroneMove( entity player )
+//By Retículo Endoplasmático#5955 (CaféDeColombiaFPS)//
+{
+	if ( player != GetLocalViewPlayer() || player != GetLocalClientPlayer() )
+		return
+	
+	if(!IsValid(player)) return
+	
+	entity weapon = player.GetOffhandWeapon( OFFHAND_TACTICAL )
+
+	if ( !IsValid( weapon ) )
+		return
+
+	if ( weapon.GetWeaponClassName() != "mp_weapon_deployable_medic" )
+		return
+	
+	//Signal(player, "RemoveColombianDecoyHint")
+	
+		vector decoyPos
+		TraceResults trace
+		
+	bool validPos = false
+	if ( player.HasThirdPersonAttackFocus() )
+	{
+		decoyPos = player.GetThirdPersonAttackFocus()
+		validPos = true
+	}
+	else
+	{
+		vector eyePos      = player.EyePosition()
+		vector viewVector  = player.GetViewVector()
+		trace = TraceLine( eyePos, eyePos + (viewVector * 2500), player, TRACE_MASK_PLAYERSOLID, TRACE_COLLISION_GROUP_PLAYER )
+		if ( trace.fraction < 1.0 )
+		{
+			decoyPos = trace.endPos
+			validPos = true
+		}
+	}
+	
+	if ( validPos )
+	{
+		trace = TraceLine( decoyPos, decoyPos + <0, 0, -2000>, player, TRACE_MASK_PLAYERSOLID, TRACE_COLLISION_GROUP_PLAYER )
+		int arID           = GetParticleSystemIndex( DECOY_AR_MARKER )
+		int fxHandle       = StartParticleEffectInWorldWithHandle( arID, trace.endPos, trace.surfaceNormal )
+		EffectSetControlPointVector( fxHandle, 1, <10, 247, 247> )
+		thread DestroyAfterTime( fxHandle, 1.5 )
+	}
+
+	player.ClientCommand( "MoveDocDrone " + trace.endPos.x + " " + trace.endPos.y + " " + trace.endPos.z )
+	//thread DoScreenFlashFX(player)
+}
+
 void function DeployableMedic_OnPropScriptCreated( entity ent )
 {
 }

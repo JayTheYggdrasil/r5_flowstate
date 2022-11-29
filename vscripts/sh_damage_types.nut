@@ -57,8 +57,13 @@ global enum eDamageSourceId
 	damagedef_creeping_bombardment_detcord_explosion
 	damagedef_defensive_bombardment
 
-	//---------------------------
+	//Custom
+	damagedef_DocDrone
 
+	//---------------------------
+	mp_weapon_grenade_decoyaudio
+	mp_weapon_grenade_cryonade
+	
 	// Pilot Weapons
 	mp_weapon_hemlok
 	mp_weapon_lmg
@@ -363,6 +368,7 @@ global enum eModSourceId
 //Attachments intentionally left off. This prevents them from displaying in kill cards.
 // modNameStrings should be defined when the mods are created, not in a separate table -Mackey
 global const modNameStrings = {
+	[ eDamageSourceId.damagedef_DocDrone ] 					= "DRONE",
 	[ eModSourceId.accelerator ]						= "#MOD_ACCELERATOR_NAME",
 	[ eModSourceId.afterburners ]						= "#MOD_AFTERBURNERS_NAME",
 	[ eModSourceId.arc_triple_threat ] 					= "#MOD_ARC_TRIPLE_THREAT_NAME",
@@ -470,6 +476,7 @@ void function DamageTypes_Init()
 
 	file.damageSourceIDToName =
 	{
+		[ eDamageSourceId.damagedef_DocDrone ] 					= "DRONE",
 		//mp
 		[ eDamageSourceId.mp_extreme_environment ] 					= "#DAMAGE_EXTREME_ENVIRONMENT",
 

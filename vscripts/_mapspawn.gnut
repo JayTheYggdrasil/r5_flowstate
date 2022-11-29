@@ -249,6 +249,12 @@ void function CodeCallback_MapSpawn() // original script entry point
 	PrecacheModel( $"mdl/menu/xp_badge.rmdl" )
 	PrecacheModel( $"mdl/menu/coin.rmdl" )
 	PrecacheModel( $"mdl/currency/crafting/currency_crafting_epic.rmdl" )
+
+	PrecacheModel( $"mdl/robotics_r2/turret_plasma/plasma_turret_pc_1.rmdl" )
+	PrecacheModel( $"mdl/robotics_r2/turret_plasma/plasma_turret_pc_2.rmdl" )
+	PrecacheModel( $"mdl/robotics_r2/turret_plasma/plasma_turret_pc_3.rmdl" )
+	PrecacheParticleSystem($"P_melee_ice")
+	PrecacheParticleSystem($"P_impact_exp_FRAG_ice")
 	//Weapons
 
 	PrecacheWeapon( $"mp_weapon_melee_survival" )
@@ -294,6 +300,7 @@ void function CodeCallback_MapSpawn() // original script entry point
 	PrecacheWeapon( $"mp_weapon_rspn101" )
 	PrecacheWeapon( $"mp_weapon_defender" )
 	PrecacheWeapon( $"mp_weapon_jump_pad" )
+	PrecacheWeapon( $"mp_weapon_smart_pistol" )
 	PrecacheWeapon( $"mp_weapon_grenade_creeping_bombardment" )
 	PrecacheWeapon( $"mp_weapon_grenade_defensive_bombardment" )
 	PrecacheWeapon( $"mp_weapon_grenade_sonar" )
@@ -367,7 +374,17 @@ void function CodeCallback_MapSpawn() // original script entry point
 	PrecacheWeapon($"mp_weapon_nessy_primary" )
 	PrecacheWeapon($"melee_loba_wolf" )
 	PrecacheWeapon($"mp_weapon_loba_wolf_primary" )	
-	
+	PrecacheWeapon( $"mp_weapon_ironmanrepulsor")
+	PrecacheWeapon( $"mp_weapon_leviathangun")
+	PrecacheWeapon( $"mp_weapon_portalgun" )
+	PrecacheWeapon( $"mp_weapon_ringflare")
+	PrecacheWeapon( $"mp_weapon_jumppadsweapon")	
+	PrecacheWeapon( $"mp_weapon_ziplinesweapon")
+	PrecacheWeapon( $"mp_ability_phase_chamber" )
+	PrecacheWeapon( $"mp_ability_ironmanunibeam" )
+	PrecacheWeapon( $"mp_ability_phase_chamber" )
+	PrecacheWeapon( $"mp_ability_mobile_respawn_beacon" )
+
 	switch(GameRules_GetGameMode())
 	{
 		case "custom_tdm":

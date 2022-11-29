@@ -409,6 +409,13 @@ global struct ServerEntityStruct
 
 	//Arthur's revenge
 	array<entity> birdsFromThisCluster
+
+	//portal gun
+	bool isplayercomingfromportal1 = false
+	bool isplayercomingfromportal2 = false
+	
+	bool alreadyPingedUltraDecoy = false
+	bool isBeingAttackedByDroneMedic = false
 }
 
 global struct MeritData
@@ -729,10 +736,16 @@ global struct ServerPlayerStruct
 	int dummieKilled = 0
 	bool touchingTopTrigger = false
 	bool ForceEject = false
+	
 	string weapon = "mp_weapon_wingman"
 	array<string> mods = ["optic_cq_hcog_classic"]
+	string weapon2 = ""
+	array<string> mods2 = []
 	int weaponSkin = -1
+	int weaponSkin2 = -1
 	int weaponModelIndex = -1
+	int weaponModelIndex2 = -1
+	
 	
 	//Map editor
 	PropInfo& selectedProp
@@ -740,7 +753,7 @@ global struct ServerPlayerStruct
 	EditorMode& selectedEditorMode
 	EditorMode ornull lastEditorMode
 	
-	//Rocketpod Weapon
+	//Rocketpod Weapon and Guided Missiles
 	vector guidedLaserPoint
 	
 	//Holospray
@@ -748,6 +761,17 @@ global struct ServerPlayerStruct
 	
 	//Data request
 	float lastTimeDataRequestUsed = 0
+	
+	//Needler
+	int needles = 0
+	bool ongoingneedlesexplode = false
+	array<entity> proplist
+	entity particleonbody
+	//Super decys (mirage buff)
+	entity lastDecoy
+	
+	//Super doc (lifeline buff)
+	entity lastdocdrone
 }
 
 global struct ChallengeScore
@@ -851,6 +875,13 @@ global struct ServerAIStruct
 	// r5 stuff
 	array<BurnDamageStack> burnDamageStacks
 	bool isBurning
+	
+	int needles = 0
+	bool ongoingneedlesexplode = false
+	array<entity> proplist
+	entity particleonbody
+	
+	entity decoyOwner
 	string lastSchedule
 	string lastAnim
 }
@@ -889,8 +920,25 @@ global struct ServerWeaponStruct
 	entity ziplineStartModel
 	var ziplineStartPos
 	bool translocate_isADSForced
-}
 
+	//portal gun
+	entity portal1root = null
+	entity portal2root = null
+	entity trigger1 = null
+	entity trigger2 = null
+	vector startpos
+	vector endpos
+	bool issecondportalshot = false
+	vector portal1savedNormalAngle
+	vector portal2savedNormalAngle
+	vector portal1savedNormal
+	vector portal2savedNormal
+	vector portal1savedSurfaceAngle
+	vector portal2savedSurfaceAngle
+	
+	vector portal1RefAngles
+	vector portal2RefAngles
+}
 
 global struct RemoteTurretSettings
 {
@@ -948,7 +996,8 @@ global struct ServerProjectileStruct
 	vector ownerLocationDebug
 	vector savedSurfaceNormal
 	float lastTeleportTime
-	
+	bool dontbouncethistime = false
+	entity weapon
 	array<entity> healWeaponEffects
 }
 
@@ -980,6 +1029,10 @@ global struct ServerPlayerDecoyStruct
 {
 	array< entity > fxHandles
 	array< string > loopingSounds
+	asset characterSetFile 
+	asset modelName
+	bool F_or_B_CoinFlip
+	entity owner
 }
 
 // hooked up to entity.sp in code

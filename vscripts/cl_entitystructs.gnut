@@ -166,6 +166,12 @@ global struct ClientPlayerStruct
 	EditorMode& selectedEditorMode
 	EditorMode ornull lastEditorMode
 	int ziplineUsages = 0
+	float delayeddamage
+	int needles = 0
+	bool ongoingneedlesexplode = false
+	
+	bool onetimetimer = false
+	float lasttime
 }
 
 
@@ -174,6 +180,8 @@ global struct ClientPlayerStruct
 global struct ClientAIStruct
 {
 	int gruntVoiceIndex = 0
+	int needles = 0
+	bool ongoingneedlesexplode = false
 	bool firsttime = true
 	int shieldTier
 }

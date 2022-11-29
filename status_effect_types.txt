@@ -3,7 +3,11 @@
 //enum eStatusEffect
 //{
 /////////////////////////////
-
+	ring_flare
+	turretlockon_detected
+	rewindTimer
+	rewindTimerChamber
+	
 	anti_slow
 	move_slow
 	turn_slow

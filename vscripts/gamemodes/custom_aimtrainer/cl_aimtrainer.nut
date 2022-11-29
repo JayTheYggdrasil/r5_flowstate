@@ -86,6 +86,7 @@ global function OpenFRChallengesSettingsWpnSelector
 global function CloseFRChallengesSettingsWpnSelector
 global function ExitChallengeClient
 global function WeaponSelectorClose
+global function ClientLocalizeAndShortenNumber_Float
 
 global function SetWeaponSlot
 string DesiredSlot = "p"

@@ -19,6 +19,8 @@ global function SetTitanMeterGainScale
 // r5 stuff
 global function SvCodeCallbacksCommon_Init
 
+bool VERBOSE_DAMAGE_PRINTOUTS2 = false
+
 struct AccumulatedDamageData
 {
 	float accumulatedDamage
@@ -56,6 +58,7 @@ void function OnClientConnected( entity player )
 	printt("Flowstate DEBUG - The gamemode running is: " + GameRules_GetGameMode())
 	//Wraith Q fix. Colombia
 	player.SetForceVisibleInPhaseShift(true)
+	player.SetPlayerNetInt( "skyDiveTrailOverrideIndex", 2 )
 	
 	//Phase Rewind Record Positions. Colombia
 	thread RecordPositions(player)
@@ -99,8 +102,10 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 	bool entIsNPC = ent.IsNPC()
 
 	entity attacker = DamageInfo_GetAttacker( damageInfo )
+	if(!IsValid( attacker )) return
 	entity inflictor = DamageInfo_GetInflictor( damageInfo )
-
+	float damage = DamageInfo_GetDamage( damageInfo )
+	
 	bool attackerIsPlayer = false
 	bool attackerIsTitan = false
 	bool attackerIsNPC = false
@@ -110,6 +115,15 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 		attackerIsPlayer = attacker.IsPlayer()
 		attackerIsTitan = attacker.IsTitan()
 		attackerIsNPC = attacker.IsNPC()
+	}
+	
+	if(attacker.GetTargetName() == "UltraDecoy")
+	{
+		if(IsValid(ent) && attacker.IsNPC() && !ent.e.alreadyPingedUltraDecoy){
+		PingForDecoyTriggered(attacker.ai.decoyOwner, ent)
+		ent.e.alreadyPingedUltraDecoy = true
+		}
+		Remote_CallFunction_NonReplay( attacker.ai.decoyOwner, "ShowDamageFlyout", ent, damage )
 	}
 
 	// Set damage source correctly when npc grunts or titans try to melee us
@@ -147,7 +161,7 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 			&& inflictor.HasKey( "damageSourceName" ) )
 		DamageInfo_SetDamageSourceIdentifier( damageInfo, eDamageSourceId[expect string( inflictor.kv.damageSourceName )] )
 
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "CodeCallback_DamagePlayerOrNPC ent:", ent )
 		printt( "    Attacker:", DamageInfo_GetAttacker( damageInfo ) )
 		printt( "    Inflictor:", DamageInfo_GetInflictor( damageInfo ) )
@@ -162,7 +176,7 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 			printt( "    SourceID:", GetObitFromDamageSourceID( sourceID ) )
 
 		PrintDamageFlags( DamageInfo_GetCustomDamageType( damageInfo ) )
-	#endif
+	}
 
 	if ( !ScriptCallback_ShouldEntTakeDamage( ent, damageInfo ) )
 	{
@@ -236,14 +250,14 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 	if ( DamageInfo_GetDamage( damageInfo ) <= 0 )
 		return
 
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    rounded damage amount:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 
 	HandleLocationBasedDamage( ent, damageInfo )
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    after location based damage:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 
 	//PROTO Defensive AI Chip. Ideally less invisible gameplay, but something that can combo with other chips.
 	if ( ent.IsTitan() && entIsNPC )
@@ -252,16 +266,16 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 		if ( IsValid( soul ) && SoulHasPassive( soul, ePassives.PAS_GUARDIAN_CHIP ) )
 		{
 			DamageInfo_SetDamage( damageInfo, DamageInfo_GetDamage( damageInfo ) * 0.8 )
-			#if VERBOSE_DAMAGE_PRINTOUTS
+			if(VERBOSE_DAMAGE_PRINTOUTS2){
 				printt( "After guardian chip :", DamageInfo_GetDamage( damageInfo ) )
-			#endif
+			}
 		}
 	}
 
 	RunClassDamageCallbacks( ent, damageInfo )
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    after class damage callbacks:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 	if ( DamageInfo_GetDamage( damageInfo ) == 0 )
 		return
 
@@ -313,9 +327,9 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 	{
 		callbackFunc( ent, damageInfo )
 	}
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    after AddEntityCallback_OnDamaged callbacks:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 
 	// use AddDamageCallbackSourceID( "classname", function ) to registed functions
 	int damageSourceId = DamageInfo_GetDamageSourceIdentifier( damageInfo )
@@ -326,16 +340,16 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 			callbackFunc( ent, damageInfo )
 		}
 	}
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    after damageSourceID callbacks:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 	if ( DamageInfo_GetDamage( damageInfo ) == 0 )
 		return
 
 	RunClassDamageFinalCallbacks( ent, damageInfo )
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    after class damage final callbacks:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 	if ( DamageInfo_GetDamage( damageInfo ) == 0 )
 		return
 
@@ -443,17 +457,20 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 			}
 			
 			UpdatePlayerCounts()
+
+			if(GetCurrentPlaylistVarBool( "enable_evo_shields", false ))
+				thread FakeEvoShield(attacker)
 		}
 	}
 
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    After player damage mod:", DamageInfo_GetDamage( damageInfo ) )
-	#endif
+	}
 
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 	if ( titanDamage.shieldDamage > 0 )
 		printt( "    	Shield Damage:", titanDamage.shieldDamage )
-	#endif
+	}
 
 	// Added via AddEntityCallback_OnPostDamaged
 	foreach ( callbackFunc in ent.e.entPostDamageCallbacks )
@@ -508,10 +525,10 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 	if ( entIsPlayer && !entIsTitan )
 		PilotDamageFlinch( ent, damageInfo )
 
-	#if VERBOSE_DAMAGE_PRINTOUTS
+	if(VERBOSE_DAMAGE_PRINTOUTS2){
 		printt( "    final damage done:", DamageInfo_GetDamage( damageInfo ) )
 		printt( "	 health: " + ent.GetHealth() )
-	#endif
+	}
 
 	RunClassPostDamageCallbacks( ent, damageInfo )
 
@@ -527,6 +544,30 @@ void function CodeCallback_DamagePlayerOrNPC( entity ent, var damageInfo )
 	#endif
 
 	attacker.Signal( "DamagedPlayerOrNPC" )
+}
+
+void function FakeEvoShield(entity attacker)
+{
+				int oldshield = attacker.GetShieldHealth()
+				if(attacker.GetPlayerNetInt("kills") == 2)
+				{	
+						Inventory_SetPlayerEquipment(attacker, "armor_pickup_lv2", "armor")
+						attacker.SetShieldHealthMax( 75 )
+						WaitFrame()
+						attacker.SetShieldHealth(oldshield)
+				} else if(attacker.GetPlayerNetInt("kills") == 4)
+				{
+						Inventory_SetPlayerEquipment(attacker, "armor_pickup_lv3", "armor")
+						attacker.SetShieldHealthMax( 100 )
+						WaitFrame()
+						attacker.SetShieldHealth(oldshield)
+				} else if(attacker.GetPlayerNetInt("kills") == 6)
+				{
+						Inventory_SetPlayerEquipment(attacker, "armor_pickup_lv4_all_fast", "armor")
+						attacker.SetShieldHealthMax( 125 )
+						WaitFrame()
+						attacker.SetShieldHealth(oldshield)
+				}
 }
 
 void function EarnMeterDamageConversion( var damageInfo, entity attacker, entity ent, float savedDamage, TitanDamage titanDamage )

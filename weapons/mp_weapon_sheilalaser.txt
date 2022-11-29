@@ -28,7 +28,7 @@ WeaponData
 	"stat_rof"										"80"
 
 	// Models
-	"viewmodel"   									"mdl/Weapons/rampart_turret/ptpov_rampart_turret.rmdl"
+	"viewmodel"   									"mdl/weapons/rampart_turret/ptpov_rampart_turret_new.rmdl"
 	"playermodel" 									"mdl/Weapons/rampart_turret/w_rampart_turret.rmdl"
 	"holster_type"									"rifle"
 

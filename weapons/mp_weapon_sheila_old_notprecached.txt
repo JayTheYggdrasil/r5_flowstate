@@ -41,7 +41,7 @@ WeaponData
 	dof_zoom_focusArea_bottom						-0.018
 
 	// Models
-	"viewmodel"   									"mdl/weapons/rampart_turret/ptpov_rampart_turret.rmdl"
+	"viewmodel"   									"mdl/weapons/rampart_turret/ptpov_rampart_turret_new.rmdl"
 	"playermodel" 									"mdl/weapons/rampart_turret/w_rampart_turret.rmdl"
 	"holster_type"									"rifle"
 
