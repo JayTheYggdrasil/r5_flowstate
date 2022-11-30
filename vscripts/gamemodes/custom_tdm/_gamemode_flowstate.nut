@@ -37,6 +37,7 @@ global function	ClientCommand_ShowLatency
 global function WpnPulloutOnRespawn
 global function WpnAutoReload
 global function ReCheckGodMode
+global function GetBestPlayer
 
 const string WHITE_SHIELD = "armor_pickup_lv1"
 const string BLUE_SHIELD = "armor_pickup_lv2"

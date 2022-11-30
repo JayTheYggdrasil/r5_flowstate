@@ -717,6 +717,11 @@ void function SURVIVAL_PopulatePlayerInfoRui( entity player, var rui )
 		RuiSetColorAlpha( rui, "customCharacterColor", SrgbToLinear( <53, 222, 47> / 255.0 ), 1.0 )
 		RuiSetBool( rui, "useCustomCharacterColor", true )
 	}
+	else if (FlowState_PROPHUNT())
+	{
+		RuiSetColorAlpha( rui, "customCharacterColor", SrgbToLinear( <255, 0, 119> / 255.0 ), 1.0 )
+		RuiSetBool( rui, "useCustomCharacterColor", true )
+	}
 	
 	if(RGB_HUD)
 		thread RGBRui(rui)
