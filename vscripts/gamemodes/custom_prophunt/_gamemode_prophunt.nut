@@ -10,6 +10,7 @@ global function helpMessagePROPHUNT
 global function returnPropBool
 
 const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 3
+const int PROPHUNT_FLASH_BANG_RADIUS = 300
 
 struct{
 	float endTime = 0
@@ -55,6 +56,7 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
 	AddClientCommandCallback("LockAngles", ClientCommand_LockAngles)
 	AddClientCommandCallback("CreateDecoy", ClientCommand_CreatePropDecoy)
+	AddClientCommandCallback("FireFlashBang", ClientCommand_EmitFlashBangToNearbyPlayers)
 	
 	PrecacheCustomMapsProps()
 	
@@ -1533,21 +1535,20 @@ bool function ClientCommand_ChangeProp(entity player, array<string> args)
 
 	if(player.p.PROPHUNT_AreAnglesLocked)
 	{
-		ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
-		asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
-		player.SetPlayerSettingsWithMods( characterSetFile, [] )
-		SetPlayerSettings(player, PROPHUNT_SETTINGS)
-		
-		player.SetBodyModelOverride( $"" )
-		player.SetArmsModelOverride( $"" )
-		player.kv.solid = 6
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		player.Hide()
-		player.p.PROPHUNT_AreAnglesLocked = false
 		int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
 		player.p.PROPHUNT_ChangePropUsageLimit = newscore
 		if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
 		{
+			ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
+			asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
+			player.SetPlayerSettingsWithMods( characterSetFile, [] )
+			SetPlayerSettings(player, PROPHUNT_SETTINGS)
+			player.SetBodyModelOverride( $"" )
+			player.SetArmsModelOverride( $"" )
+			player.kv.solid = 6
+			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			player.Hide()
+			player.p.PROPHUNT_AreAnglesLocked = false
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
 		} else 
 		{
@@ -1624,16 +1625,10 @@ bool function ClientCommand_CreatePropDecoy(entity player, array<string> args)
 	entity decoy = player.CreateTargetedPlayerDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, 0, 0 )
 	decoy.SetMaxHealth( 50 )
 	decoy.SetHealth( 50 )
-	// decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
+	decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
 	SetObjectCanBeMeleed( decoy, true )
 	decoy.SetTimeout( 5 )
 	decoy.SetPlayerOneHits( true )
-	// AddEntityCallback_OnPostDamaged( decoy, void function( entity decoy, var damageInfo ) : ( player ) {
-		// if ( IsValid( player ) )
-			// HoloPiliot_OnDecoyDamaged( decoy, player, damageInfo )
-	// })
-	
-	//entity decoy = CreateDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, player, 0, 5 )
 	decoy.SetAngles( player.GetAngles() )
 	PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
 	return true
@@ -1642,6 +1637,19 @@ bool function ClientCommand_CreatePropDecoy(entity player, array<string> args)
 bool function ClientCommand_EmitFlashBangToNearbyPlayers(entity player, array<string> args)
 {
 	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
-
+	
+	foreach(sPlayer in GetPlayerArray_Alive())
+	{
+		if(!IsValid(player)) continue
+		
+		// if(sPlayer == player) continue
+		
+		float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
+		if ( playerDist <= PROPHUNT_FLASH_BANG_RADIUS )
+		{
+			Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)			
+		}
+	}
+	
 	return true
 }

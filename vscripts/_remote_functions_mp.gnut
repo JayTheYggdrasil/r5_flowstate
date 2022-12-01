@@ -79,7 +79,8 @@ void function RemoteFunctions_Init_Begin()
 			Remote_RegisterClientFunction("ServerCallback_CoolCameraOnMenu")
 			Remote_RegisterClientFunction("ServerCallback_SendScoreboardToClient", "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX, "float", 0.0, 10.0, 32, "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX)
 			Remote_RegisterClientFunction("ServerCallback_ClearScoreboardOnClient")
-			Remote_RegisterClientFunction("ServerCallback_FSDM_CoolCamera")			
+			Remote_RegisterClientFunction("ServerCallback_FSDM_CoolCamera")
+			Remote_RegisterClientFunction("PROPHUNT_DoScreenFlashFX", "entity", "entity")			
 			break
 		case MAP_EDITOR:
 			Remote_RegisterClientFunction("ServerCallback_NextProp", "entity")
