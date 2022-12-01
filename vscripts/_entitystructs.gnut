@@ -710,9 +710,9 @@ global struct ServerPlayerStruct
 	bool isParentedToFlyer = false
 	entity ParentedFlyer
 	//Prophunt by Colombia
-	int PROPHUNT_Max3changes
+	int PROPHUNT_ChangePropUsageLimit
 	bool PROPHUNT_isSpectatorDiedMidRound = false
-	bool PROPHUNT_DestroyProp = false
+	bool PROPHUNT_AreAnglesLocked = false
 	asset PROPHUNT_LastModel
 	
 	//By Endergreen

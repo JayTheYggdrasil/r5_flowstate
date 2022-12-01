@@ -3,13 +3,13 @@
 
 global function _GamemodeProphunt_Init
 global function _RegisterLocationPROPHUNT
-global function PROPHUNT_GiveAndManageRandomProp
-global function returnPropBool
-global function RunPROPHUNT
 global function _OnPlayerConnectedPROPHUNT
 global function _OnPlayerDiedPROPHUNT
-global function ClientCommand_NextRoundPROPHUNT
+global function RunPROPHUNT
 global function helpMessagePROPHUNT
+global function returnPropBool
+
+const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 3
 
 struct{
 	float endTime = 0
@@ -25,7 +25,7 @@ struct{
 	entity ringBoundary_PreGame
 	
 	// Voting
-    array<entity> votedPlayers // array of players that have already voted (bad var name idc)
+    array<entity> votedPlayers
     bool votingtime = false
     bool votestied = false
     array<int> mapVotes
@@ -51,9 +51,16 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("commands", ClientCommand_Help)
 	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
 	
+	//Controls
+	AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
+	AddClientCommandCallback("LockAngles", ClientCommand_LockAngles)
+	AddClientCommandCallback("CreateDecoy", ClientCommand_CreatePropDecoy)
+	
 	PrecacheCustomMapsProps()
 	
-	thread RunPROPHUNT()	
+	thread RunPROPHUNT()
+	
+	RegisterSignal("DestroyProp")
 }
 
 void function _OnEntitiesDidLoadPROPHUNT()
@@ -432,13 +439,17 @@ void function CheckForPlayersPlaying()
 
 void function PropWatcher(entity prop, entity player)
 {
-	while(IsValid(player) && FS_PROPHUNT.InProgress && !player.p.PROPHUNT_DestroyProp) 
-	{
-		WaitFrame()
-	}
+	EndSignal(player, "DestroyProp")
 	
-	if(IsValid(prop))
-		prop.Destroy()
+	OnThreadEnd(
+	function() : ( prop)
+	{
+		if(IsValid(prop))
+			prop.Destroy()
+	})
+	
+	while(IsValid(player) && FS_PROPHUNT.InProgress )
+		WaitFrame()
 }
 
 void function DestroyPlayerPropsPROPHUNT()
@@ -452,17 +463,39 @@ void function DestroyPlayerPropsPROPHUNT()
     FS_PROPHUNT.playerSpawnedProps.clear()
 }
 
-void function PROPHUNT_GiveAndManageRandomProp(entity player, bool anglesornah = false)
+void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false, bool forcelockedangles = false)
 {
 	if(!IsValid(player)) return
 	
-	player.p.PROPHUNT_DestroyProp = true
+	Signal(player, "DestroyProp")
 	
-	if(!anglesornah)
-	{
-		//WaitFrame()
-		asset selectedModel = prophuntAssetsWE[RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))]
-		player.p.PROPHUNT_LastModel = selectedModel
+	// if(!anglesornah)
+	// {
+		asset selectedModel
+		if(giveOldProp)
+			selectedModel = player.p.PROPHUNT_LastModel
+		else
+		{
+			selectedModel = prophuntAssetsWE[RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))]
+			player.p.PROPHUNT_LastModel = selectedModel
+		}
+		
+		if(forcelockedangles)
+		{
+			player.Show()
+			player.SetBodyModelOverride( selectedModel )
+			player.SetArmsModelOverride( selectedModel )
+			player.p.PROPHUNT_LastModel = selectedModel
+			player.kv.solid = SOLID_BBOX
+			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			player.AllowMantle()
+			player.SetDamageNotifications( true )
+			player.SetTakeDamageType( DAMAGE_YES )
+			player.p.PROPHUNT_AreAnglesLocked = true
+			return
+		}
+		
+		
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
@@ -477,21 +510,11 @@ void function PROPHUNT_GiveAndManageRandomProp(entity player, bool anglesornah =
 		prop.SetHealth( 100 )
 		prop.SetParent(player)
 		AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
-		player.p.PROPHUNT_DestroyProp = false
 		thread PropWatcher(prop, player) 
-	} else
-	{
-		player.p.PROPHUNT_DestroyProp = true
-		player.Show()
-		player.SetBodyModelOverride( player.p.PROPHUNT_LastModel )
-		player.SetArmsModelOverride( player.p.PROPHUNT_LastModel )
-		Message(player, "prophunt", "Angles locked.", 1)
-		player.kv.solid = SOLID_BBOX
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		player.AllowMantle()
-		player.SetDamageNotifications( true )
-		player.SetTakeDamageType( DAMAGE_YES )
-	}
+	// } else
+	// {
+
+	// }
 }
 
 
@@ -607,8 +630,7 @@ void function ActualPROPHUNTLobby()
 		if(!IsValid(player)) continue
 		
 		player.p.PROPHUNT_isSpectatorDiedMidRound = false
-		player.p.PROPHUNT_Max3changes = 0
-		player.p.PROPHUNT_DestroyProp = false
+		player.p.PROPHUNT_ChangePropUsageLimit = 0
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
 		//Message(player, "FS PROPHUNT", "                Made by @CafeFPS. Game is starting.\n" + helpMessagePROPHUNT(), 10)
@@ -713,8 +735,6 @@ void function ActualPROPHUNTGameLoop()
 			prop.SetParent(player)
 			
 			AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
-			
-			player.p.PROPHUNT_DestroyProp = false
 			
 			thread PropWatcher(prop, player) //destroys prop on end round and restores player model.
 			
@@ -1505,4 +1525,123 @@ bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> arg
     FS_PROPHUNT.votedPlayers.append(player)
 
     return true
+}
+
+bool function ClientCommand_ChangeProp(entity player, array<string> args)
+{
+	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+
+	if(player.p.PROPHUNT_AreAnglesLocked)
+	{
+		ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
+		asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
+		player.SetPlayerSettingsWithMods( characterSetFile, [] )
+		SetPlayerSettings(player, PROPHUNT_SETTINGS)
+		
+		player.SetBodyModelOverride( $"" )
+		player.SetArmsModelOverride( $"" )
+		player.kv.solid = 6
+		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.Hide()
+		player.p.PROPHUNT_AreAnglesLocked = false
+		int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
+		player.p.PROPHUNT_ChangePropUsageLimit = newscore
+		if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
+		{
+			thread PROPHUNT_GiveAndManageProp(player, false, true)
+		} else 
+		{
+			printt("Flowstate DEBUG - Max amount of changes reached: ", player)
+			Message(player, "FS prophunt", "Max amount of changes reached.", 1)
+		}		
+	} else if(!player.p.PROPHUNT_AreAnglesLocked)
+	{
+		int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
+		player.p.PROPHUNT_ChangePropUsageLimit = newscore
+		if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
+		{
+			thread PROPHUNT_GiveAndManageProp(player)
+		} else 
+		{
+			printt("Flowstate DEBUG - Max amount of changes reached: ", player)
+			Message(player, "FS prophunt", "Max amount of changes reached.", 1)
+		}		
+	}
+	
+	return true
+}
+
+bool function ClientCommand_LockAngles(entity player, array<string> args)
+{
+	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	
+	Signal(player, "DestroyProp")
+	
+	if(!player.p.PROPHUNT_AreAnglesLocked)
+	{
+		player.Show()
+		player.SetBodyModelOverride( player.p.PROPHUNT_LastModel )
+		player.SetArmsModelOverride( player.p.PROPHUNT_LastModel )
+		player.kv.solid = SOLID_BBOX
+		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.AllowMantle()
+		player.SetDamageNotifications( true )
+		player.SetTakeDamageType( DAMAGE_YES )
+		player.p.PROPHUNT_AreAnglesLocked = true
+		//Angles are locked!!
+	} else if(player.p.PROPHUNT_AreAnglesLocked)
+	{
+		ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
+		asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
+		player.SetPlayerSettingsWithMods( characterSetFile, [] )
+		SetPlayerSettings(player, PROPHUNT_SETTINGS)
+		
+		player.SetBodyModelOverride( $"" )
+		player.SetArmsModelOverride( $"" )
+		player.kv.solid = 6
+		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.Hide()
+		
+		thread PROPHUNT_GiveAndManageProp(player, true)
+		player.p.PROPHUNT_AreAnglesLocked = false
+		//Angles are unlocked!!
+	}
+	return true
+}
+
+
+bool function ClientCommand_MatchSlope(entity player, array<string> args)
+{
+	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+
+	return true
+}
+
+bool function ClientCommand_CreatePropDecoy(entity player, array<string> args)
+{
+	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+
+	entity decoy = player.CreateTargetedPlayerDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, 0, 0 )
+	decoy.SetMaxHealth( 50 )
+	decoy.SetHealth( 50 )
+	// decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
+	SetObjectCanBeMeleed( decoy, true )
+	decoy.SetTimeout( 5 )
+	decoy.SetPlayerOneHits( true )
+	// AddEntityCallback_OnPostDamaged( decoy, void function( entity decoy, var damageInfo ) : ( player ) {
+		// if ( IsValid( player ) )
+			// HoloPiliot_OnDecoyDamaged( decoy, player, damageInfo )
+	// })
+	
+	//entity decoy = CreateDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, player, 0, 5 )
+	decoy.SetAngles( player.GetAngles() )
+	PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
+	return true
+}
+
+bool function ClientCommand_EmitFlashBangToNearbyPlayers(entity player, array<string> args)
+{
+	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+
+	return true
 }
