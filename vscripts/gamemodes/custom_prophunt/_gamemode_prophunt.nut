@@ -1531,7 +1531,7 @@ bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> arg
 
 bool function ClientCommand_ChangeProp(entity player, array<string> args)
 {
-	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
 
 	if(player.p.PROPHUNT_AreAnglesLocked)
 	{
@@ -1574,7 +1574,7 @@ bool function ClientCommand_ChangeProp(entity player, array<string> args)
 
 bool function ClientCommand_LockAngles(entity player, array<string> args)
 {
-	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
 	
 	Signal(player, "DestroyProp")
 	
@@ -1613,14 +1613,14 @@ bool function ClientCommand_LockAngles(entity player, array<string> args)
 
 bool function ClientCommand_MatchSlope(entity player, array<string> args)
 {
-	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
 
 	return true
 }
 
 bool function ClientCommand_CreatePropDecoy(entity player, array<string> args)
 {
-	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
 
 	entity decoy = player.CreateTargetedPlayerDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, 0, 0 )
 	decoy.SetMaxHealth( 50 )
@@ -1636,7 +1636,7 @@ bool function ClientCommand_CreatePropDecoy(entity player, array<string> args)
 
 bool function ClientCommand_EmitFlashBangToNearbyPlayers(entity player, array<string> args)
 {
-	if(!IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
 	
 	foreach(sPlayer in GetPlayerArray_Alive())
 	{
