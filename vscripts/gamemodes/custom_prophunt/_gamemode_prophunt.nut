@@ -35,6 +35,8 @@ void function _GamemodeProphunt_Init()
         thread _OnPlayerDiedPROPHUNT(victim, attacker, damageInfo)
     })
 	
+	AddCallback_EntitiesDidLoad( _OnEntitiesDidLoadPROPHUNT )
+	
 	AddClientCommandCallback("next_round", ClientCommand_NextRoundPROPHUNT)
 	AddClientCommandCallback("latency", ClientCommand_ShowLatency)
 	AddClientCommandCallback("commands", ClientCommand_Help)
@@ -43,6 +45,11 @@ void function _GamemodeProphunt_Init()
 	
 	thread RunPROPHUNT()
 	
+}
+
+void function _OnEntitiesDidLoadPROPHUNT()
+{
+	thread SpawnFlowstateLobbyProps()
 }
 
 void function _RegisterLocationPROPHUNT(LocationSettings locationSettings)
