@@ -665,14 +665,14 @@ void function SetNestedGladiatorCardOverrideRankedDetails( NestedGladiatorCardHa
 
 
 #if CLIENT || UI 
-GladCardBadgeDisplayData function GetBadgeData( EHI playerEHI, ItemFlavor ornull character, int badgeIndex, ItemFlavor badge, int ornull overrideDataIntegerOrNull, bool TEMP_showOneTierHigherThanIsUnlocked = false )
+GladCardBadgeDisplayData function GetBadgeData( EHI playerEHI, ItemFlavor ornull character, int badgeIndex, ItemFlavor badge, int ornull overrideDataIntegerOrNull = 0, bool TEMP_showOneTierHigherThanIsUnlocked = false )
 {
 	GladCardBadgeDisplayData badgeData
 
-	if ( overrideDataIntegerOrNull != null )
-		badgeData.dataInteger = expect int(overrideDataIntegerOrNull)
-	else
-		badgeData.dataInteger = GetPlayerBadgeDataInteger( playerEHI, badge, badgeIndex, character, TEMP_showOneTierHigherThanIsUnlocked )
+	// if ( overrideDataIntegerOrNull != null )
+		// badgeData.dataInteger = expect int(overrideDataIntegerOrNull)
+	// else
+		// badgeData.dataInteger = GetPlayerBadgeDataInteger( playerEHI, badge, badgeIndex, character, TEMP_showOneTierHigherThanIsUnlocked )
 
 	if ( badgeData.dataInteger == -1 ) //This should make a locked badge return an image
 		badgeData.dataInteger = 0
@@ -682,21 +682,14 @@ GladCardBadgeDisplayData function GetBadgeData( EHI playerEHI, ItemFlavor ornull
 		tierIndex = 0 // todo(dw): handle badges with both tiers and dynamic text
 
 	array<GladCardBadgeTierData> tierDataList = GladiatorCardBadge_GetTierDataList( badge )
-	if ( tierIndex in tierDataList )
+	if(tierDataList.len()>0)
 	{
-		if ( GladiatorCardBadge_HasOwnRUI( badge ) )
-		{
-			badgeData.ruiAsset = tierDataList[tierIndex].ruiAsset
-		}
+		if ( GladiatorCardBadge_IsOversizedImage( badge ) )
+			badgeData.ruiAsset = $"ui/gcard_badge_oversized.rpak"
 		else
-		{
-			if ( GladiatorCardBadge_IsOversizedImage( badge ) )
-				badgeData.ruiAsset = $"ui/gcard_badge_oversized.rpak"
-			else
-				badgeData.ruiAsset = $"ui/gcard_badge_basic.rpak"
+			badgeData.ruiAsset = $"ui/gcard_badge_basic.rpak"
 
-			badgeData.imageAsset = tierDataList[tierIndex].imageAsset
-		}
+		badgeData.imageAsset = tierDataList[tierDataList.len()-1].imageAsset
 	}
 
 	return badgeData
@@ -1828,10 +1821,38 @@ void function ActualUpdateNestedGladiatorCard( NestedGladiatorCardHandle handle 
 		{
 			var badgeRui = UpdateGladiatorCardNestedWidget( handle, "badge" + badgeIndex + "Instance", handle.badgeNWSList[badgeIndex], badgeRuiAssets[badgeIndex] )
 			if ( badgeRui != null )
-			{
+			{			
 				RuiSetInt( badgeRui, "tier", badgeTiers[badgeIndex] )
 				if ( badgeImageAssets[badgeIndex] != $"" )
 					RuiSetImage( badgeRui, "img", badgeImageAssets[badgeIndex] )
+			}
+		}
+		
+		if(playerName == "r5r_ColombiaFPS" || playerName == "SkeptationYT")
+		{
+			ItemFlavor pChar = LoadoutSlot_GetItemFlavor( ToEHI( GetLocalClientPlayer() ), Loadout_CharacterClass() )
+			GladCardBadgeDisplayData dev = GetBadgeData(ToEHI( GetLocalClientPlayer() ), pChar, 0, GetItemFlavorByHumanReadableRef( "gcard_badge_account_dev_badge" ))
+			var badgeRui = UpdateGladiatorCardNestedWidget( handle, "badge0Instance", handle.badgeNWSList[0], dev.ruiAsset )
+			if ( badgeRui != null )
+			{
+				RuiSetInt( badgeRui, "tier", dev.dataInteger )
+				RuiSetImage( badgeRui, "img", dev.imageAsset )
+			}
+			
+			dev = GetBadgeData(ToEHI( GetLocalClientPlayer() ), pChar, 0, GetItemFlavorByHumanReadableRef( "gcard_badge_pathfinder_character_wake" ))
+			badgeRui = UpdateGladiatorCardNestedWidget( handle, "badge1Instance", handle.badgeNWSList[1], dev.ruiAsset )
+			if ( badgeRui != null )
+			{
+				RuiSetInt( badgeRui, "tier", dev.dataInteger )
+				RuiSetImage( badgeRui, "img", dev.imageAsset )
+			}
+			
+			dev = GetBadgeData(ToEHI( GetLocalClientPlayer() ), pChar, 0, GetItemFlavorByHumanReadableRef( "gcard_badge_pathfinder_character_wrath" ))
+			badgeRui = UpdateGladiatorCardNestedWidget( handle, "badge2Instance", handle.badgeNWSList[2], dev.ruiAsset )
+			if ( badgeRui != null )
+			{
+				RuiSetInt( badgeRui, "tier", dev.dataInteger )
+				RuiSetImage( badgeRui, "img", dev.imageAsset )
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 global function ClGamemodeProphunt_Init
-global function Cl_RegisterLocationPROPHUNT
+// global function Cl_RegisterLocationPROPHUNT
 
 struct {
     LocationSettings &selectedLocation
@@ -13,10 +13,11 @@ struct {
 
 void function ClGamemodeProphunt_Init()
 {
-
+	RegisterSignal("ChallengeStartRemoveCameras")
+	RegisterSignal("ChangeCameraToSelectedLocation")
 }
 
-void function Cl_RegisterLocationPROPHUNT(LocationSettings locationSettings)
-{
-    file.locationSettings.append(locationSettings)
-}
+// void function Cl_RegisterLocationPROPHUNT(LocationSettings locationSettings)
+// {
+    // file.locationSettings.append(locationSettings)
+// }

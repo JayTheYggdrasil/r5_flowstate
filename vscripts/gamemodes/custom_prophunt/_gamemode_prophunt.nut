@@ -23,7 +23,16 @@ struct{
 	bool InProgress = false
 	entity ringBoundary
 	entity ringBoundary_PreGame
-} prophunt
+	
+	// Voting
+    array<entity> votedPlayers // array of players that have already voted (bad var name idc)
+    bool votingtime = false
+    bool votestied = false
+    array<int> mapVotes
+    array<int> mapIds
+    int mappicked = 0
+	int currentRound = 1
+} FS_PROPHUNT
 
 void function _GamemodeProphunt_Init()
 {
@@ -40,11 +49,11 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("next_round", ClientCommand_NextRoundPROPHUNT)
 	AddClientCommandCallback("latency", ClientCommand_ShowLatency)
 	AddClientCommandCallback("commands", ClientCommand_Help)
+	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
 	
 	PrecacheCustomMapsProps()
 	
-	thread RunPROPHUNT()
-	
+	thread RunPROPHUNT()	
 }
 
 void function _OnEntitiesDidLoadPROPHUNT()
@@ -55,12 +64,12 @@ void function _OnEntitiesDidLoadPROPHUNT()
 
 void function _RegisterLocationPROPHUNT(LocationSettings locationSettings)
 {
-    prophunt.locationSettings.append(locationSettings)
+    FS_PROPHUNT.locationSettings.append(locationSettings)
 }
 
 void function _OnPropDynamicSpawnedPROPHUNT(entity prop)
 {
-    prophunt.playerSpawnedProps.append(prop)
+    FS_PROPHUNT.playerSpawnedProps.append(prop)
 }
 
 const array<asset> prophuntAssetsWE =
@@ -105,7 +114,7 @@ array<LocationSettings> function shuffleLocationsArray(array<LocationSettings> a
 void function RunPROPHUNT()
 {
     SetGameState( eGameState.Playing )
-	prophunt.locationsShuffled = shuffleLocationsArray(prophunt.locationSettings)
+	//FS_PROPHUNT.locationsShuffled = shuffleLocationsArray(FS_PROPHUNT.locationSettings)
 	
     while(true)
 	{
@@ -176,7 +185,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			playersON.fastremovebyvalue( player )
 			
 			printt("Flowstate DEBUG - Prophunt player connected midround, setting spectator.", player)
-			array<LocPair> prophuntSpawns = prophunt.selectedLocation.spawns
+			array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 			player.MakeInvisible()
 			player.p.PROPHUNT_isSpectatorDiedMidRound = false
@@ -207,7 +216,20 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 
 void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageInfo)
 {
-	if(GetGameState() != eGameState.Playing) return
+	if(GetGameState() != eGameState.Playing) //FIXME!
+	{	
+		array<entity> playersON = GetPlayerArray_Alive()
+		playersON.fastremovebyvalue( victim )
+		if(playersON.len() == 0) return
+		
+		victim.SetObserverTarget( playersON[0] )
+		victim.SetSpecReplayDelay( 2 + DEATHCAM_TIME_SHORT)
+		victim.StartObserverMode( OBS_MODE_IN_EYE )
+		victim.p.isSpectating = true
+		Remote_CallFunction_NonReplay(victim, "ServerCallback_KillReplayHud_Activate")
+		victim.p.PROPHUNT_isSpectatorDiedMidRound = true
+		return
+	}
 	
 	switch(GetGameState())
     {
@@ -272,8 +294,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 				array<entity> teamMILITIAplayersalive = GetPlayerArrayOfTeam_Alive( TEAM_MILITIA )
 				if ( teamMILITIAplayersalive.len() == 0 )
 				{
-					SetTdmStateToNextRound()
-					SetGameState(eGameState.MapVoting)				
+					SetTdmStateToNextRound()		
 				}
 			}
 			
@@ -324,7 +345,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 
 bool function returnPropBool()
 {
-	return prophunt.cantUseChangeProp
+	return FS_PROPHUNT.cantUseChangeProp
 }
 
 void function GiveTeamToProphuntPlayer(entity player)
@@ -355,7 +376,7 @@ void function GiveTeamToProphuntPlayer(entity player)
 
 void function EmitSoundOnSprintingProp()
 {
-	while(prophunt.InProgress)
+	while(FS_PROPHUNT.InProgress)
 	{
 		array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
 		foreach(player in MILITIAplayers)
@@ -373,7 +394,7 @@ void function EmitSoundOnSprintingProp()
 
 void function EmitWhistleOnProp()
 {
-	while(prophunt.InProgress)
+	while(FS_PROPHUNT.InProgress)
 	{
 		wait 30 //40 s COD original value: 20.
 		array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
@@ -390,7 +411,7 @@ void function EmitWhistleOnProp()
 
 void function CheckForPlayersPlaying()
 {
-	while(prophunt.InProgress)
+	while(FS_PROPHUNT.InProgress)
 	{
 		if(GetPlayerArray().len() == 1)
 		{
@@ -411,7 +432,7 @@ void function CheckForPlayersPlaying()
 
 void function PropWatcher(entity prop, entity player)
 {
-	while(IsValid(player) && prophunt.InProgress && !player.p.PROPHUNT_DestroyProp) 
+	while(IsValid(player) && FS_PROPHUNT.InProgress && !player.p.PROPHUNT_DestroyProp) 
 	{
 		WaitFrame()
 	}
@@ -422,13 +443,13 @@ void function PropWatcher(entity prop, entity player)
 
 void function DestroyPlayerPropsPROPHUNT()
 {
-    foreach(prop in prophunt.playerSpawnedProps)
+    foreach(prop in FS_PROPHUNT.playerSpawnedProps)
     {
         if(!IsValid(prop)) continue
         
 		prop.Destroy()
     }
-    prophunt.playerSpawnedProps.clear()
+    FS_PROPHUNT.playerSpawnedProps.clear()
 }
 
 void function PROPHUNT_GiveAndManageRandomProp(entity player, bool anglesornah = false)
@@ -551,7 +572,7 @@ void function NotifyDamageOnProp(entity ent, var damageInfo)
 void function ActualPROPHUNTLobby()
 {
 	DestroyPlayerPropsPROPHUNT()
-	SetGameState(eGameState.MapVoting)
+	SetGameState(eGameState.MapVoting) //!FIXME
 	SetFallTriggersStatus(true)
 	if(GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx" || GetMapName() == "mp_rr_canyonlands_mu1" || GetMapName() == "mp_rr_canyonlands_mu1_night" || GetMapName() == "mp_rr_canyonlands_64k_x_64k")
 	{
@@ -559,24 +580,25 @@ void function ActualPROPHUNTLobby()
 	}
 	printt("Flowstate DEBUG - Fall triggers created.")
 
-	if (FlowState_LockPOI()) 
-	{
-		prophunt.nextMapIndex = FlowState_LockedPOI()
-	}else if (!prophunt.mapIndexChanged)
-	{
-		prophunt.nextMapIndex = (prophunt.nextMapIndex + 1 ) % prophunt.locationsShuffled.len()
+	if (!FS_PROPHUNT.mapIndexChanged)
+		{
+			FS_PROPHUNT.nextMapIndex = ( FS_PROPHUNT.nextMapIndex + 1 ) % FS_PROPHUNT.locationSettings.len()
+		}
+
+	if (FlowState_LockPOI()) {
+		FS_PROPHUNT.nextMapIndex = FlowState_LockedPOI()
 	}
 		
-	int choice = prophunt.nextMapIndex
-	prophunt.mapIndexChanged = false
-	prophunt.selectedLocation = prophunt.locationsShuffled[choice]
-	printt("Flowstate DEBUG - Next location selected: ", prophunt.selectedLocation.name)
+	FS_PROPHUNT.mapIndexChanged = false
+	FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings[ FS_PROPHUNT.mappicked ]
+	printt("Flowstate DEBUG - Next location selected: ", FS_PROPHUNT.selectedLocation.name)
 		
-	if(prophunt.selectedLocation.name == "Skill trainer By CafeFPS")
+	if(FS_PROPHUNT.selectedLocation.name == "Skill trainer By CafeFPS")
 	{
 		DestroyPlayerPropsPROPHUNT()
-		wait 2
+		WaitFrame()
 		thread SkillTrainerLoad()
+		wait 1
 		printt("Flowstate DEBUG - Skill trainer loading.")
 	}
 	
@@ -589,9 +611,9 @@ void function ActualPROPHUNTLobby()
 		player.p.PROPHUNT_DestroyProp = false
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
-		Message(player, "FS PROPHUNT", "                Made by @CafeFPS. Game is starting.\n" + helpMessagePROPHUNT(), 10)
+		//Message(player, "FS PROPHUNT", "                Made by @CafeFPS. Game is starting.\n" + helpMessagePROPHUNT(), 10)
 	}
-	wait 10
+	wait 2
 
 	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
 	{
@@ -648,14 +670,15 @@ void function ActualPROPHUNTGameLoop()
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
 	array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
 
-	array<LocPair> prophuntSpawns = prophunt.selectedLocation.spawns
+	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 
-	prophunt.cantUseChangeProp = false
-	prophunt.InProgress = true
+	FS_PROPHUNT.cantUseChangeProp = false
+	FS_PROPHUNT.InProgress = true
 	thread EmitSoundOnSprintingProp()
 	
-	prophunt.ringBoundary_PreGame = CreateRing_PreGame(prophunt.selectedLocation)
-	
+	ResetMapVotes()
+	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
+	SetGameState( eGameState.Playing )
 	printt("Flowstate DEBUG - Tping props team.")
 	foreach(player in GetPlayerArray())
 	{
@@ -728,7 +751,7 @@ void function ActualPROPHUNTGameLoop()
 	
 	SetFallTriggersStatus(false)
 
-	prophunt.cantUseChangeProp = true
+	FS_PROPHUNT.cantUseChangeProp = true
 	printt("Flowstate DEBUG - Tping attackers team.")
 	
 	foreach(player in IMCplayers)
@@ -757,8 +780,8 @@ void function ActualPROPHUNTGameLoop()
 		DeployAndEnableWeapons(player)
 	}
 	
-	prophunt.ringBoundary_PreGame.Destroy()
-	prophunt.ringBoundary = CreateRingBoundary_PropHunt(prophunt.selectedLocation)
+	FS_PROPHUNT.ringBoundary_PreGame.Destroy()
+	FS_PROPHUNT.ringBoundary = CreateRingBoundary_PropHunt(FS_PROPHUNT.selectedLocation)
 	
 	foreach(player in GetPlayerArray())
 	{
@@ -829,7 +852,7 @@ void function ActualPROPHUNTGameLoop()
 			}
 			WaitFrame()	
 		}
-	prophunt.InProgress = false
+	FS_PROPHUNT.InProgress = false
 	array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)	
 	if(MILITIAplayersAlive.len() > 0){
 		foreach(player in GetPlayerArray())
@@ -850,20 +873,321 @@ void function ActualPROPHUNTGameLoop()
 			HolsterAndDisableWeapons(player)		
 		}	
 	}
-	wait 7
 	
+	thread SendScoreboardToClient()
+
+	wait 7
+	SetGameState(eGameState.MapVoting)
 	UpdatePlayerCounts()
-	prophunt.ringBoundary.Destroy()
+	FS_PROPHUNT.ringBoundary.Destroy()
 	SetDeathFieldParams( <0,0,0>, 100000, 0, 90000, 99999 )
 	printt("Flowstate DEBUG - Prophunt round finished Swapping teams.")
+	foreach( player in GetPlayerArray() )
+	{
+		if( !IsValid( player ) ) continue
+		RemoveCinematicFlag( player, CE_FLAG_HIDE_MAIN_HUD | CE_FLAG_EXECUTION )
+		player.SetThirdPersonShoulderModeOff()	
+		player.FreezeControlsOnServer()
+	}
+	
+	int TeamWon = 69
+	
+	if(GetPlayerArray().len() == 1)
+		TeamWon = gp()[0].GetTeam() //DEBUG VALUE
+	
+	if(IsValid(GetBestPlayer()))
+		TeamWon = GetBestPlayer().GetTeam()
+	
 
+	// Only do voting for maps with multi locations
+	// if ( FS_PROPHUNT.locationSettings.len() >= NUMBER_OF_MAP_SLOTS_FSDM )
+	// {
+
+		// for each player, open the vote menu and set it to the winning team screen
+		foreach( player in GetPlayerArray() )
+		{
+			if( !IsValid( player ) )
+				continue
+			
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_OpenVotingPhase", true)
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_ChampionScreenHandle", true, TeamWon, 0)
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.WinnerScreen, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
+		}
+		
+		
+		thread function() : ()
+		{
+			for( int i = 0; i < NUMBER_OF_MAP_SLOTS_FSDM; ++i )
+			{
+				while( true )
+				{
+					// Get a random location id from the available locations
+					int randomId = RandomIntRange(0, FS_PROPHUNT.locationSettings.len())
+
+					// If the map already isnt picked for voting then append it to the array, otherwise keep looping till it finds one that isnt picked yet
+					if( !FS_PROPHUNT.mapIds.contains( randomId ) )
+					{
+						FS_PROPHUNT.mapIds.append( randomId )
+						break
+					}
+				}
+			}
+		}()
+		
+		wait 7
+
+		foreach( player in GetPlayerArray() )
+		{
+			if( !IsValid( player ) )
+				continue
+			
+			Remote_CallFunction_NonReplay(player, "ServerCallback_FSDM_CoolCamera")
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.ScoreboardUI, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
+			EmitSoundOnEntityOnlyToPlayer(player, player, "UI_Menu_RoundSummary_Results")
+		}
+		
+		wait 7
+	
+		// Set voting to be allowed
+		FS_PROPHUNT.votingtime = true
+
+		// For each player, set voting screen and update maps that are picked for voting
+		foreach( player in GetPlayerArray() )
+		{
+			if( !IsValid( player ) )
+				continue
+			
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_UpdateVotingMaps", FS_PROPHUNT.mapIds[0], FS_PROPHUNT.mapIds[1], FS_PROPHUNT.mapIds[2], FS_PROPHUNT.mapIds[3])
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.VoteScreen, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
+		}
+
+		wait 16
+
+		FS_PROPHUNT.votestied = false
+		bool anyVotes = false
+
+		// Make voting not allowed
+		FS_PROPHUNT.votingtime = false
+
+		// See if there was any votes in the first place
+		foreach( int votes in FS_PROPHUNT.mapVotes )
+		{
+			if( votes > 0 )
+			{
+				anyVotes = true
+				break
+			}
+		}
+
+		if ( anyVotes )
+		{
+			// store the highest vote count for any of the maps
+			int highestVoteCount = -1
+
+			// store the last map id of the map that has the highest vote count
+			int highestVoteId = -1
+
+			// store map ids of all the maps with the highest vote count
+			array<int> mapsWithHighestVoteCount
+
+
+			for(int i = 0; i < NUMBER_OF_MAP_SLOTS_FSDM; ++i)
+			{
+				int votes = FS_PROPHUNT.mapVotes[i]
+				if( votes > highestVoteCount )
+				{
+					highestVoteCount = votes
+					highestVoteId = FS_PROPHUNT.mapIds[i]
+
+					// we have a new highest, so clear the array
+					mapsWithHighestVoteCount.clear()
+					mapsWithHighestVoteCount.append(FS_PROPHUNT.mapIds[i])
+				}
+				else if( votes == highestVoteCount ) // if this map also has the highest vote count, add it to the array
+				{
+					mapsWithHighestVoteCount.append(FS_PROPHUNT.mapIds[i])
+				}
+			}
+
+			// if there are multiple maps with the highest vote count then it's a tie
+			if( mapsWithHighestVoteCount.len() > 1 )
+			{
+				FS_PROPHUNT.votestied = true
+			}
+			else // else pick the map with the highest vote count
+			{
+				// Set the vote screen for each player to show the chosen location
+				foreach( player in GetPlayerArray() )
+				{
+					if( !IsValid( player ) )
+						continue
+
+					Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.SelectedScreen, eFSDMScreen.NotUsed, highestVoteId, eFSDMScreen.NotUsed)
+				}
+
+				// Set the location to the location that won
+				FS_PROPHUNT.mappicked = highestVoteId
+			}
+
+			if ( FS_PROPHUNT.votestied )
+			{
+				foreach( player in GetPlayerArray() )
+				{
+					if( !IsValid( player ) )
+						continue
+
+					Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.TiedScreen, eFSDMScreen.NotUsed, 42069, eFSDMScreen.NotUsed)
+				}
+
+				mapsWithHighestVoteCount.randomize()
+				waitthread RandomizeTiedLocations(mapsWithHighestVoteCount)
+			}
+		}
+		else // No one voted so pick random map
+		{
+			// Pick a random location id from the aviable locations
+			FS_PROPHUNT.mappicked = RandomIntRange(0, FS_PROPHUNT.locationSettings.len() - 1)
+
+			// Set the vote screen for each player to show the chosen location
+			foreach( player in GetPlayerArray() )
+			{
+				if( !IsValid( player ) )
+					continue
+
+				Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.SelectedScreen, eFSDMScreen.NotUsed, FS_PROPHUNT.mappicked, eFSDMScreen.NotUsed)
+			}
+		}
+
+		//wait for timing
+		wait 5
+
+		// Close the votemenu for each player
+		foreach( player in GetPlayerArray() )
+		{
+			if( !IsValid( player ) )
+				continue
+			
+			ScreenCoverTransition_Player(player, Time() + 1)
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_OpenVotingPhase", false)
+		}
+	wait 2
+	// }
+	
+    // Clear players the voted for next voting
+    FS_PROPHUNT.votedPlayers.clear()
+
+    // Clear mapids for next voting
+    FS_PROPHUNT.mapIds.clear()	
+	
+	// if( FS_PROPHUNT.currentRound == Flowstate_AutoChangeLevelRounds() && Flowstate_EnableAutoChangeLevel() )
+	// {
+		// // foreach( player in GetPlayerArray() )
+			// // Message( player, "We have reached the round to change levels.", "Total Round: " + FS_PROPHUNT.currentRound, 6.0 )
+
+		// foreach( player in GetPlayerArray() )
+			// Message( player, "Server clean up incoming", "Don't leave. Server is going to reload to avoid lag.", 6.0 )
+
+		// wait 6.0
+
+		// GameRules_ChangeMap( GetMapName(), GameRules_GetGameMode() )
+	// }
+
+	foreach( player in GetPlayerArray() )
+	{
+		if( !IsValid( player ) ) continue
+		
+		ClearInvincible( player )
+		player.UnfreezeControlsOnServer()
+	}
+
+	FS_PROPHUNT.currentRound++
+	
 	foreach(player in GetPlayerArray())
 	{	
 		if(!IsValid(player)) continue
 			
-		thread HandlePlayerTeam(player)
-		WaitFrame()
+		HandlePlayerTeam(player)
 	}
+}
+
+// purpose: display the UI for randomization of tied maps at the end of voting
+void function RandomizeTiedLocations(array<int> maps)
+{
+    bool donerandomizing = false
+    int randomizeammount = RandomIntRange(50, 75)
+    int i = 0
+    int mapslength = maps.len()
+    int currentmapindex = 0
+    int selectedamp = 0
+
+    while (!donerandomizing)
+    {
+        // If currentmapindex is out of range set to 0
+        if (currentmapindex >= mapslength)
+            currentmapindex = 0
+
+        // Update Randomizer ui for each player
+        foreach( player in GetPlayerArray() )
+        {
+            if( !IsValid( player ) )
+                continue
+
+            Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.TiedScreen, 69, maps[currentmapindex], 0)
+        }
+
+        // stop randomizing once the randomize ammount is done
+        if (i >= randomizeammount)
+        {
+            donerandomizing = true
+            selectedamp = currentmapindex
+        }
+
+        i++
+        currentmapindex++
+
+        if (i >= randomizeammount - 15 && i < randomizeammount - 5) // slow down voting randomizer speed
+        {
+            wait 0.15
+        }
+        else if (i >= randomizeammount - 5) // slow down voting randomizer speed
+        {
+            wait 0.25
+        }
+        else // default voting randomizer speed
+        {
+            wait 0.05
+        }
+    }
+
+    // Show final selected map
+    foreach( player in GetPlayerArray() )
+    {
+        if( !IsValid( player ) )
+            continue
+
+        Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.TiedScreen, 69, maps[selectedamp], 1)
+    }
+
+    // Pause on selected map for a sec for visuals
+    wait 0.5
+
+    // Procede to final location picked screen
+    foreach( player in GetPlayerArray() )
+    {
+        if( !IsValid( player ) )
+            continue
+
+        Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.SelectedScreen, 69, maps[selectedamp], eFSDMScreen.NotUsed)
+    }
+
+    // Set selected location on server
+    FS_PROPHUNT.mappicked = maps[selectedamp]
+}
+
+void function ResetMapVotes()
+{
+    FS_PROPHUNT.mapVotes.clear()
+    FS_PROPHUNT.mapVotes.resize( NUMBER_OF_MAP_SLOTS_FSDM )
 }
 
 void function HandlePlayerTeam(entity player)
@@ -1114,16 +1438,15 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 	{
 		if (args.len()) {
 			int mapIndex = int(args[0])
-			prophunt.nextMapIndex = (((mapIndex >= 0 ) && (mapIndex < prophunt.locationSettings.len())) ? mapIndex : RandomIntRangeInclusive(0, prophunt.locationSettings.len() - 1))
-			prophunt.mapIndexChanged = true
+			FS_PROPHUNT.nextMapIndex = (((mapIndex >= 0 ) && (mapIndex < FS_PROPHUNT.locationSettings.len())) ? mapIndex : RandomIntRangeInclusive(0, FS_PROPHUNT.locationSettings.len() - 1))
+			FS_PROPHUNT.mapIndexChanged = true
 
 			string now = args[0]
 			if (now == "now")
 			{
 			   SetTdmStateToNextRound()
-			   prophunt.mapIndexChanged = false
-			   prophunt.InProgress = false
-			   SetGameState(eGameState.MapVoting)
+			   FS_PROPHUNT.mapIndexChanged = false
+			   FS_PROPHUNT.InProgress = false
 			}
 			
 			if(args.len() > 1){
@@ -1131,7 +1454,7 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 				if (now == "now")
 				{
 				   SetTdmStateToNextRound()
-				   prophunt.InProgress = false
+				   FS_PROPHUNT.InProgress = false
 				}
 			}
 		}
@@ -1147,4 +1470,39 @@ string function helpMessagePROPHUNT()
 //by michae\l/#1125
 {
 	return " Use your ULTIMATE to CHANGE PROP up to 3 times. \n Use your ULTIMATE to LOCK ANGLES as attackers arrive. "
+}
+
+bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> args)
+{
+    // don't allow multiple votes
+    if ( FS_PROPHUNT.votedPlayers.contains( player ) )
+        return false
+
+    // dont allow votes if its not voting time
+    if ( !FS_PROPHUNT.votingtime )
+        return false
+
+    // get map id from args
+    int mapid = args[0].tointeger()
+
+    // reject map ids that are outside of the range
+    if ( mapid >= NUMBER_OF_MAP_SLOTS_FSDM || mapid < 0 )
+        return false
+
+    // add a vote for selected maps
+    FS_PROPHUNT.mapVotes[mapid]++
+
+    // update current amount of votes for each map
+    foreach( p in GetPlayerArray() )
+    {
+        if( !IsValid( p ) )
+            continue
+
+        Remote_CallFunction_Replay(p, "ServerCallback_FSDM_UpdateMapVotesClient", FS_PROPHUNT.mapVotes[0], FS_PROPHUNT.mapVotes[1], FS_PROPHUNT.mapVotes[2], FS_PROPHUNT.mapVotes[3])
+    }
+
+    // append player to the list of players the voted so they cant vote again
+    FS_PROPHUNT.votedPlayers.append(player)
+
+    return true
 }

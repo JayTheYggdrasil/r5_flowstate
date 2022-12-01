@@ -108,9 +108,9 @@ void function Set_FSDM_ScoreboardScreen()
 //Sets and updates the voting screen
 void function Set_FSDM_VotingScreen()
 {
-	try{
-		RegisterButtonPressedCallback( KEY_ENTER, FocusChat )
-	}catch(e420){}
+	// try{
+		// RegisterButtonPressedCallback( KEY_ENTER, FocusChat )
+	// }catch(e420){}
 	SetVoteHudElems(true, true, true, true, true, true, true, false, false, false, false, false)
 
 	for(int i = 1; i < 5; i++ ) {
@@ -119,7 +119,8 @@ void function Set_FSDM_VotingScreen()
 	
 	Hud_SetVisible( Hud_GetChild( file.menu, "VotingPhaseChatBox"), true )
 	Hud_SetAboveBlur( Hud_GetChild( file.menu, "VotingPhaseChatBox"), true )
-	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "VotingPhaseChatBox"), "ChatInputLine" ), false)
+	Hud_StartMessageMode( Hud_GetChild( file.menu, "VotingPhaseChatBox") )
+	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "VotingPhaseChatBox"), "ChatInputLine" ), true)
 }
 
 //Sets and updates the next round screen
@@ -147,9 +148,9 @@ void function UpdateMapsForVoting_FSDM(string map1, asset map1asset, string map2
 //Closes the vote menu
 void function Close_FSDM_VoteMenu()
 {
-	try{
-		DeregisterButtonPressedCallback( KEY_ENTER, FocusChat )
-	}catch(e420){}
+	// try{
+		// DeregisterButtonPressedCallback( KEY_ENTER, FocusChat )
+	// }catch(e420){}
 	CloseAllMenus()
 }
 

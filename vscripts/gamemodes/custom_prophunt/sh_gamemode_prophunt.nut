@@ -12,7 +12,7 @@ void function GamemodeProphuntShared_Init()
 					NewLocPair(<10462,6128,-4163>, <0, -45, 0>),
 					NewLocPair(<9635,4868,-4073>, <0, -135, 0>)
 				],
-				<0, 0, 3000>
+				<0, 0, 3000>,$"rui/flowstatelocations/ttvbuilding"
 			)
 		)
 	RegisterLocationPROPHUNT(
@@ -24,7 +24,7 @@ void function GamemodeProphuntShared_Init()
 					NewLocPair(<19267, 33522, -680>, <10, -138, 0>),
 					NewLocPair(<14995, 33566, -680>, <16, -45, 0>)
 				],
-				<0, 0, 3000>
+				<0, 0, 3000>,$"rui/flowstatelocations/skilltrainer"
 			)
 		)
 	RegisterLocationPROPHUNT(
@@ -36,7 +36,7 @@ void function GamemodeProphuntShared_Init()
 					NewLocPair(<2617, 4668, -4250>, <0, 85, 0>),
 					NewLocPair(<1200, 4471, -4150>, <0, 50, 0>)
 				],
-				<0, 0, 2000>
+				<0, 0, 2000>,$"rui/flowstatelocations/ttvbuilding2"
 			)
 		)
 
@@ -50,7 +50,7 @@ void function GamemodeProphuntShared_Init()
 					NewLocPair(<-11412,3692,-3405>, <0, 3, 0>),
 					NewLocPair(<-14930,2065,-3140>, <0, 3, 0>)
 				],
-				<0, 0, 2000>
+				<0, 0, 2000>,$"rui/flowstatelocations/trainyard"
 			)
 		)
 
@@ -63,7 +63,7 @@ void function RegisterLocationPROPHUNT(LocationSettings locationSettings)
     #endif
 	
 	#if CLIENT
-    Cl_RegisterLocationPROPHUNT(locationSettings)
+    Cl_RegisterLocation(locationSettings)
     #endif
 
 }

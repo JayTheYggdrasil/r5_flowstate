@@ -198,7 +198,7 @@
 			"tall"						"30"
 			"visible"					"1"
 			"fontHeight"				"35"
-			labelText				"FLOWSTATE DM v3.6"
+			labelText				"FLOWSTATE"
 			font					"TitleBoldFont"
 			allcaps					1
 			fgcolor_override		"191 13 13 255"
@@ -217,7 +217,7 @@
 			"tall"						"40"
 			"visible"					"1"
 			"fontHeight"				"22"
-			"labelText"					"Made by @CafeFPS and 暇人のEndergreen#7138"
+			"labelText"					"Made by @CafeFPS"
 			"font"						"DefaultBold_62_DropShadow"
 			"allcaps"					"0"
 			"fgcolor_override"			"255 255 255 255"

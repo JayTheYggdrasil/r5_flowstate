@@ -39,6 +39,7 @@ global function WpnPulloutOnRespawn
 global function WpnAutoReload
 global function ReCheckGodMode
 global function GetBestPlayer
+global function SendScoreboardToClient
 
 const string WHITE_SHIELD = "armor_pickup_lv1"
 const string BLUE_SHIELD = "armor_pickup_lv2"
@@ -2304,7 +2305,8 @@ void function SimpleChampionUI()
 	
 	int TeamWon = 69
 	
-	TeamWon = gp()[0].GetTeam() //DEBUG VALUE
+	if(GetPlayerArray().len() == 1)
+		TeamWon = gp()[0].GetTeam() //DEBUG VALUE
 	
 	if(IsValid(GetBestPlayer()))
 		TeamWon = GetBestPlayer().GetTeam()
