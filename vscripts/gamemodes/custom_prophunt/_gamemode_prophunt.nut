@@ -49,7 +49,8 @@ void function _GamemodeProphunt_Init()
 
 void function _OnEntitiesDidLoadPROPHUNT()
 {
-	thread SpawnFlowstateLobbyProps()
+	SpawnFlowstateLobbyProps()
+	AddSpawnCallback("prop_dynamic", _OnPropDynamicSpawnedPROPHUNT)
 }
 
 void function _RegisterLocationPROPHUNT(LocationSettings locationSettings)
@@ -103,9 +104,7 @@ array<LocationSettings> function shuffleLocationsArray(array<LocationSettings> a
 
 void function RunPROPHUNT()
 {
-    WaitForGameState(eGameState.Playing)
-    AddSpawnCallback("prop_dynamic", _OnPropDynamicSpawnedPROPHUNT)
-	
+    SetGameState( eGameState.Playing )
 	prophunt.locationsShuffled = shuffleLocationsArray(prophunt.locationSettings)
 	
     while(true)
@@ -644,9 +643,6 @@ void function ActualPROPHUNTGameLoop()
 		SetChampion( GetBestPlayer() )
 
 	SurvivalCommentary_ResetAllData()
-	
-	SetGameState(eGameState.Playing)
-
 	float endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
 	
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)

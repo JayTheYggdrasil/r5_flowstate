@@ -144,7 +144,7 @@ void function Sequence_WaitingForPlayers()
 
 	wait PreGame_GetWaitingForPlayersCountdown() + (introCountdownEnabled ? 0.0 : CharSelect_GetIntroMusicStartTime())
 		
-	if(GameRules_GetGameMode() == "custom_tdm")
+	if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt")
 	{	
 		SetGameState( eGameState.Playing )
 		return	
