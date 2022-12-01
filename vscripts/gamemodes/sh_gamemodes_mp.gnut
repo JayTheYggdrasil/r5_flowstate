@@ -169,6 +169,26 @@ void function GameModes_Init_SV_CL()
 	//GameMode_AddClientInit( gameMode, ClGamemodeSurvival_Init )
 	#endif
 	
+	//////////////////////////////////////
+	//                                  //
+	//       Custom PROPHUNT	       	//
+	//                                  //
+	//////////////////////////////////////
+
+	gameMode = CUSTOM_PROPHUNT
+	#if SERVER || CLIENT
+		GameMode_AddSharedInit(gameMode, GamemodeProphuntShared_Init)
+		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
+	#endif
+	#if SERVER
+	GameMode_AddServerInit(gameMode, _GamemodeProphunt_Init)
+	GameMode_SetPilotSpawnpointsRatingFunc( gameMode, RateSpawnpoints_Generic )
+	GameMode_SetTitanSpawnpointsRatingFunc( gameMode, RateSpawnpoints_Generic )
+	GameMode_SetEvacEnabled( gameMode, false )
+	#elseif CLIENT
+	GameMode_AddClientInit(gameMode, ClGamemodeProphunt_Init)
+	//GameMode_AddClientInit( gameMode, ClGamemodeSurvival_Init )
+	#endif	
 	#if DEVSCRIPTS
 		Dev_GameModes_Init_SV_CL()
 	#endif

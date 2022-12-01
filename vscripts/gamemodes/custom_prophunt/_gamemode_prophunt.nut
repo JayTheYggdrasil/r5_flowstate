@@ -1,6 +1,7 @@
 //FLOWSTATE PROPHUNT
 //Made by @CafeFPS (Retículo Endoplasmático#5955)
 
+global function _GamemodeProphunt_Init
 global function _RegisterLocationPROPHUNT
 global function PROPHUNT_GiveAndManageRandomProp
 global function returnPropBool
@@ -24,6 +25,26 @@ struct{
 	entity ringBoundary_PreGame
 } prophunt
 
+void function _GamemodeProphunt_Init()
+{
+	AddCallback_OnClientConnected( void function(entity player) { 
+		thread _OnPlayerConnectedPROPHUNT(player)
+    })
+	
+	AddCallback_OnPlayerKilled( void function(entity victim, entity attacker, var damageInfo) {
+        thread _OnPlayerDiedPROPHUNT(victim, attacker, damageInfo)
+    })
+	
+	AddClientCommandCallback("next_round", ClientCommand_NextRoundPROPHUNT)
+	AddClientCommandCallback("latency", ClientCommand_ShowLatency)
+	AddClientCommandCallback("commands", ClientCommand_Help)
+	
+	PrecacheCustomMapsProps()
+	
+	thread RunPROPHUNT()
+	
+}
+
 void function _RegisterLocationPROPHUNT(LocationSettings locationSettings)
 {
     prophunt.locationSettings.append(locationSettings)
@@ -33,9 +54,6 @@ void function _OnPropDynamicSpawnedPROPHUNT(entity prop)
 {
     prophunt.playerSpawnedProps.append(prop)
 }
-
-//prophunt start. Colombia
-///////////////////////////////////////////////////////
 
 const array<asset> prophuntAssetsWE =
 [

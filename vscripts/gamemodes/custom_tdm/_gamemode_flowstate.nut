@@ -34,6 +34,7 @@ global function getkd
 global function	ClientCommand_RebalanceTeams
 global function	ClientCommand_FlowstateKick
 global function	ClientCommand_ShowLatency
+global function ClientCommand_Help
 global function WpnPulloutOnRespawn
 global function WpnAutoReload
 global function ReCheckGodMode
@@ -129,9 +130,7 @@ void function _CustomTDM_Init()
     AddCallback_EntitiesDidLoad( __OnEntitiesDidLoad )
 
     AddCallback_OnClientConnected( void function(entity player) {
-        if(FlowState_PROPHUNT())
-            _OnPlayerConnectedPROPHUNT(player)
-        else if (FlowState_SURF())
+        if (FlowState_SURF())
             _OnPlayerConnectedSURF(player)
         else
 			thread _OnPlayerConnected(player)
@@ -142,17 +141,12 @@ void function _CustomTDM_Init()
     AddSpawnCallback( "prop_survival", DissolveItem )
 
     AddCallback_OnPlayerKilled(void function(entity victim, entity attacker, var damageInfo) {
-        if(FlowState_PROPHUNT())
-            thread _OnPlayerDiedPROPHUNT(victim, attacker, damageInfo)
-        else if (FlowState_SURF())
+        if (FlowState_SURF())
             thread _OnPlayerDiedSURF(victim, attacker, damageInfo)
         else thread _OnPlayerDied(victim, attacker, damageInfo)
     })
 
-	if(FlowState_PROPHUNT()){
-		AddClientCommandCallback("next_round", ClientCommand_NextRoundPROPHUNT)
-		AddClientCommandCallback("scoreboard", ClientCommand_ScoreboardPROPHUNT)
-	} else if (FlowState_SURF()){
+	if (FlowState_SURF()){
 		AddClientCommandCallback("next_round", ClientCommand_NextRoundSURF)
 	} else{
 		AddClientCommandCallback("scoreboard", ClientCommand_Scoreboard)
@@ -191,9 +185,11 @@ void function _CustomTDM_Init()
 	AddClientCommandCallback("controllersummary", ClientCommand_ControllerSummary)
 	
 	if( is1v1EnabledAndAllowed() )
+	{
 		AddClientCommandCallback("rest", ClientCommand_Maki_SoloModeRest)
 		_soloModeInit(GetMapName())
-		
+	}
+	
 	for(int i = 0; GetCurrentPlaylistVarString("blacklisted_weapon_" + i.tostring(), "~~none~~") != "~~none~~"; i++)
 	{
 		file.blacklistedWeapons.append(GetCurrentPlaylistVarString("blacklisted_weapon_" + i.tostring(), "~~none~~"))
@@ -204,9 +200,7 @@ void function _CustomTDM_Init()
 		file.blacklistedAbilities.append(GetCurrentPlaylistVarString("blacklisted_ability_" + i.tostring(), "~~none~~"))
 	}
 
-	if(FlowState_PROPHUNT()){
-		thread RunPROPHUNT()
-	} else if(FlowState_SURF()){
+	if(FlowState_SURF()){
 		thread RunSURF()
 	}else {
 		thread RunTDM()}
