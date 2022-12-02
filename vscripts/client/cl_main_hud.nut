@@ -114,7 +114,10 @@ void function MainHud_AddClient( entity player )
 
 	clGlobal.empScreenEffect = Hud.HudElement( "EMPScreenFX" )
 
-	thread ClientHudInit( player )
+	// var elem = HudElement( "Dev_Info3" )
+	// Hud_SetText( elem, "Apex Flowstate" )
+	// Hud_Show( elem )
+	// Hud_SetVisible( elem, true )
 }
 
 void function CockpitHudInit( entity cockpit )
@@ -693,18 +696,18 @@ void function DrawAttentionToTestMap( var elem )
 
 void function ClientHudInit( entity player )
 {
-	Assert( player == GetLocalClientPlayer() )
+	// Assert( player == GetLocalClientPlayer() )
 
 	#if DEVELOPER
-		HudElement( "Dev_Info1" ).Hide()
-		HudElement( "Dev_Info2" ).Hide()
-		HudElement( "Dev_Info3" ).Hide()
-		{
-			if ( IsTestMap() )
-			{
-				var elem = HudElement( "Dev_Info3" )
-				Hud_SetText( elem, "Test Map" )
-				Hud_Show( elem )
+		// HudElement( "Dev_Info1" ).Hide()
+		// HudElement( "Dev_Info2" ).Hide()
+		// HudElement( "Dev_Info3" ).Hide()
+		// {
+			// if ( IsTestMap() )
+			// {
+				// var elem = HudElement( "Dev_Info3" )
+				// Hud_SetText( elem, "Test Map" )
+				// Hud_Show( elem )
 
 				/*switch( GetMapName() )
 				{
@@ -721,8 +724,8 @@ void function ClientHudInit( entity player )
 						thread DrawAttentionToTestMap( elem )
 						break
 				}*/
-			}
-		}
+			// }
+		// }
 	#endif // DEVELOPER
 }
 

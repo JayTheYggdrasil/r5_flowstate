@@ -166,6 +166,12 @@ void function SetCommonScoreRUIVars( var rui )
 		RuiSetString( rui, "squadsRemainingTextSingular", "DUMMIES REMAINING" )
 		RuiSetString( rui, "squadsRemainingTextPlural", "DUMMIES REMAINING" )
 	}
+	else if(GameRules_GetGameMode() == "custom_prophunt"){
+		RuiSetString( rui, "gameModeString", "APEX PROPHUNT" )
+		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+		RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
+		RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
+	}
 	else
 	{
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", true )
@@ -254,11 +260,11 @@ void function ClGameState_AddClient( entity player )
 		player.cv.scoreboardBadRepPresentMessage.SetText( "#ASTERISK_BAD_REPUTATION" )
 	#endif
 
-	player.cv.hudCheaterMessage <- HudElement( "HudCheaterMessage" )
-	if ( !Durango_IsDurango() && !IsLobby() && player.HasBadReputation() )
-		player.cv.hudCheaterMessage.Show()
-	else
-		player.cv.hudCheaterMessage.Hide()
+	// player.cv.hudCheaterMessage <- HudElement( "HudCheaterMessage" )
+	// if ( !Durango_IsDurango() && !IsLobby() && player.HasBadReputation() )
+		// player.cv.hudCheaterMessage.Show()
+	// else
+		// player.cv.hudCheaterMessage.Hide()
 }
 
 

@@ -1,6 +1,9 @@
 //FLOWSTATE PROPHUNT
 //Made by @CafeFPS (Retículo Endoplasmático#5955)
 
+// AyeZee#6969 -- Ctf voting phase to work off
+// everyone else -- advice
+
 global function _GamemodeProphunt_Init
 global function _RegisterLocationPROPHUNT
 global function _OnPlayerConnectedPROPHUNT
@@ -202,7 +205,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			
 			player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray().len() )
 			player.SetObserverTarget( playersON[RandomIntRangeInclusive(0,playersON.len()-1)] )
-			player.SetSpecReplayDelay( 2 )
+			player.SetSpecReplayDelay( 0 )
 			player.StartObserverMode( OBS_MODE_IN_EYE )
 			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
 			player.p.isSpectating = true
@@ -923,6 +926,20 @@ void function ActualPROPHUNTGameLoop()
 	
 	thread SendScoreboardToClient()
 	wait 5
+	foreach(player in GetPlayerArray())
+	{
+		if(!IsValid(player)) continue
+		
+		if(player.p.isSpectating)
+		{
+			player.p.isSpectating = false
+			player.SetPlayerNetInt( "spectatorTargetCount", 0 )
+			player.SetSpecReplayDelay( 0 )
+			player.SetObserverTarget( null )
+			player.StopObserverMode()
+			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Deactivate")
+		}
+	}
 	SetGameState(eGameState.MapVoting)
 	UpdatePlayerCounts()
 	FS_PROPHUNT.ringBoundary.Destroy()

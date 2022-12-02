@@ -1,6 +1,9 @@
 //FLOWSTATE PROPHUNT
 //Made by @CafeFPS (Retículo Endoplasmático#5955)
 
+// AyeZee#6969 -- Ctf voting phase to work off
+// everyone else -- advice
+
 global function GamemodeProphuntShared_Init
 global function RegisterLocationPROPHUNT
 

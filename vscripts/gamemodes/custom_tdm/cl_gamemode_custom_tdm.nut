@@ -478,10 +478,10 @@ string function GetWinningTeamText(int team)
             // teamwon = "Winner couldn't be decided"
             // break
     // }
-	if(IsFFAGame())
-		teamwon = GetPlayerArrayOfTeam( team )[0].GetPlayerName() + " has won."
-	else
-		teamwon = "Team " + team + " has won."
+	// if(IsFFAGame())
+		// teamwon = GetPlayerArrayOfTeam( team )[0].GetPlayerName() + " has won."
+	// else
+		// teamwon = "Team " + team + " has won."
 	
     return teamwon
 }
@@ -503,7 +503,7 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_bangalore":
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00775529591" ) ) )
+		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00775529591" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02041779191" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02122844468" ) ) )
 		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01046964932" ) ) )
