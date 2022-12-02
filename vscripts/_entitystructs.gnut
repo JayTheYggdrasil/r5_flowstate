@@ -711,6 +711,9 @@ global struct ServerPlayerStruct
 	entity ParentedFlyer
 	//Prophunt by Colombia
 	int PROPHUNT_ChangePropUsageLimit
+	int PROPHUNT_DecoysPropUsageLimit
+	int PROPHUNT_FlashbangPropUsageLimit
+	
 	bool PROPHUNT_isSpectatorDiedMidRound = false
 	bool PROPHUNT_AreAnglesLocked = false
 	asset PROPHUNT_LastModel

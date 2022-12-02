@@ -9,9 +9,6 @@ global function RunPROPHUNT
 global function helpMessagePROPHUNT
 global function returnPropBool
 
-const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 3
-const int PROPHUNT_FLASH_BANG_RADIUS = 300
-
 struct{
 	float endTime = 0
 	array<entity> playerSpawnedProps
@@ -37,6 +34,8 @@ struct{
 
 void function _GamemodeProphunt_Init()
 {
+	RegisterSignal("DestroyProp")
+	
 	AddCallback_OnClientConnected( void function(entity player) { 
 		thread _OnPlayerConnectedPROPHUNT(player)
     })
@@ -53,22 +52,22 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
 	
 	//Controls
-	AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
-	AddClientCommandCallback("LockAngles", ClientCommand_LockAngles)
-	AddClientCommandCallback("CreateDecoy", ClientCommand_CreatePropDecoy)
-	AddClientCommandCallback("FireFlashBang", ClientCommand_EmitFlashBangToNearbyPlayers)
+	// AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
+	//AddClientCommandCallback("MatchSlope", ClientCommand_MatchSlope)	
+	// AddClientCommandCallback("LockAngles", ClientCommand_LockAngles)
+	//AddClientCommandCallback("CreateDecoy", ClientCommand_CreatePropDecoy)
+	//AddClientCommandCallback("FireFlashBang", ClientCommand_EmitFlashBangToNearbyPlayers)
+	//AddClientCommandCallback("Attackers_ForceChangeProp", ClientCommand_ForceChangeProp_Attackers)
 	
 	PrecacheCustomMapsProps()
 	
-	thread RunPROPHUNT()
-	
-	RegisterSignal("DestroyProp")
+	thread RunPROPHUNT()	
 }
 
 void function _OnEntitiesDidLoadPROPHUNT()
 {
 	SpawnFlowstateLobbyProps()
-	AddSpawnCallback("prop_dynamic", _OnPropDynamicSpawnedPROPHUNT)
+	AddSpawnCallback("prop_dynamic", _OnPropDynamicSpawnedPROPHUNT) //it should be after spawn lobby props so they won't be deleted
 }
 
 void function _RegisterLocationPROPHUNT(LocationSettings locationSettings)
@@ -140,7 +139,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
     if(!IsValid(player)) return
 
 	//CreatePanelText( player, "Flowstate", "", <-19766, 2111, 6541>, <0, 180, 0>, false, 2 )
-	printt("Flowstate DEBUG - New player connected.", player)
+	//printt("Flowstate DEBUG - New player connected.", player)
 	if(FlowState_ForceCharacter())
 	{
 		CharSelect(player)
@@ -156,7 +155,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 	player.SetPlayerSettingsWithMods( characterSetFile, [] )
 	SetPlayerSettings(player, PROPHUNT_SETTINGS)
 	DoRespawnPlayer( player, null )
-	Survival_SetInventoryEnabled( player, true )				
+	Survival_SetInventoryEnabled( player, false )				
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 	player.SetPlayerNetBool( "pingEnabled", true )
 	player.SetHealth( 100 )
@@ -170,7 +169,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 		case eGameState.MapVoting:
 			if(!IsValid(player)) return
 			
-			printt("Flowstate DEBUG - Prophunt player connected mapvoting.", player)
+			//printt("Flowstate DEBUG - Prophunt player connected mapvoting.", player)
 			//player has a team assigned already, we need to fix it before spawn
 			GiveTeamToProphuntPlayer(player)
 
@@ -193,7 +192,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			array<entity> playersON = GetPlayerArray_Alive()
 			playersON.fastremovebyvalue( player )
 			
-			printt("Flowstate DEBUG - Prophunt player connected midround, setting spectator.", player)
+			//printt("Flowstate DEBUG - Prophunt player connected midround, setting spectator.", player)
 			array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 			player.MakeInvisible()
@@ -266,7 +265,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 					victim.StartObserverMode( OBS_MODE_IN_EYE )
 					victim.p.isSpectating = true
 					Remote_CallFunction_NonReplay(victim, "ServerCallback_KillReplayHud_Activate")
-				} else 
+				} else if (GetPlayerArray_Alive().len() > 0)
 				{
 					victim.SetObserverTarget( playersON[0] )
 					victim.SetSpecReplayDelay( 2 + DEATHCAM_TIME_SHORT)
@@ -284,6 +283,13 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 				victim.SetPlayerNetInt( "assists", invscore2 )
 				
 				victim.p.PROPHUNT_isSpectatorDiedMidRound = true
+							
+				RemoveButtonPressedPlayerInputCallback( victim, IN_ATTACK, ClientCommand_ChangeProp )
+				RemoveButtonPressedPlayerInputCallback( victim, IN_ZOOM, ClientCommand_LockAngles )
+				RemoveButtonPressedPlayerInputCallback( victim, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
+				RemoveButtonPressedPlayerInputCallback( victim, IN_MELEE, ClientCommand_CreatePropDecoy )
+				RemoveButtonPressedPlayerInputCallback( victim, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
+				
 			}
 
 			// Atacante
@@ -315,7 +321,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 	}
 	
 	UpdatePlayerCounts()
-	printt("Flowstate DEBUG - Prophunt player killed.", victim, " -by- ", attacker)
+	//printt("Flowstate DEBUG - Prophunt player killed.", victim, " -by- ", attacker)
 	
 }
 
@@ -323,7 +329,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 {
 	if(!IsValid(player)) return
 	
-	printt("Flowstate DEBUG - Tping prophunt player to Lobby.", player)
+	//printt("Flowstate DEBUG - Tping prophunt player to Lobby.", player)
 
 	if(FlowState_ForceCharacter())
 	{
@@ -345,7 +351,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 	}
 	
 	player.SetThirdPersonShoulderModeOn()
-	Survival_SetInventoryEnabled( player, true )
+	Survival_SetInventoryEnabled( player, false )
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 	player.SetPlayerNetBool( "pingEnabled", true )
 	player.SetHealth( 100 )
@@ -379,7 +385,7 @@ void function GiveTeamToProphuntPlayer(entity player)
 				break
 		}
 	}
-	printt("Flowstate DEBUG - Giving team to player.", player, player.GetTeam())
+	//printt("Flowstate DEBUG - Giving team to player.", player, player.GetTeam())
 }
 
 
@@ -436,7 +442,7 @@ void function CheckForPlayersPlaying()
 	WaitFrame()	
 	}
 	
-	printt("Flowstate DEBUG - Ending round cuz not enough players midround")
+	//printt("Flowstate DEBUG - Ending round cuz not enough players midround")
 }
 
 void function PropWatcher(entity prop, entity player)
@@ -603,7 +609,7 @@ void function ActualPROPHUNTLobby()
 	{
 		thread CreateShipRoomFallTriggers()
 	}
-	printt("Flowstate DEBUG - Fall triggers created.")
+	//printt("Flowstate DEBUG - Fall triggers created.")
 
 	if (!FS_PROPHUNT.mapIndexChanged)
 		{
@@ -616,7 +622,7 @@ void function ActualPROPHUNTLobby()
 		
 	FS_PROPHUNT.mapIndexChanged = false
 	FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings[ FS_PROPHUNT.mappicked ]
-	printt("Flowstate DEBUG - Next location selected: ", FS_PROPHUNT.selectedLocation.name)
+	//printt("Flowstate DEBUG - Next location selected: ", FS_PROPHUNT.selectedLocation.name)
 		
 	if(FS_PROPHUNT.selectedLocation.name == "Skill trainer By CafeFPS")
 	{
@@ -624,7 +630,7 @@ void function ActualPROPHUNTLobby()
 		WaitFrame()
 		thread SkillTrainerLoad()
 		wait 1
-		printt("Flowstate DEBUG - Skill trainer loading.")
+		//printt("Flowstate DEBUG - Skill trainer loading.")
 	}
 	
 	foreach(player in GetPlayerArray())
@@ -684,7 +690,7 @@ void function ActualPROPHUNTLobby()
 void function ActualPROPHUNTGameLoop()
 {
 	SetTdmStateToInProgress()
-	printt("Flowstate DEBUG - tdmState is eTDMState.IN_PROGRESS Starting round.")
+	//printt("Flowstate DEBUG - tdmState is eTDMState.IN_PROGRESS Starting round.")
 	if( GetBestPlayer() != null )
 		SetChampion( GetBestPlayer() )
 
@@ -703,7 +709,7 @@ void function ActualPROPHUNTGameLoop()
 	ResetMapVotes()
 	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
 	SetGameState( eGameState.Playing )
-	printt("Flowstate DEBUG - Tping props team.")
+	//printt("Flowstate DEBUG - Tping props team.")
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
@@ -714,6 +720,14 @@ void function ActualPROPHUNTGameLoop()
 		player.p.playerDamageDealt = 0.0
 		if(player.GetTeam() == TEAM_MILITIA)
 		{
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", false)
+
+			AddButtonPressedPlayerInputCallback( player, IN_ATTACK, ClientCommand_ChangeProp )
+			AddButtonPressedPlayerInputCallback( player, IN_ZOOM, ClientCommand_LockAngles )
+			AddButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
+			AddButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
+			AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
+
 			vector lastPosForCoolParticles = player.GetOrigin()
 			vector lastAngForCoolParticles = player.GetAngles()
 			StartParticleEffectInWorld( GetParticleSystemIndex( $"P_impact_shieldbreaker_sparks" ), lastPosForCoolParticles, lastAngForCoolParticles )
@@ -744,7 +758,7 @@ void function ActualPROPHUNTGameLoop()
 			player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 			player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 			player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
-			player.GiveOffhandWeapon("mp_ability_phase_walk", OFFHAND_ULTIMATE)
+			//player.GiveOffhandWeapon("mp_ability_phase_walk", OFFHAND_ULTIMATE)
 			DeployAndEnableWeapons(player)
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
@@ -774,12 +788,13 @@ void function ActualPROPHUNTGameLoop()
 	SetFallTriggersStatus(false)
 
 	FS_PROPHUNT.cantUseChangeProp = true
-	printt("Flowstate DEBUG - Tping attackers team.")
+	//printt("Flowstate DEBUG - Tping attackers team.")
 	
 	foreach(player in IMCplayers)
 	{
 		if(!IsValid(player)) continue
 		
+		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
 		//Inventory_SetPlayerEquipment(player, WHITE_SHIELD, "armor")
 		ClearInvincible(player)
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
@@ -790,10 +805,17 @@ void function ActualPROPHUNTGameLoop()
 		player.SetThirdPersonShoulderModeOff()
 		string pri = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon1", "~~none~~")
 		string sec = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon2", "~~none~~")
-		player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_0 )
-		player.GiveWeapon( pri, WEAPON_INVENTORY_SLOT_PRIMARY_0, [] )
-		player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_1 )
-		player.GiveWeapon( sec, WEAPON_INVENTORY_SLOT_PRIMARY_1, [] )
+		if(pri != "")
+		{
+			player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_0 )
+			player.GiveWeapon( pri, WEAPON_INVENTORY_SLOT_PRIMARY_0, [] )
+		}
+		if(sec != "")
+		{
+			player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_1 )
+			player.GiveWeapon( sec, WEAPON_INVENTORY_SLOT_PRIMARY_1, [] )
+		}
+		
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 		//if a player punch a prop, he/she will crash. This is a workaround. Colombia
@@ -811,13 +833,13 @@ void function ActualPROPHUNTGameLoop()
 		
 		if (player.GetTeam() == TEAM_MILITIA)
 		{
-			Message(player, "ATTENTION", "The attackers have arrived. Use your ULTIMATE to PLACE PROP (lock angles).", 20, "Survival_UI_Ultimate_Ready")
+			Message(player, "The seekers have arrived", "", 4, "Survival_UI_Ultimate_Ready")
 		}
-		else if (player.GetTeam() == TEAM_IMC)
-		{
-			array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-			Message(player, "ATTENTION", "Kill the props. Props alive: " + MILITIAplayersAlive.len(), 20)
-		}			
+		// else if (player.GetTeam() == TEAM_IMC)
+		// {
+			// array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
+			// //Message(player, "ATTENTION", "Kill the props. Props alive: " + MILITIAplayersAlive.len(), 20)
+		// }			
 	}
 	
 	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
@@ -827,16 +849,6 @@ void function ActualPROPHUNTGameLoop()
 
 	while( Time() <= endTime )
 		{
-			if(Time() == endTime-120)
-			{
-				foreach(player in GetPlayerArray())
-				{
-					if(!IsValid(player)) continue
-					
-					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"2 MINUTES REMAINING!", "Props alive: " + MILITIAplayersAlive.len(), 5)
-				}
-			}
 			if(Time() == endTime-60)
 			{
 				foreach(player in GetPlayerArray())
@@ -844,7 +856,7 @@ void function ActualPROPHUNTGameLoop()
 					if(!IsValid(player)) continue
 					
 					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"1 MINUTE REMAINING!", "Props alive: " + MILITIAplayersAlive.len(), 5, "diag_ap_aiNotify_circleMoves60sec")
+					Message(player,"1 MINUTE REMAINING!", "", 5, "diag_ap_aiNotify_circleMoves60sec")
 				}
 			}
 			if(Time() == endTime-30)
@@ -854,22 +866,22 @@ void function ActualPROPHUNTGameLoop()
 					if(!IsValid(player)) continue
 					
 					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"30 SECONDS REMAINING!", "Props alive: " + MILITIAplayersAlive.len(), 5, "diag_ap_aiNotify_circleMoves30sec")
+					Message(player,"30 SECONDS REMAINING", "", 5, "diag_ap_aiNotify_circleMoves30sec")
 				}
 			}
-			if(Time() == endTime-10)
+			if(Time() == endTime-5)
 			{
 				foreach(player in GetPlayerArray())
 				{
 					if(!IsValid(player)) continue
 					
 					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"10 SECONDS REMAINING!",  "Props alive: " + MILITIAplayersAlive.len(), 5, "diag_ap_aiNotify_circleMoves10sec")
+					Message(player,"5 SECONDS REMAINING!",  "", 5, "diag_ap_aiNotify_circleMoves10sec")
 				}
 			}
-			if(GetTDMState() == 1)//eTDMState.NEXT_ROUND_NOW)
+			if(GetTDMState() == 1)
 			{
-				printt("Flowstate DEBUG - tdmState is eTDMState.NEXT_ROUND_NOW Loop ended.")
+				//printt("Flowstate DEBUG - tdmState is eTDMState.NEXT_ROUND_NOW Loop ended.")
 				break
 			}
 			WaitFrame()	
@@ -880,8 +892,14 @@ void function ActualPROPHUNTGameLoop()
 		foreach(player in GetPlayerArray())
 		{
 			if(!IsValid(player)) continue
+						
+			RemoveButtonPressedPlayerInputCallback( player, IN_ATTACK, ClientCommand_ChangeProp )
+			RemoveButtonPressedPlayerInputCallback( player, IN_ZOOM, ClientCommand_LockAngles )
+			RemoveButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
+			RemoveButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
+			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
 			
-			Message(player, "PROPS TEAM WIN", "Props alive: " + MILITIAplayersAlive.len() + ". \n Swapping teams.", 5, "diag_ap_aiNotify_winnerFound")
+			Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()
 			HolsterAndDisableWeapons(player)
 		}
@@ -890,20 +908,26 @@ void function ActualPROPHUNTGameLoop()
 		{
 			if(!IsValid(player)) continue
 			
-			Message(player, "ATTACKERS TEAM WIN", "All props are dead. \n Swapping teams.", 5, "diag_ap_aiNotify_winnerFound")
+			Message(player, "SEEKERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)		
 		}	
 	}
 	
+	foreach(player in GetPlayerArray())
+	{
+		if(!IsValid(player)) continue
+			
+		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
+	}
+	
 	thread SendScoreboardToClient()
-
-	wait 7
+	wait 5
 	SetGameState(eGameState.MapVoting)
 	UpdatePlayerCounts()
 	FS_PROPHUNT.ringBoundary.Destroy()
 	SetDeathFieldParams( <0,0,0>, 100000, 0, 90000, 99999 )
-	printt("Flowstate DEBUG - Prophunt round finished Swapping teams.")
+	//printt("Flowstate DEBUG - Prophunt round finished Swapping teams.")
 	foreach( player in GetPlayerArray() )
 	{
 		if( !IsValid( player ) ) continue
@@ -1217,7 +1241,7 @@ void function HandlePlayerTeam(entity player)
 	if(!IsValid(player)) return
 	
 	player.Show()
-	printt(player, player.GetTeam())
+	//printt(player, player.GetTeam())
 	//for connected players midround
 	if( player.GetTeam() == 15 && !player.p.PROPHUNT_isSpectatorDiedMidRound)
 	{
@@ -1529,9 +1553,9 @@ bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> arg
     return true
 }
 
-bool function ClientCommand_ChangeProp(entity player, array<string> args)
+void function ClientCommand_ChangeProp(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
 
 	if(player.p.PROPHUNT_AreAnglesLocked)
 	{
@@ -1550,10 +1574,10 @@ bool function ClientCommand_ChangeProp(entity player, array<string> args)
 			player.Hide()
 			player.p.PROPHUNT_AreAnglesLocked = false
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
 		} else 
 		{
-			printt("Flowstate DEBUG - Max amount of changes reached: ", player)
-			Message(player, "FS prophunt", "Max amount of changes reached.", 1)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
 		}		
 	} else if(!player.p.PROPHUNT_AreAnglesLocked)
 	{
@@ -1562,19 +1586,27 @@ bool function ClientCommand_ChangeProp(entity player, array<string> args)
 		if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
 		{
 			thread PROPHUNT_GiveAndManageProp(player)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
 		} else 
 		{
-			printt("Flowstate DEBUG - Max amount of changes reached: ", player)
-			Message(player, "FS prophunt", "Max amount of changes reached.", 1)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
 		}		
 	}
-	
-	return true
 }
 
-bool function ClientCommand_LockAngles(entity player, array<string> args)
+void function ClientCommand_MatchSlope(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return //false
+	
+	// vector GoodAngles = AnglesOnSurface(normal, -AnglesToRight(player.EyeAngles()))
+	
+	// player.SetAngles( Vector(GoodAngles.x, player.GetAngles().y, player.GetAngles().z) )
+	Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3)
+}
+
+void function ClientCommand_LockAngles(entity player)
+{
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
 	
 	Signal(player, "DestroyProp")
 	
@@ -1589,6 +1621,8 @@ bool function ClientCommand_LockAngles(entity player, array<string> args)
 		player.SetDamageNotifications( true )
 		player.SetTakeDamageType( DAMAGE_YES )
 		player.p.PROPHUNT_AreAnglesLocked = true
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 0)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 3)
 		//Angles are locked!!
 	} else if(player.p.PROPHUNT_AreAnglesLocked)
 	{
@@ -1605,51 +1639,58 @@ bool function ClientCommand_LockAngles(entity player, array<string> args)
 		
 		thread PROPHUNT_GiveAndManageProp(player, true)
 		player.p.PROPHUNT_AreAnglesLocked = false
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 1)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 3)
 		//Angles are unlocked!!
 	}
-	return true
 }
 
-
-bool function ClientCommand_MatchSlope(entity player, array<string> args)
+void function ClientCommand_CreatePropDecoy(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
-
-	return true
-}
-
-bool function ClientCommand_CreatePropDecoy(entity player, array<string> args)
-{
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
-
-	entity decoy = player.CreateTargetedPlayerDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, 0, 0 )
-	decoy.SetMaxHealth( 50 )
-	decoy.SetHealth( 50 )
-	decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
-	SetObjectCanBeMeleed( decoy, true )
-	decoy.SetTimeout( 5 )
-	decoy.SetPlayerOneHits( true )
-	decoy.SetAngles( player.GetAngles() )
-	PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
-	return true
-}
-
-bool function ClientCommand_EmitFlashBangToNearbyPlayers(entity player, array<string> args)
-{
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
 	
-	foreach(sPlayer in GetPlayerArray_Alive())
+	player.p.PROPHUNT_DecoysPropUsageLimit = player.p.PROPHUNT_DecoysPropUsageLimit + 1
+	if (player.p.PROPHUNT_DecoysPropUsageLimit <= PROPHUNT_DECOYS_USAGE_LIMIT)
 	{
-		if(!IsValid(player)) continue
-		
-		// if(sPlayer == player) continue
-		
-		float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
-		if ( playerDist <= PROPHUNT_FLASH_BANG_RADIUS )
-		{
-			Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)			
-		}
+		entity decoy = player.CreateTargetedPlayerDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, 0, 0 )
+		decoy.SetMaxHealth( 50 )
+		decoy.SetHealth( 50 )
+		decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
+		SetObjectCanBeMeleed( decoy, true )
+		decoy.SetTimeout( 30 )
+		decoy.SetPlayerOneHits( true )
+		decoy.SetAngles( player.GetAngles() )
+		PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 1)
+	} else
+	{
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
 	}
+}
+
+void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
+{
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
 	
-	return true
+	player.p.PROPHUNT_FlashbangPropUsageLimit = player.p.PROPHUNT_FlashbangPropUsageLimit + 1
+	if (player.p.PROPHUNT_FlashbangPropUsageLimit <= PROPHUNT_FLASH_BANG_USAGE_LIMIT)
+	{
+	
+		foreach(sPlayer in GetPlayerArray_Alive())
+		{
+			if(!IsValid(player)) continue
+			
+			if(sPlayer == player || player.GetTeam() == sPlayer.GetTeam() ) continue
+			
+			float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
+			if ( playerDist <= PROPHUNT_FLASH_BANG_RADIUS )
+			{
+				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)			
+			}
+		}
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
+	} else 
+	{
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
+	}
 }

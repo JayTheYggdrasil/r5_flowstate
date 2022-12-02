@@ -172,6 +172,12 @@ global struct ClientPlayerStruct
 	
 	bool onetimetimer = false
 	float lasttime
+	//prophunt
+	bool isAttackerProphunt = false
+	bool PROPHUNT_AreAnglesLocked = false
+	int PROPHUNT_ChangePropUsageLimit
+	int PROPHUNT_DecoysPropUsageLimit
+	int PROPHUNT_FlashbangPropUsageLimit
 }
 
 

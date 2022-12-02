@@ -604,7 +604,7 @@ void function OnClientConnected( entity player )
 	{
 		case eGameState.WaitingForPlayers:
 		case eGameState.PickLoadout:
-			if(GameRules_GetGameMode() == "custom_tdm") break
+			if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt") break
 		
 			entity startEnt = GetEnt( "info_player_start" )
 

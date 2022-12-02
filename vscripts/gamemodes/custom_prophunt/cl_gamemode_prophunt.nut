@@ -1,5 +1,12 @@
+//FLOWSTATE PROPHUNT
+//Made by @CafeFPS (Retículo Endoplasmático#5955)
+
 global function ClGamemodeProphunt_Init
 global function PROPHUNT_DoScreenFlashFX
+global function PROPHUNT_EnableControlsUI
+global function PROPHUNT_RemoveControlsUI
+global function PROPHUNT_CustomHint
+global function PROPHUNT_AddUsageToHint
 
 struct {
     LocationSettings &selectedLocation
@@ -9,14 +16,61 @@ struct {
 	vector victorySequenceAngles = < 0, 0, 0 >
 	SquadSummaryData winnerSquadSummaryData
 	bool forceShowSelectedLocation = false
+	array<var> inputHintRuis
+	var activeQuickHint = null
 } file
 
 void function ClGamemodeProphunt_Init()
 {
+	SetConVarInt("cl_quota_stringCmdsPerSecond", 60)
+	//I don't want these things in user screen even if they launch in debug
+	SetConVarBool( "cl_showpos", false )
+	SetConVarBool( "cl_showfps", false )
+	SetConVarBool( "cl_showgpustats", false )
+	SetConVarBool( "cl_showsimstats", false )
+	SetConVarBool( "cl_showhoststats", false )
+	SetConVarBool( "con_drawnotify", false )
+	SetConVarBool( "enable_debug_overlays", false )
+	
 	RegisterSignal("ChallengeStartRemoveCameras")
 	RegisterSignal("ChangeCameraToSelectedLocation")
 	
 	PrecacheParticleSystem($"P_shell_shock_FP")
+	AddClientCallback_OnResolutionChanged( ReloadMenuRUI )
+}
+
+void function PROPHUNT_EnableControlsUI(bool isAttacker)
+{
+	entity player = GetLocalViewPlayer()
+	SetDpadMenuHidden()
+	Minimap_DisableDraw_Internal()
+	
+	// var ruitest = CreateFullscreenRui( $"ui/generic_timer.rpak" )
+	// float endtime = Time() + 5
+	// RuiSetString( ruitest, "messageText", "test test" )
+	// RuiSetGameTime( ruitest, "startTime", Time() )
+	// RuiSetGameTime( ruitest, "endTime", endtime )
+	// RuiSetColorAlpha( ruitest, "timerColor", SrgbToLinear( <255,233,0> / 255.0 ), 1.0 )
+	
+	if(!isAttacker)
+	{		
+		player.p.isAttackerProphunt = false
+		AddInputHint( "%attack%", "Change Prop x" + PROPHUNT_CHANGE_PROP_USAGE_LIMIT.tostring() )
+		AddInputHint( "%zoom%", "Lock Angles")
+		AddInputHint( "%weaponSelectPrimary0%", "Match Slope" )
+		AddInputHint( "%melee%", "Place Decoy x" + PROPHUNT_DECOYS_USAGE_LIMIT.tostring() )
+		AddInputHint( "%offhand4%", "Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring() )
+		
+	} else
+	{
+		player.p.isAttackerProphunt = true
+		AddInputHint( "%scriptCommand5%", "Change Props Model" )
+	}
+}
+
+void function PROPHUNT_RemoveControlsUI()
+{
+	RemoveAllHints()
 }
 
 void function PROPHUNT_DoScreenFlashFX(entity player, entity propAttacker)
@@ -28,7 +82,7 @@ void function PROPHUNT_DoScreenFlashFX(entity player, entity propAttacker)
 	EffectSetIsWithCockpit( fxHandle2, true )
 	thread ShellShock_ScreenFXThink(player, fxHandle, fxHandle2)
 	
-	Obituary_Print_Localized( "ENEMY PROP " + propAttacker.GetPlayerName() + " USED FLASHBANG!", GetChatTitleColorForPlayer( player ), BURN_COLOR )
+	Obituary_Print_Localized( "Enemy prop " + propAttacker.GetPlayerName() + " used flashbang!", GetChatTitleColorForPlayer( player ), BURN_COLOR )
 }
 
 void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandle2 )
@@ -50,4 +104,164 @@ void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandl
 		}
 	)
 	wait 1
+}
+
+void function ReloadMenuRUI()
+{
+	RemoveAllHints()
+	entity player = GetLocalViewPlayer()
+	
+	RemoveAllHints()
+	if(!player.p.isAttackerProphunt)
+	{		
+		player.p.isAttackerProphunt = false
+		AddInputHint( "%attack%", "Change Prop" )
+		AddInputHint( "%zoom%", "Lock Angles")
+		AddInputHint( "%weaponSelectPrimary0%", "Match Slope" )
+		AddInputHint( "%melee%", "Place Decoy" )
+		AddInputHint( "%offhand4%", "Flash Grenade" )
+		
+	} else
+	{
+		player.p.isAttackerProphunt = true
+		AddInputHint( "%scriptCommand5%", "Change Props Model" )
+	}
+}
+
+void function AddInputHint( string buttonText, string hintText)
+{
+	UISize screenSize = GetScreenSize()
+	int offset = file.inputHintRuis.len()
+	
+	var topo = RuiTopology_CreatePlane( <( screenSize.width * 0.20),( screenSize.height * 0.15) + offset*45, 0>, <float( screenSize.width )*1.1, 0, 0>, <0, float( screenSize.height )*1.1, 0>, false )
+	var hintRui = RuiCreate( $"ui/announcement_quick_right.rpak", topo, RUI_DRAW_HUD, 0 )
+	
+	RuiSetGameTime( hintRui, "startTime", Time() )
+	RuiSetString( hintRui, "messageText", buttonText + " " + hintText )
+	RuiSetFloat( hintRui, "duration", 9999999 )
+	RuiSetFloat3( hintRui, "eventColor", SrgbToLinear( <255, 0, 119> / 255.0 ) )
+	
+    file.inputHintRuis.append( hintRui )
+}
+
+void function PROPHUNT_AddUsageToHint( int index )
+{
+	entity player = GetLocalViewPlayer()
+	
+	switch(index)
+	{
+		case 0:
+			player.p.PROPHUNT_ChangePropUsageLimit = player.p.PROPHUNT_ChangePropUsageLimit + 1
+			ChangeInputHintString(0)
+		break
+		case 1:
+			player.p.PROPHUNT_DecoysPropUsageLimit = player.p.PROPHUNT_DecoysPropUsageLimit + 1
+			ChangeInputHintString(3)
+		break
+		case 2:
+			player.p.PROPHUNT_FlashbangPropUsageLimit = player.p.PROPHUNT_FlashbangPropUsageLimit + 1
+			ChangeInputHintString(4)
+		break
+		case 3:
+			ChangeInputHintString(1)
+		break
+	}
+		
+}
+
+void function ChangeInputHintString( int index )
+{
+	entity player = GetLocalViewPlayer()
+	
+	var hintRui = file.inputHintRuis[index]
+	
+	string messageText
+	string hintButton
+	switch(index)
+	{
+		case 0:
+			messageText = "Change Prop x" + ( PROPHUNT_CHANGE_PROP_USAGE_LIMIT - player.p.PROPHUNT_ChangePropUsageLimit ).tostring()
+			hintButton = "%attack%"
+		break
+		case 3:
+			messageText = "Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring()
+			hintButton = "%melee%"
+		break
+		case 4:
+			messageText = "Flash Grenade x" + ( PROPHUNT_FLASH_BANG_USAGE_LIMIT - player.p.PROPHUNT_FlashbangPropUsageLimit ).tostring()
+			hintButton = "%offhand4%"
+		break
+		case 1:
+			if(player.p.PROPHUNT_AreAnglesLocked)
+			{
+				messageText = "Lock Angles"
+				player.p.PROPHUNT_AreAnglesLocked = false
+			}
+			else
+			{
+				messageText = "Unlock Angles"
+				player.p.PROPHUNT_AreAnglesLocked = true
+			}
+			hintButton = "%zoom%"
+		break
+		
+	}
+	
+	RuiSetGameTime( hintRui, "startTime", Time() )
+	RuiSetString( hintRui, "messageText", hintButton + " " + messageText )
+	RuiSetFloat( hintRui, "duration", 9999999 )
+	RuiSetFloat3( hintRui, "eventColor", SrgbToLinear( <255, 0, 119> / 255.0 ) )
+}
+
+void function PROPHUNT_CustomHint(int index)
+{
+	switch(index)
+	{
+		case 0:
+		QuickHint("", "Angles locked!")
+		break
+		case 1:
+		QuickHint("", "Angles unlocked!")
+		break
+		case 2:
+		QuickHint("", "Limit reached!")
+		break
+		case 3:
+		QuickHint("", "Slope matched!")
+		break
+		case 4:
+		QuickHint("", "Decoy placed!")
+		break
+		case 5:
+		QuickHint("", "Seekers arrived!")
+		break
+		case 6:
+		QuickHint("", "Angles unlocked!")
+		break		
+	}
+
+}
+
+void function QuickHint( string buttonText, string hintText)
+{
+	if(file.activeQuickHint != null)
+	{
+		RuiDestroyIfAlive( file.activeQuickHint )
+		file.activeQuickHint = null
+	}
+	file.activeQuickHint = CreateFullscreenRui( $"ui/announcement_quick_right.rpak" )
+	
+	RuiSetGameTime( file.activeQuickHint, "startTime", Time() )
+	RuiSetString( file.activeQuickHint, "messageText", buttonText + " " + hintText )
+	RuiSetFloat( file.activeQuickHint, "duration", 2 )
+	RuiSetFloat3( file.activeQuickHint, "eventColor", SrgbToLinear( <255, 0, 119> / 255.0 ) )
+}
+
+void function RemoveAllHints()
+{
+    foreach( rui in file.inputHintRuis )
+    {
+        RuiDestroy( rui )
+    }
+    file.inputHintRuis.clear()
 }

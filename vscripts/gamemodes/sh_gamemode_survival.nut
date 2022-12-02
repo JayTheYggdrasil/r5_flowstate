@@ -146,6 +146,7 @@ void function GamemodeSurvivalShared_Init()
 	
 	//printt("GamemodeSurvivalShared_Init")
 	RegisterSignal("GameStateChanged")
+	if(GameRules_GetGameMode() == "custom_prophunt") return
 	
 	#if SERVER || CLIENT
 		BleedoutShared_Init()

@@ -102,6 +102,7 @@ global function Dev_AdjustVictorySequence
 
 global function GetCompassRui
 global function CircleAnnouncementsEnable
+global function SetDpadMenuHidden
 
 global struct NextCircleDisplayCustomData
 {
