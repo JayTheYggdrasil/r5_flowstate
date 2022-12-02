@@ -14,6 +14,7 @@ global function ServerCallback_FSDM_UpdateVotingMaps
 global function ServerCallback_FSDM_UpdateMapVotesClient
 global function ServerCallback_FSDM_SetScreen
 global function ServerCallback_FSDM_CoolCamera
+global function PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex
 
 //Ui callbacks
 global function UI_To_Client_VoteForMap_FSDM
@@ -329,16 +330,18 @@ void function CreateChampionUI(int skinindex)
 	
     entity targetBackground = GetEntByScriptName( "target_char_sel_bg_new" )
     entity targetCamera = GetEntByScriptName( "target_char_sel_camera_new" )
-
-    //Clear Winning Squad Data
-    AddWinningSquadData( -1, -1)
-
-    //Set Squad Data For Each Player In Winning Team
-	foreach( int i, entity player in GetPlayerArrayOfTeam( file.teamwon ) )
-    {
-		AddWinningSquadData( i, player.GetEncodedEHandle())
-    }
-
+	
+	if(file.teamwon != 3 && GameRules_GetGameMode() == "custom_prophunt")
+	{
+		//Clear Winning Squad Data
+		AddWinningSquadData( -1, -1)
+		
+		//Set Squad Data For Each Player In Winning Team
+		foreach( int i, entity player in GetPlayerArrayOfTeam( file.teamwon ) )
+		{
+			AddWinningSquadData( i, player.GetEncodedEHandle())
+		}
+	}
     thread Show_FSDM_VictorySequence(skinindex)
 	
     // ScreenFade(GetLocalClientPlayer(), 0, 0, 0, 255, 0.3, 0.0, FFADE_IN | FFADE_PURGE)
@@ -605,8 +608,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 	VictoryPlatformModelData victoryPlatformModelData = GetVictorySequencePlatformModel()
 	entity platformModel
 
-	int maxPlayersToShow = 9
-
+	int maxPlayersToShow = 1
 	if ( victoryPlatformModelData.isSet )
 	{
 		platformModel = CreateClientSidePropDynamic( file.victorySequencePosition + victoryPlatformModelData.originOffset, victoryPlatformModelData.modelAngles, victoryPlatformModelData.modelAsset )
@@ -624,55 +626,95 @@ void function Show_FSDM_VictorySequence(int skinindex)
 			string playerName = ""
 			if ( EHIHasValidScriptStruct( data.eHandle ) )
 				playerName = EHI_GetName( data.eHandle )
-
-			if ( !LoadoutSlot_IsReady( data.eHandle, loadoutSlotCharacter ) )
-				continue
-
-			ItemFlavor character = LoadoutSlot_GetItemFlavor( data.eHandle, loadoutSlotCharacter )
-
-			if ( !LoadoutSlot_IsReady( data.eHandle, Loadout_CharacterSkin( character ) ) )
-				continue
-
 			
-			ItemFlavor characterSkin 
-			if(skinindex == 0)
-				characterSkin = GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) )[0]
+			if(file.teamwon == 3 && GameRules_GetGameMode() == "custom_prophunt")
+				{
+					if ( !LoadoutSlot_IsReady( data.eHandle, loadoutSlotCharacter ) )
+						continue
+
+					ItemFlavor character = LoadoutSlot_GetItemFlavor( data.eHandle, loadoutSlotCharacter )
+
+					if ( !LoadoutSlot_IsReady( data.eHandle, Loadout_CharacterSkin( character ) ) )
+						continue
+
+					vector pos = GetVictorySquadFormationPosition( file.victorySequencePosition, file.victorySequenceAngles, i )
+					entity characterNode = CreateScriptRef( pos, characterAngles )
+					characterNode.SetParent( platformModel, "", true )
+
+					entity characterModel = CreateClientSidePropDynamic( pos, characterAngles, prophuntAssetsWE[data.prophuntModelIndex] )
+					SetForceDrawWhileParented( characterModel, true )
+					characterModel.MakeSafeForUIScriptHack()
+					cleanupEnts.append( characterModel )
+
+					foreach( func in s_callbacks_OnVictoryCharacterModelSpawned )
+						func( characterModel, character, data.eHandle )
+
+					characterModel.SetParent( characterNode, "", false )
+					ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
+					asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
+					
+					entity overheadNameEnt = CreateClientSidePropDynamic( pos + (AnglesToUp( file.victorySequenceAngles ) * 73), <0, 0, 0>, $"mdl/dev/empty_model.rmdl" )
+					overheadNameEnt.Hide()
+
+					var overheadRuiName = RuiCreate( $"ui/winning_squad_member_overhead_name.rpak", clGlobal.topoFullScreen, RUI_DRAW_HUD, 0 )
+					RuiSetString(overheadRuiName, "playerName", playerName)
+					RuiTrackFloat3(overheadRuiName, "position", overheadNameEnt, RUI_TRACK_ABSORIGIN_FOLLOW)
+
+					overHeadRuis.append( overheadRuiName )
+
+					playersOnPodium++
+				}
 			else
-				characterSkin = GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) )[GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) ).len()-skinindex]
-			
-			vector pos = GetVictorySquadFormationPosition( file.victorySequencePosition, file.victorySequenceAngles, i )
-			entity characterNode = CreateScriptRef( pos, characterAngles )
-			characterNode.SetParent( platformModel, "", true )
+			{
+				if ( !LoadoutSlot_IsReady( data.eHandle, loadoutSlotCharacter ) )
+					continue
 
-			entity characterModel = CreateClientSidePropDynamic( pos, characterAngles, defaultModel )
-			SetForceDrawWhileParented( characterModel, true )
-			characterModel.MakeSafeForUIScriptHack()
-			CharacterSkin_Apply( characterModel, characterSkin )
+				ItemFlavor character = LoadoutSlot_GetItemFlavor( data.eHandle, loadoutSlotCharacter )
 
-			cleanupEnts.append( characterModel )
+				if ( !LoadoutSlot_IsReady( data.eHandle, Loadout_CharacterSkin( character ) ) )
+					continue
 
-			foreach( func in s_callbacks_OnVictoryCharacterModelSpawned )
-				func( characterModel, character, data.eHandle )
+				
+				ItemFlavor characterSkin 
+				if(skinindex == 0)
+					characterSkin = GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) )[0]
+				else
+					characterSkin = GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) )[GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) ).len()-skinindex]
+				
+				vector pos = GetVictorySquadFormationPosition( file.victorySequencePosition, file.victorySequenceAngles, i )
+				entity characterNode = CreateScriptRef( pos, characterAngles )
+				characterNode.SetParent( platformModel, "", true )
 
-			characterModel.SetParent( characterNode, "", false )
-			ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
-			asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
-			
-			thread PlayAnim( characterModel, animtoplay, characterNode )
-			characterModel.Anim_SetPlaybackRate(0.8)
-			
-			characterModel.Anim_EnableUseAnimatedRefAttachmentInsteadOfRootMotion()
+				entity characterModel = CreateClientSidePropDynamic( pos, characterAngles, defaultModel )
+				SetForceDrawWhileParented( characterModel, true )
+				characterModel.MakeSafeForUIScriptHack()
+				CharacterSkin_Apply( characterModel, characterSkin )
 
-			entity overheadNameEnt = CreateClientSidePropDynamic( pos + (AnglesToUp( file.victorySequenceAngles ) * 73), <0, 0, 0>, $"mdl/dev/empty_model.rmdl" )
-			overheadNameEnt.Hide()
+				cleanupEnts.append( characterModel )
 
-			var overheadRuiName = RuiCreate( $"ui/winning_squad_member_overhead_name.rpak", clGlobal.topoFullScreen, RUI_DRAW_HUD, 0 )
-			RuiSetString(overheadRuiName, "playerName", playerName)
-			RuiTrackFloat3(overheadRuiName, "position", overheadNameEnt, RUI_TRACK_ABSORIGIN_FOLLOW)
+				foreach( func in s_callbacks_OnVictoryCharacterModelSpawned )
+					func( characterModel, character, data.eHandle )
 
-			overHeadRuis.append( overheadRuiName )
+				characterModel.SetParent( characterNode, "", false )
+				ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
+				asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
+				
+				thread PlayAnim( characterModel, animtoplay, characterNode )
+				characterModel.Anim_SetPlaybackRate(0.8)
+				
+				characterModel.Anim_EnableUseAnimatedRefAttachmentInsteadOfRootMotion()
 
-			playersOnPodium++
+				entity overheadNameEnt = CreateClientSidePropDynamic( pos + (AnglesToUp( file.victorySequenceAngles ) * 73), <0, 0, 0>, $"mdl/dev/empty_model.rmdl" )
+				overheadNameEnt.Hide()
+
+				var overheadRuiName = RuiCreate( $"ui/winning_squad_member_overhead_name.rpak", clGlobal.topoFullScreen, RUI_DRAW_HUD, 0 )
+				RuiSetString(overheadRuiName, "playerName", playerName)
+				RuiTrackFloat3(overheadRuiName, "position", overheadNameEnt, RUI_TRACK_ABSORIGIN_FOLLOW)
+
+				overHeadRuis.append( overheadRuiName )
+
+				playersOnPodium++
+			}
 		}
 
 		string dialogueApexChampion
@@ -750,6 +792,21 @@ void function AddWinningSquadData( int index, int eHandle)
 
 	SquadSummaryPlayerData data
 	data.eHandle = eHandle
+	file.winnerSquadSummaryData.playerData.append( data )
+	file.winnerSquadSummaryData.squadPlacement = 1
+}
+
+void function PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex( bool clear, int eHandle, int ModelIndex)
+{
+	if ( clear )
+	{
+		file.winnerSquadSummaryData.playerData.clear()
+		file.winnerSquadSummaryData.squadPlacement = -1
+	}
+	
+	SquadSummaryPlayerData data
+	data.eHandle = eHandle
+	data.prophuntModelIndex = ModelIndex
 	file.winnerSquadSummaryData.playerData.append( data )
 	file.winnerSquadSummaryData.squadPlacement = 1
 }

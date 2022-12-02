@@ -12,6 +12,27 @@ global const int PROPHUNT_FLASH_BANG_RADIUS = 300
 global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 3
 
+global const array<asset> prophuntAssetsWE =
+[
+	$"mdl/barriers/concrete/concrete_barrier_01.rmdl",
+	$"mdl/vehicles_r5/land/msc_truck_samson_v2/veh_land_msc_truck_samson_v2.rmdl",
+	$"mdl/angel_city/vending_machine.rmdl",
+	$"mdl/utilities/power_gen1.rmdl",
+	$"mdl/angel_city/box_small_02.rmdl",
+	$"mdl/colony/antenna_05_colony.rmdl",
+	$"mdl/garbage/trash_bin_single_wtrash_Blue.rmdl",
+	$"mdl/angel_city/box_small_01.rmdl",
+	$"mdl/garbage/dumpster_dirty_open_a_02.rmdl",
+	$"mdl/containers/slumcity_oxygen_tank_red.rmdl",
+	$"mdl/containers/box_shrinkwrapped.rmdl",
+	$"mdl/colony/farmland_fridge_01.rmdl",
+	$"mdl/furniture/chair_beanbag_01.rmdl",
+	$"mdl/colony/farmland_crate_plastic_01_red.rmdl",
+	$"mdl/IMC_base/generator_IMC_01.rmdl",
+	$"mdl/garbage/trash_can_metal_02_b.rmdl",
+	$"mdl/garbage/trash_bin_single_wtrash.rmdl"
+]
+
 void function GamemodeProphuntShared_Init()
 {
 	RegisterLocationPROPHUNT(

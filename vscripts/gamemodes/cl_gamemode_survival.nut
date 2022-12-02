@@ -179,6 +179,7 @@ global struct SquadSummaryPlayerData
 	int survivalTime
 	int revivesGiven
 	int respawnsGiven
+	int prophuntModelIndex
 }
 
 global struct SquadSummaryData

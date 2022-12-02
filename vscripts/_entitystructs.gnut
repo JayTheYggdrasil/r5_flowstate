@@ -717,6 +717,7 @@ global struct ServerPlayerStruct
 	bool PROPHUNT_isSpectatorDiedMidRound = false
 	bool PROPHUNT_AreAnglesLocked = false
 	asset PROPHUNT_LastModel
+	int PROPHUNT_LastModelIndex
 	
 	//By Endergreen
 	// This is for Octane's ability chatter

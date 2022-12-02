@@ -281,7 +281,7 @@ void function PROPHUNT_CustomHint(int index)
 		QuickHint("", "Seekers arrived!")
 		break
 		case 6:
-		QuickHint("", "Angles unlocked!")
+		QuickHint("", "Flashbang used!")
 		break		
 	}
 }

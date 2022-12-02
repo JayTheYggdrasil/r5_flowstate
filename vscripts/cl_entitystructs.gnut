@@ -173,6 +173,7 @@ global struct ClientPlayerStruct
 	bool onetimetimer = false
 	float lasttime
 	//prophunt
+	asset PROPHUNT_LastModel
 	bool isAttackerProphunt = false
 	bool PROPHUNT_AreAnglesLocked = false
 	int PROPHUNT_ChangePropUsageLimit

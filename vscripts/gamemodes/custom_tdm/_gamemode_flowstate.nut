@@ -2928,20 +2928,27 @@ return kd
 
 void function SendScoreboardToClient()
 {
-	foreach(player in GetPlayerArray())
+	foreach(sPlayer in GetPlayerArray())
 	{
-		if(!IsValid(player)) continue
+		if(!IsValid(sPlayer)) continue
 		
-		PlayerInfo p
-		p.eHandle = player.GetEncodedEHandle()
-		p.score = player.GetPlayerGameStat( PGS_KILLS )
-		p.deaths = player.GetPlayerGameStat( PGS_DEATHS )
-		p.kd = getkd(p.score,p.deaths)
-		p.damage = int(player.p.playerDamageDealt)
-		p.lastLatency = int(player.GetLatency()* 1000)
-		
-		Remote_CallFunction_NonReplay(player, "ServerCallback_ClearScoreboardOnClient")
-		Remote_CallFunction_NonReplay(player, "ServerCallback_SendScoreboardToClient", p.eHandle, p.score, p.deaths, p.kd, p.damage, p.lastLatency)
+		Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_ClearScoreboardOnClient")
+		foreach(player in GetPlayerArray())
+		{
+			if(!IsValid(player)) continue
+			
+			PlayerInfo p
+			p.eHandle = player.GetEncodedEHandle()
+			p.score = player.GetPlayerGameStat( PGS_KILLS )
+			p.deaths = player.GetPlayerGameStat( PGS_DEATHS )
+			p.kd = getkd(p.score,p.deaths)
+			p.damage = int(player.p.playerDamageDealt)
+			p.lastLatency = int(player.GetLatency()* 1000)
+			
+			
+			Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_SendScoreboardToClient", p.eHandle, p.score, p.deaths, p.kd, p.damage, p.lastLatency)
+			WaitFrame()
+		}
 	}
 }
 

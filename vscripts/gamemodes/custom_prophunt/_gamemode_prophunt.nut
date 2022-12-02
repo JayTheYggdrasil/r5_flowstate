@@ -83,26 +83,6 @@ void function _OnPropDynamicSpawnedPROPHUNT(entity prop)
     FS_PROPHUNT.playerSpawnedProps.append(prop)
 }
 
-const array<asset> prophuntAssetsWE =
-[
-	$"mdl/barriers/concrete/concrete_barrier_01.rmdl",
-	$"mdl/vehicles_r5/land/msc_truck_samson_v2/veh_land_msc_truck_samson_v2.rmdl",
-	$"mdl/angel_city/vending_machine.rmdl",
-	$"mdl/utilities/power_gen1.rmdl",
-	$"mdl/angel_city/box_small_02.rmdl",
-	$"mdl/colony/antenna_05_colony.rmdl",
-	$"mdl/garbage/trash_bin_single_wtrash_Blue.rmdl",
-	$"mdl/angel_city/box_small_01.rmdl",
-	$"mdl/garbage/dumpster_dirty_open_a_02.rmdl",
-	$"mdl/containers/slumcity_oxygen_tank_red.rmdl",
-	$"mdl/containers/box_shrinkwrapped.rmdl",
-	$"mdl/colony/farmland_fridge_01.rmdl",
-	$"mdl/furniture/chair_beanbag_01.rmdl",
-	$"mdl/colony/farmland_crate_plastic_01_red.rmdl",
-	$"mdl/IMC_base/generator_IMC_01.rmdl",
-	$"mdl/garbage/trash_can_metal_02_b.rmdl",
-	$"mdl/garbage/trash_bin_single_wtrash.rmdl"
-]
 array<LocationSettings> function shuffleLocationsArray(array<LocationSettings> arr)
 // O(n) Durstenfeld / Knuth shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
 //By michae\l/#1125.
@@ -205,7 +185,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			
 			player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray().len() )
 			player.SetObserverTarget( playersON[RandomIntRangeInclusive(0,playersON.len()-1)] )
-			player.SetSpecReplayDelay( 0 )
+			player.SetSpecReplayDelay( 2 )
 			player.StartObserverMode( OBS_MODE_IN_EYE )
 			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
 			player.p.isSpectating = true
@@ -215,9 +195,12 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 				if(!IsValid(sPlayer)) continue
 				
 				if(sPlayer == player)
+				{
 					Message(player, "FS PROPHUNT", "You'll spawn in the next round.", 10)
-				else
-					Message(player, "Player connected!", player.GetPlayerName() + " is in waiting room.", 5)
+					return
+				}
+				
+				Message(player, "Player connected!", player.GetPlayerName() + " is in waiting room.", 5)
 			}
 			break
 		default:
@@ -487,7 +470,9 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 			selectedModel = player.p.PROPHUNT_LastModel
 		else
 		{
-			selectedModel = prophuntAssetsWE[RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))]
+			int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+			player.p.PROPHUNT_LastModelIndex = modelindex
+			selectedModel = prophuntAssetsWE[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
 		}
 		
@@ -738,7 +723,9 @@ void function ActualPROPHUNTGameLoop()
 			EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 			EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
-			asset selectedModel = prophuntAssetsWE[RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))]
+			int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+			player.p.PROPHUNT_LastModelIndex = modelindex
+			asset selectedModel = prophuntAssetsWE[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
 			player.kv.solid = 6
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
@@ -849,7 +836,7 @@ void function ActualPROPHUNTGameLoop()
 		thread CheckForPlayersPlaying()
 	
 	thread EmitWhistleOnProp()
-
+	int TeamWon
 	while( Time() <= endTime )
 		{
 			if(Time() == endTime-60)
@@ -892,6 +879,8 @@ void function ActualPROPHUNTGameLoop()
 	FS_PROPHUNT.InProgress = false
 	array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)	
 	if(MILITIAplayersAlive.len() > 0){
+		TeamWon = TEAM_MILITIA
+				
 		foreach(player in GetPlayerArray())
 		{
 			if(!IsValid(player)) continue
@@ -903,10 +892,25 @@ void function ActualPROPHUNTGameLoop()
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
 			
 			Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
+			
+			bool clearOnClient = false
+			
+			int i = 0
+			foreach( Winnerplayer in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA) )
+			{
+				if(i == 0)
+					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", true, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
+				else
+					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", false, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
+				i++
+			}
+			
 			player.SetThirdPersonShoulderModeOn()
 			HolsterAndDisableWeapons(player)
 		}
 	} else {
+		TeamWon = TEAM_IMC
+		
 		foreach(player in GetPlayerArray())
 		{
 			if(!IsValid(player)) continue
@@ -953,15 +957,6 @@ void function ActualPROPHUNTGameLoop()
 		player.FreezeControlsOnServer()
 	}
 	
-	int TeamWon = 69
-	
-	if(GetPlayerArray().len() == 1)
-		TeamWon = gp()[0].GetTeam() //DEBUG VALUE
-	
-	if(IsValid(GetBestPlayer()))
-		TeamWon = GetBestPlayer().GetTeam()
-	
-
 	// Only do voting for maps with multi locations
 	// if ( FS_PROPHUNT.locationSettings.len() >= NUMBER_OF_MAP_SLOTS_FSDM )
 	// {
@@ -1706,6 +1701,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			}
 		}
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
 	} else 
 	{
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
