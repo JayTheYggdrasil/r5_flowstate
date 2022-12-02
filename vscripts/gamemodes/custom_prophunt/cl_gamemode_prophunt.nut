@@ -53,7 +53,8 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	// RuiSetColorAlpha( ruitest, "timerColor", SrgbToLinear( <255,233,0> / 255.0 ), 1.0 )
 	
 	if(!isAttacker)
-	{		
+	{	
+		//SetCustomPlayerInfoCharacterIcon(player, $"")
 		player.p.isAttackerProphunt = false
 		AddInputHint( "%attack%", "Change Prop x" + PROPHUNT_CHANGE_PROP_USAGE_LIMIT.tostring() )
 		AddInputHint( "%zoom%", "Lock Angles")
@@ -111,7 +112,6 @@ void function ReloadMenuRUI()
 	RemoveAllHints()
 	entity player = GetLocalViewPlayer()
 	
-	RemoveAllHints()
 	if(!player.p.isAttackerProphunt)
 	{		
 		player.p.isAttackerProphunt = false

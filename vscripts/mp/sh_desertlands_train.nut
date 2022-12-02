@@ -269,7 +269,7 @@ void function DesertlandsTrain_Init()
 			if(distance > 300)
 				continue
 
-			if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) == true)
+			if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) && GameRules_GetGameMode() != "custom_prophunt")
 			{
 				ClearLootBinContents( bin )
 					AddMultipleLootItemsToLootBin( bin, SURVIVAL_GetMultipleWeightedItemsFromGroup( "POI_Ultra", 4 ) )

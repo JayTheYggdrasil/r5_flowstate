@@ -274,7 +274,7 @@ void function InitLootBin( entity lootbin )
 		return
 	}
 	
-	if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) == true)
+	if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) && GameRules_GetGameMode() != "custom_prophunt")
 	{
 		AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( LootZones_GetRefForOrigin(lootbin.GetOrigin()), RandomIntRange(3,4) ) )
 	}
