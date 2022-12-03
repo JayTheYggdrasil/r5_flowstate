@@ -3,6 +3,7 @@
 
 // AyeZee#6969 -- Ctf voting phase to work off
 // everyone else -- advice
+untyped
 
 global function ClGamemodeProphunt_Init
 global function PROPHUNT_DoScreenFlashFX
@@ -114,9 +115,9 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		// AddInputHint( "%scriptCommand5%", "Change Props Model" )
 	}
 }
-void function PROPHUNT_StartMiscTimer()
+void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 {
-	thread function() : ()
+	thread function() : (isPropTeam)
 	{
 		Hud_SetEnabled(HudElement( "DarkenBackground" ), true)
 		Hud_SetVisible(HudElement( "DarkenBackground" ), true)
@@ -141,6 +142,19 @@ void function PROPHUNT_StartMiscTimer()
 		
 		int time = PROPHUNT_TELEPORT_ATTACKERS_DELAY
 		string text
+		
+		// if(isPropTeam)
+		// {
+			// var hudElement = HudElement( "DarkenBackground" )
+			// var height = hudElement.GetHeight()
+			// var screenSize = Hud.GetScreenSize()
+			// var position = hudElement.GetPos()
+			// hudElement.SetPos( position[0], -1 * ( screenSize[1] - ( height + screenSize[1] * 0.10 ) ) )
+			
+		// }
+		// else
+			// printt("restore position fixme")
+		
 		while(IsValid(player))
 		{
 			if(time == 0)
@@ -151,10 +165,16 @@ void function PROPHUNT_StartMiscTimer()
 			}else if(time == -1)
 			{
 				time = PROPHUNT_WHISTLE_TIMER
-				text = "PROPS ARE HIDING " + time.tostring()
+				if(isPropTeam)
+					text = "SEEKERS ARRIVING " + time.tostring()
+				else
+					text = "PROPS ARE HIDING " + time.tostring()
 			} else
 			{
-				text = "PROPS ARE HIDING " + time.tostring()
+				if(isPropTeam)
+					text = "SEEKERS ARRIVING " + time.tostring()
+				else
+					text = "PROPS ARE HIDING " + time.tostring()
 			}
 			
 			Hud_SetText( HudElement( "MiscTimer"), text)

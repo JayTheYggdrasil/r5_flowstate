@@ -768,15 +768,16 @@ void function ActualPROPHUNTGameLoop()
 			player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 			player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 			DeployAndEnableWeapons(player)
-			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
 			
+			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", true)
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
 			//Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
-			if(GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
-				PROPHUNT_TELEPORT_ATTACKERS_DELAY = 2
+			// if(GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
+				// PROPHUNT_TELEPORT_ATTACKERS_DELAY = 2
 	
-			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer")
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", false)
 		}
 	}
 
