@@ -248,9 +248,14 @@ void function Custom_KillReplayHud_Activate()
 		attackerName = ""
 		islocalclient = true
 	}
-
+	
+	bool isProphunt = false
+	
+	if(GameRules_GetGameMode() == "custom_prophunt")
+		isProphunt = true
+	
 	//Open Kill Replay Hud
-	RunUIScript("OpenKillReplayHud", image, attackerName, armorTier, islocalclient)
+	RunUIScript("OpenKillReplayHud", image, attackerName, armorTier, islocalclient, isProphunt)
 }
 
 void function Custom_KillReplayHud_Deactivate()
@@ -260,9 +265,14 @@ void function Custom_KillReplayHud_Deactivate()
 
 	if ( IsReplayRoundWinning() )
 		return
-
+	
+	bool isProphunt = false
+	
+	if(GameRules_GetGameMode() == "custom_prophunt")
+		isProphunt = true
+	
 	//Close the replay menu
-	RunUIScript("CloseKillReplayHud")
+	RunUIScript("CloseKillReplayHud", isProphunt)
 
 	GetLocalClientPlayer().Signal( "DeactivateKillReplayHud" )
 }

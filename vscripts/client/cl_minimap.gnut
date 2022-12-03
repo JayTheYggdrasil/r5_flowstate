@@ -39,6 +39,8 @@ global function GetMinimapBackgroundTileImage
 
 global function SetMapFeatureItem
 global function RemoveMapFeatureItemByName
+
+global function Minimap_EnableDraw_Internal
 global function Minimap_DisableDraw_Internal
 
 #if DEVELOPER

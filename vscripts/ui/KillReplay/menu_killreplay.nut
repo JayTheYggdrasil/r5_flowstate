@@ -10,7 +10,7 @@ struct
     int basesheildwidth
 } file
 
-void function OpenKillReplayHud(asset image, string killedby, int tier, bool islocalclient)
+void function OpenKillReplayHud(asset image, string killedby, int tier, bool islocalclient, bool isProphunt)
 {
 	try{
 		RegisterButtonPressedCallback( KEY_ENTER, FocusChat )
@@ -54,6 +54,18 @@ void function OpenKillReplayHud(asset image, string killedby, int tier, bool isl
 	Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayChatBox"), true )
 	Hud_SetAboveBlur( Hud_GetChild( file.menu, "KillReplayChatBox"), true )
 	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "KillReplayChatBox"), "ChatInputLine" ), false)
+	
+	if(isProphunt) 
+	{
+		Hud_SetText(Hud_GetChild( file.menu, "KillReplayText" ), "APEX PROPHUNT - YOU WILL SPAWN THE NEXT ROUND.")
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCard" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardTopLine" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardBottomLine" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayKilledBy" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerImage" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayPlayerName" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerHealth" ), false )
+	}
 }
 
 void function ReplayHud_UpdatePlayerHealthAndSheild(float health, float sheild, int tier)
@@ -62,7 +74,7 @@ void function ReplayHud_UpdatePlayerHealthAndSheild(float health, float sheild, 
     Hud_SetWidth( Hud_GetChild( file.menu, "PlayerHealth" ), file.basehealthwidth * health )
 }
 
-void function CloseKillReplayHud()
+void function CloseKillReplayHud(bool isProphunt)
 {
 	try{
 		DeregisterButtonPressedCallback( KEY_ENTER, FocusChat )
@@ -71,6 +83,11 @@ void function CloseKillReplayHud()
 	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "KillReplayChatBox"), "ChatInputLine" ), false)
 	Hud_SetVisible( Hud_GetChild( Hud_GetChild( file.menu, "KillReplayChatBox"), "ChatInputLine" ), false )
 	Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayChatBox"), false )
+	
+	if(isProphunt)
+	{
+		
+	}
 	CloseAllMenus()
 }
 

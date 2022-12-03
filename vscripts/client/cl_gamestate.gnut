@@ -155,6 +155,17 @@ void function SetCommonScoreRUIVars( var rui )
 		RuiSetString( rui, "squadsRemaining2TextPlural", "#SHADOW_SQUAD_SHADOW_PLAYERS_REMAIN" )
 		return
 	}
+	
+	if(GameRules_GetGameMode() == "custom_prophunt"){
+		RuiSetString( rui, "gameModeString", "APEX PROPHUNT" )
+		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+		RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
+		RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
+		RuiSetVisible(rui, true)
+		printt("prophunt hud")
+		return
+	}
+	
 	if ( IsSoloMode() )
 	{
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
@@ -165,12 +176,6 @@ void function SetCommonScoreRUIVars( var rui )
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
 		RuiSetString( rui, "squadsRemainingTextSingular", "DUMMIES REMAINING" )
 		RuiSetString( rui, "squadsRemainingTextPlural", "DUMMIES REMAINING" )
-	}
-	else if(GameRules_GetGameMode() == "custom_prophunt"){
-		RuiSetString( rui, "gameModeString", "APEX PROPHUNT" )
-		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
-		RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
 	}
 	else
 	{

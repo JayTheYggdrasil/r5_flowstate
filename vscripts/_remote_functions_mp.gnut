@@ -86,6 +86,8 @@ void function RemoteFunctions_Init_Begin()
 			Remote_RegisterClientFunction("PROPHUNT_CustomHint", "int", 0, 255)
 			Remote_RegisterClientFunction("PROPHUNT_AddUsageToHint", "int", 0, 255)
 			Remote_RegisterClientFunction("PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", "bool", "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX)
+			Remote_RegisterClientFunction("Minimap_EnableDraw_Internal")
+			Remote_RegisterClientFunction("Minimap_DisableDraw_Internal")
 			break
 		case MAP_EDITOR:
 			Remote_RegisterClientFunction("ServerCallback_NextProp", "entity")

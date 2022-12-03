@@ -282,6 +282,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 				RemoveButtonPressedPlayerInputCallback( victim, IN_MELEE, ClientCommand_CreatePropDecoy )
 				RemoveButtonPressedPlayerInputCallback( victim, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
 				//RemoveButtonPressedPlayerInputCallback( victim, IN_RELOAD, ClientCommand_MatchSlope )
+				Remote_CallFunction_NonReplay(victim, "Minimap_DisableDraw_Internal")
 			}
 
 			// Atacante
@@ -757,6 +758,8 @@ void function ActualPROPHUNTGameLoop()
 			player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 			player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 			DeployAndEnableWeapons(player)
+			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
+			
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
 			Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
@@ -824,6 +827,7 @@ void function ActualPROPHUNTGameLoop()
 		DeployAndEnableWeapons(player)
 		
 		Highlight_SetFriendlyHighlight( player, "survival_friendly_skydiving" )
+		Remote_CallFunction_NonReplay(player, "Minimap_EnableDraw_Internal")
 	}
 	
 	FS_PROPHUNT.ringBoundary_PreGame.Destroy()
@@ -937,6 +941,7 @@ void function ActualPROPHUNTGameLoop()
 	{
 		if(!IsValid(player)) continue
 		
+		Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
 		Highlight_ClearFriendlyHighlight( player )
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
 	}

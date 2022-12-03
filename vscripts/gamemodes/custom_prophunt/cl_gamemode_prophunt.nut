@@ -57,8 +57,17 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	
 	if(!isAttacker)
 	{
-		// Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
-		// Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+		
+		Hud_SetEnabled(HudElement( "ScreenBlur3" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur3" ), true)
+		
+		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
+		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+		
+		Hud_SetEnabled(HudElement( "WhistleTimer" ), true)
+		Hud_SetVisible(HudElement( "WhistleTimer" ), true)
 		
 		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
 		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
@@ -93,7 +102,13 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	} else
 	{
 		player.p.isAttackerProphunt = true
-
+		
+		// var hudElement = HudElement( "IngameTextChat" )
+		// var height = hudElement.GetHeight()
+		// var screenSize = Hud.GetScreenSize()
+		// var position = hudElement.GetPos()
+		// HudElement( "IngameTextChat" ).SetPos( position[0], -1 * ( screenSize[1] - ( height + screenSize[1] * 0.10 ) ) )
+		
 		// AddInputHint( "%scriptCommand5%", "Change Props Model" )
 	}
 }
@@ -144,6 +159,19 @@ void function ReloadMenuRUI()
 	if(!player.p.isAttackerProphunt)
 	{
 		player.p.isAttackerProphunt = false
+	
+		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+		
+		Hud_SetEnabled(HudElement( "ScreenBlur3" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur3" ), true)
+		
+		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
+		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+		
+		Hud_SetEnabled(HudElement( "WhistleTimer" ), true)
+		Hud_SetVisible(HudElement( "WhistleTimer" ), true)
+		
 		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
 		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
 		
@@ -308,7 +336,18 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
         RuiDestroy( rui )
     }
     file.inputHintRuis.clear()
+	Hud_SetEnabled(HudElement( "ScreenBlur1" ), false)
+	Hud_SetVisible(HudElement( "ScreenBlur1" ), false)
 	
+	Hud_SetEnabled(HudElement( "ScreenBlur3" ), false)
+	Hud_SetVisible(HudElement( "ScreenBlur3" ), false)
+	
+	Hud_SetEnabled(HudElement( "PropControlsTitle" ), false)
+	Hud_SetVisible(HudElement( "PropControlsTitle" ), false)
+	
+	Hud_SetEnabled(HudElement( "WhistleTimer" ), false)
+	Hud_SetVisible(HudElement( "WhistleTimer" ), false)
+		
 	Hud_SetEnabled(HudElement( "ScreenBlur2" ), false)
 	Hud_SetVisible(HudElement( "ScreenBlur2" ), false)
 		
