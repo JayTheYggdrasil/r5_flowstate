@@ -72,6 +72,15 @@ void function SendScoreboardToUI(string name, int score, int deaths, float kd, i
 void function ClearScoreboardOnUI()
 {
 	file.FSDM_Scoreboard.clear()
+	
+	for( int i=0; i < 10; i++ )
+	{	
+		Hud_SetText( Hud_GetChild( file.menu, "PlayerName" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.menu, "Kills" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.menu, "Deaths" + i ), "" )		
+		Hud_SetText( Hud_GetChild( file.menu, "KD" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.menu, "Damage" + i ), "" )
+	}
 }
 
 int function ComparePlayerInfo(PlayerInfo a, PlayerInfo b)
