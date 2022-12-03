@@ -123,8 +123,8 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 
     if(!IsValid(player)) return
 
-	//CreatePanelText( player, "Flowstate", "", <-19766, 2111, 6541>, <0, 180, 0>, false, 2 )
-	//printt("Flowstate DEBUG - New player connected.", player)
+	CreatePanelText( player, "Flowstate", "", <-19766, 2111, 6541>, <0, 180, 0>, false, 2 )
+	
 	if(FlowState_ForceCharacter())
 	{
 		CharSelect(player)
