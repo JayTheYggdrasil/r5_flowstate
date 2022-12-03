@@ -2933,6 +2933,7 @@ void function SendScoreboardToClient()
 		if(!IsValid(sPlayer)) continue
 		
 		Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_ClearScoreboardOnClient")
+		WaitFrame()
 		foreach(player in GetPlayerArray())
 		{
 			if(!IsValid(player)) continue

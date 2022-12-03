@@ -224,7 +224,21 @@ void function SetSpectatorAnotherTry(entity player)
 		Message(player, "FS PROPHUNT", "You will spawn next round")
 		return
 	}
-	entity specTarget = GetPlayerArray_Alive().getrandom()
+	array<entity> playersON = GetPlayerArray_Alive()
+	
+	foreach(availablePlayers in playersON)
+	{
+		if(!IsValid(availablePlayers) || IsValid(availablePlayers) && !IsAlive(availablePlayers) || IsValid(availablePlayers) && availablePlayers.p.isSpectating)
+			playersON.fastremovebyvalue( availablePlayers )
+	}
+	
+	if(playersON.len() == 0) 
+	{
+		Message(player, "FS PROPHUNT", "You will spawn next round")
+		return
+	}
+	
+	entity specTarget = playersON.getrandom()
 	if( IsValid( specTarget ) && ShouldSetObserverTarget( specTarget ))
 	{
 		player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
@@ -657,7 +671,7 @@ void function ActualPROPHUNTLobby()
 				{
 					if(!IsValid(player)) continue
 		
-					Message(player, "FS PROPHUNT", "We have enough players, starting now.", 5, "diag_ap_aiNotify_circleMoves10sec")
+					//Message(player, "FS PROPHUNT", "We have enough players, starting now.", 5, "diag_ap_aiNotify_circleMoves10sec")
 				}
 				wait 5
 				break
