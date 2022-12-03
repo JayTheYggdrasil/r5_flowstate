@@ -680,7 +680,7 @@ void function ActualPROPHUNTGameLoop()
 
 	FS_PROPHUNT.cantUseChangeProp = false
 	FS_PROPHUNT.InProgress = true
-	thread EmitSoundOnSprintingProp()
+	//thread EmitSoundOnSprintingProp()
 	
 	ResetMapVotes()
 	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
@@ -1709,7 +1709,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 	
 		foreach(sPlayer in GetPlayerArray_Alive())
 		{
-			if(!IsValid(player)) continue
+			if(!IsValid(sPlayer)) continue
 			
 			if(sPlayer == player || player.GetTeam() == sPlayer.GetTeam() ) continue
 			
@@ -1730,10 +1730,17 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string > args) 
 {	
 	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
-
-	EmitSoundOnEntity( player, "husaria_sprint_default_3p" )
-	EmitSoundOnEntity( player, "concrete_bulletimpact_1p_vs_3p" )
-	EmitSoundOnEntity( player, "husaria_sprint_default_3p" )
 	
+	foreach(sPlayer in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
+	{
+		if(!IsValid(sPlayer)) continue
+
+		float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
+		if ( playerDist <= PROPHUNT_WHISTLE_RADIUS )
+		{
+			EmitSoundOnEntityOnlyToPlayer( player, sPlayer, "pilot_phaseembark_end_3p" )			
+		}
+	}
+	EmitSoundOnEntityOnlyToPlayer( player, player, "pilot_phaseembark_end_3p" )	
 	return true
 }
