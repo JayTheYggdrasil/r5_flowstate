@@ -10,6 +10,7 @@ global function PROPHUNT_EnableControlsUI
 global function PROPHUNT_RemoveControlsUI
 global function PROPHUNT_CustomHint
 global function PROPHUNT_AddUsageToHint
+global function PROPHUNT_StartMiscTimer
 
 struct {
     LocationSettings &selectedLocation
@@ -25,7 +26,7 @@ struct {
 
 void function ClGamemodeProphunt_Init()
 {
-	SetConVarInt("cl_quota_stringCmdsPerSecond", 60)
+	SetConVarInt("cl_quota_stringCmdsPerSecond", 100)
 	//I don't want these things in user screen even if they launch in debug
 	SetConVarBool( "cl_showpos", false )
 	SetConVarBool( "cl_showfps", false )
@@ -37,6 +38,8 @@ void function ClGamemodeProphunt_Init()
 	
 	RegisterSignal("ChallengeStartRemoveCameras")
 	RegisterSignal("ChangeCameraToSelectedLocation")
+	RegisterSignal("PROPHUNT_ShutdownWhistleTimer")
+	RegisterSignal("PROPHUNT_ShutdownPropsHidingTimer")
 	
 	PrecacheParticleSystem($"P_shell_shock_FP")
 	AddClientCallback_OnResolutionChanged( ReloadMenuRUI )
@@ -47,6 +50,9 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	entity player = GetLocalViewPlayer()
 	SetDpadMenuHidden()
 	Minimap_DisableDraw_Internal()
+	player.p.PROPHUNT_ChangePropUsageLimit = 0
+	player.p.PROPHUNT_DecoysPropUsageLimit = 0
+	player.p.PROPHUNT_FlashbangPropUsageLimit = 0
 	
 	// var ruitest = CreateFullscreenRui( $"ui/generic_timer.rpak" )
 	// float endtime = Time() + 5
@@ -68,7 +74,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		
 		Hud_SetEnabled(HudElement( "WhistleTimer" ), true)
 		Hud_SetVisible(HudElement( "WhistleTimer" ), true)
-		
+		thread UpdateWhistleTimer()
 		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
 		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
 		
@@ -92,25 +98,99 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
 		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
+		
 		player.p.isAttackerProphunt = false
-		// AddInputHint( "%attack%", "Change Prop x" + PROPHUNT_CHANGE_PROP_USAGE_LIMIT.tostring() )
-		// AddInputHint( "%zoom%", "Lock Angles")
-		// AddInputHint( "%weaponSelectPrimary0%", "Match Slope" )
-		// AddInputHint( "%melee%", "Place Decoy x" + PROPHUNT_DECOYS_USAGE_LIMIT.tostring() )
-		// AddInputHint( "%offhand4%", "Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring() )
 		
 	} else
 	{
 		player.p.isAttackerProphunt = true
+		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
 		
 		// var hudElement = HudElement( "IngameTextChat" )
 		// var height = hudElement.GetHeight()
 		// var screenSize = Hud.GetScreenSize()
 		// var position = hudElement.GetPos()
 		// HudElement( "IngameTextChat" ).SetPos( position[0], -1 * ( screenSize[1] - ( height + screenSize[1] * 0.10 ) ) )
-		
 		// AddInputHint( "%scriptCommand5%", "Change Props Model" )
 	}
+}
+void function PROPHUNT_StartMiscTimer()
+{
+	thread function() : ()
+	{
+		Hud_SetEnabled(HudElement( "DarkenBackground" ), true)
+		Hud_SetVisible(HudElement( "DarkenBackground" ), true)
+			
+		Hud_SetEnabled(HudElement( "MiscTimer" ), true)
+		Hud_SetVisible(HudElement( "MiscTimer" ), true)
+			
+		entity player = GetLocalClientPlayer() 
+		
+		EndSignal(player, "PROPHUNT_ShutdownPropsHidingTimer")
+		
+		OnThreadEnd(
+			function() : ( player )
+			{
+				Hud_SetEnabled(HudElement( "DarkenBackground" ), false)
+				Hud_SetVisible(HudElement( "DarkenBackground" ), false)
+					
+				Hud_SetEnabled(HudElement( "MiscTimer" ), false)
+				Hud_SetVisible(HudElement( "MiscTimer" ), false)
+			}
+		)
+		
+		int time = PROPHUNT_TELEPORT_ATTACKERS_DELAY
+		string text
+		while(true)
+		{
+			if(time == 0)
+			{
+				text = "TELEPORTING NOW"
+				wait 1
+				break
+			}else if(time == -1)
+			{
+				time = PROPHUNT_WHISTLE_TIMER
+				text = "PROPS ARE HIDING " + time.tostring()
+			} else
+			{
+				text = "PROPS ARE HIDING " + time.tostring()
+			}
+			
+			Hud_SetText( HudElement( "MiscTimer"), text)
+			time--
+			wait 1
+		}
+	}()
+}
+
+void function UpdateWhistleTimer()
+{
+	entity player = GetLocalClientPlayer() 
+	
+	EndSignal(player, "PROPHUNT_ShutdownWhistleTimer")
+	int time = PROPHUNT_WHISTLE_TIMER
+	string text
+    while(true)
+    {
+		if(time == 0)
+		{
+			player.ClientCommand("EmitWhistle")
+			text = "MAKING NOISE"
+			
+		}else if(time == -1)
+		{
+			time = PROPHUNT_WHISTLE_TIMER
+			text = "WHISTLE IN " + time.tostring()
+		} else
+		{
+			text = "WHISTLE IN " + time.tostring()
+		}
+		
+        Hud_SetText( HudElement( "WhistleTimer"), text)
+        time--
+        wait 1
+    }
 }
 
 void function PROPHUNT_RemoveControlsUI()
@@ -171,7 +251,7 @@ void function ReloadMenuRUI()
 		
 		Hud_SetEnabled(HudElement( "WhistleTimer" ), true)
 		Hud_SetVisible(HudElement( "WhistleTimer" ), true)
-		
+
 		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
 		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
 		
@@ -367,7 +447,8 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 	Hud_SetVisible(HudElement( "ProphuntHint4" ), false)
 	
 	entity player = GetLocalViewPlayer()
-	
+	Signal(player, "PROPHUNT_ShutdownWhistleTimer")
+		
 	if(!wasResolutionChanged)
 	{
 		player.p.PROPHUNT_ChangePropUsageLimit = 0

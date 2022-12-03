@@ -575,7 +575,17 @@ void function Highlight_Init()
 	HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_OBJECTIVE )
 	//HighlightContext_SetFill( highlight, HIGHLIGHT_FILL_OBJECTIVE )
 	HighlightContext_SetParam( highlight, 0, <0, 0.47, 1.96> )
-	HighlightContext_SetRadius( highlight, 1.5 )
+	HighlightContext_SetRadius( highlight, 1.0 )
+	HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.ALWAYS )
+	HighlightContext_SetADSFade( highlight, false )
+	HighlightContext_SetAfterPostProcess( highlight, false )
+	HighlightContext_SetFarFadeDistance( highlight, 999999.0 )
+	HighlightContext_SetNearFadeDistance( highlight, 0.0 )
+	
+	highlight = RegisterHighlight( "prophunt_teammate" )
+	HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_OBJECTIVE )
+	HighlightContext_SetParam( highlight, 0, <0, 0.47, 1.96> )
+	HighlightContext_SetRadius( highlight, 1.0 )
 	HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.ALWAYS )
 	HighlightContext_SetADSFade( highlight, false )
 	HighlightContext_SetAfterPostProcess( highlight, false )
@@ -629,7 +639,6 @@ void function Highlight_Init()
 	highlight = RegisterHighlight( "survival" )
 	HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_CUSTOM_COLOR )
 	HighlightContext_SetRadius( highlight, 1 )
-	//
 	HighlightContext_SetParam( highlight, 0, HIGHLIGHT_COLOR_ENEMY )
 	HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.ALWAYS )
 	HighlightContext_SetADSFade( highlight, false )
@@ -650,10 +659,6 @@ void function Highlight_Init()
 	HighlightContext_SetParam( highlight, 0, HIGHLIGHT_COLOR_INTERACT )
 	HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.LOS )
 	HighlightContext_SetADSFade( highlight, false )
-
-	//
-	//
-	//
 
 	Highlight_EndRegisteringHighlights()
 

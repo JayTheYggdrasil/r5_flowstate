@@ -37,6 +37,7 @@ struct{
 
 void function _GamemodeProphunt_Init()
 {
+	SetConVarInt("sv_quota_stringCmdsPerSecond", 100)
 	RegisterSignal("DestroyProp")
 	
 	AddCallback_OnClientConnected( void function(entity player) { 
@@ -53,6 +54,7 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("latency", ClientCommand_ShowLatency)
 	AddClientCommandCallback("commands", ClientCommand_Help)
 	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
+	AddClientCommandCallback("EmitWhistle", ClientCommand_PROPHUNT_EmitWhistle)
 	
 	//Controls
 	// AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
@@ -403,23 +405,6 @@ void function EmitSoundOnSprintingProp()
 	}
 }
 
-void function EmitWhistleOnProp()
-{
-	while(FS_PROPHUNT.InProgress)
-	{
-		wait 30 //40 s COD original value: 20.
-		array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
-		foreach(player in MILITIAplayers)
-		{
-			if(!IsValid(player)) continue
-			
-			EmitSoundOnEntity( player, "husaria_sprint_default_3p" )
-			EmitSoundOnEntity( player, "concrete_bulletimpact_1p_vs_3p" )
-			EmitSoundOnEntity( player, "husaria_sprint_default_3p" )
-		}
-	}
-}
-
 void function CheckForPlayersPlaying()
 {
 	while(FS_PROPHUNT.InProgress)
@@ -673,7 +658,7 @@ void function ActualPROPHUNTLobby()
 	{
 		if(!IsValid(player)) continue
 		
-		Message(player, "ATTENTION", "            You're a prop. Teleporting in 5 seconds! \n Use your ULTIMATE to CHANGE PROP up to 3 times. ", 5)
+		//Message(player, "ATTENTION", "            You're a prop. Teleporting in 5 seconds! \n Use your ULTIMATE to CHANGE PROP up to 3 times. ", 5)
 	}
 	wait 5
 }
@@ -762,19 +747,15 @@ void function ActualPROPHUNTGameLoop()
 			
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
-			Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
+			//Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
+			if(GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
+				PROPHUNT_TELEPORT_ATTACKERS_DELAY = 2
+	
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer")
 		}
+	}
 
-		wait 0.2 //is only a visual effect so ppl will slowly teleport from lobby
-	}
-		
-	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
-	{
-		wait 25
-	} else
-	{
-		wait 2
-	}
+	wait PROPHUNT_TELEPORT_ATTACKERS_DELAY
 	
 	foreach(player in GetPlayerArray())
 	{
@@ -826,7 +807,7 @@ void function ActualPROPHUNTGameLoop()
 		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 		DeployAndEnableWeapons(player)
 		
-		Highlight_SetFriendlyHighlight( player, "survival_friendly_skydiving" )
+		Highlight_SetFriendlyHighlight( player, "prophunt_teammate" )
 		Remote_CallFunction_NonReplay(player, "Minimap_EnableDraw_Internal")
 	}
 	
@@ -851,7 +832,6 @@ void function ActualPROPHUNTGameLoop()
 	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
 		thread CheckForPlayersPlaying()
 	
-	thread EmitWhistleOnProp()
 	int TeamWon
 	while( Time() <= endTime )
 		{
@@ -1745,4 +1725,15 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 	{
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
 	}
+}
+
+bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string > args) 
+{	
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+
+	EmitSoundOnEntity( player, "husaria_sprint_default_3p" )
+	EmitSoundOnEntity( player, "concrete_bulletimpact_1p_vs_3p" )
+	EmitSoundOnEntity( player, "husaria_sprint_default_3p" )
+	
+	return true
 }

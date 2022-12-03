@@ -129,7 +129,7 @@
 			"ControlName"			"Label"
 			"labelText"				"Kill Replay"
 			"font"					"DefaultBold_41"
-			"allcaps"				"1"
+			"allcaps"				"1"	
 			"auto_wide_tocontents"	"1"
 			"tall"					"60"
 			"zpos" 					"10"
