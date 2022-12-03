@@ -568,7 +568,7 @@ void function NotifyDamageOnProp(entity ent, var damageInfo)
 	entity victim = ent.GetParent()
 	float damage = DamageInfo_GetDamage( damageInfo )
 	
-	if(!IsValid(attacker) || !IsValid(victim) || !IsValid(ent)) return
+	if(!IsValid(attacker) || IsValid(attacker) && !attacker.IsPlayer() || !IsValid(victim) || !IsValid(ent)) return
 		
 	attacker.NotifyDidDamage
 	(
