@@ -302,10 +302,10 @@ void function ServerCallback_OpenStatisticsUI()
 void function ServerCallback_FSDM_OpenVotingPhase(bool shouldOpen)
 {
 	if(shouldOpen)
-		RunUIScript( "Open_FSDM_VotingPhase" )	
+		RunUIScript( "Open_FSDM_VotingPhase" )
 	else
 		thread FSDM_CloseVotingPhase()
-	DoF_SetFarDepth( 1, 5000 )
+	
 }
 
 void function ServerCallback_FSDM_ChampionScreenHandle(bool shouldOpen, int TeamWon, int skinindex)

@@ -171,7 +171,7 @@ void function UpdateWhistleTimer()
 	EndSignal(player, "PROPHUNT_ShutdownWhistleTimer")
 	int time = PROPHUNT_WHISTLE_TIMER
 	string text
-    while(IsValid(player))
+    while(IsValid(player) && IsAlive(player))
     {
 		if(time == 0)
 		{
