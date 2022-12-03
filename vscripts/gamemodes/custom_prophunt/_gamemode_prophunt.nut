@@ -471,56 +471,48 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	if(!IsValid(player)) return
 	
 	Signal(player, "DestroyProp")
-	
-	// if(!anglesornah)
-	// {
-		asset selectedModel
-		if(giveOldProp)
-			selectedModel = player.p.PROPHUNT_LastModel
-		else
-		{
-			int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
-			player.p.PROPHUNT_LastModelIndex = modelindex
-			selectedModel = prophuntAssetsWE[modelindex]
-			player.p.PROPHUNT_LastModel = selectedModel
-		}
-		
-		if(forcelockedangles)
-		{
-			player.Show()
-			player.SetBodyModelOverride( selectedModel )
-			player.SetArmsModelOverride( selectedModel )
-			player.p.PROPHUNT_LastModel = selectedModel
-			player.kv.solid = SOLID_BBOX
-			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-			player.AllowMantle()
-			player.SetDamageNotifications( true )
-			player.SetTakeDamageType( DAMAGE_YES )
-			player.p.PROPHUNT_AreAnglesLocked = true
-			return
-		}
-		
-		
-		player.kv.solid = 6
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
-		player.p.PROPHUNT_LastPropEntity = prop
-		prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		prop.kv.solid = 6
-		prop.SetDamageNotifications( true )
-		prop.SetTakeDamageType( DAMAGE_YES )
-		prop.AllowMantle()
-		prop.SetCanBeMeleed( true )
-		prop.SetBoundingBox( < -150, -75, 0 >, <150, 75, 100 >  )
-		prop.SetMaxHealth( 100 )
-		prop.SetHealth( 100 )
-		prop.SetParent(player)
-		AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
-		thread PropWatcher(prop, player) 
-	// } else
-	// {
 
-	// }
+	asset selectedModel
+	if(giveOldProp)
+		selectedModel = player.p.PROPHUNT_LastModel
+	else
+	{
+		int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+		player.p.PROPHUNT_LastModelIndex = modelindex
+		selectedModel = prophuntAssetsWE[modelindex]
+		player.p.PROPHUNT_LastModel = selectedModel
+	}
+	
+	if(forcelockedangles)
+	{
+		player.Show()
+		player.SetBodyModelOverride( selectedModel )
+		player.SetArmsModelOverride( selectedModel )
+		player.p.PROPHUNT_LastModel = selectedModel
+		player.kv.solid = SOLID_BBOX
+		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.AllowMantle()
+		player.SetDamageNotifications( true )
+		player.SetTakeDamageType( DAMAGE_YES )
+		player.p.PROPHUNT_AreAnglesLocked = true
+		return
+	}
+	
+	player.kv.solid = 6
+	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+	entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
+	player.p.PROPHUNT_LastPropEntity = prop
+	prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+	prop.kv.solid = 6
+	prop.SetDamageNotifications( true )
+	prop.SetTakeDamageType( DAMAGE_YES )
+	prop.AllowMantle()
+	prop.SetCanBeMeleed( true )
+	prop.SetMaxHealth( 100 )
+	prop.SetHealth( 100 )
+	prop.SetParent(player)
+	AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
+	thread PropWatcher(prop, player) 
 }
 
 
