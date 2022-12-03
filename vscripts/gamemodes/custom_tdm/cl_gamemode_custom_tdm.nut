@@ -620,7 +620,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 		foreach( int i, SquadSummaryPlayerData data in file.winnerSquadSummaryData.playerData )
 		{
-			if ( maxPlayersToShow > 0 && i > maxPlayersToShow )
+			if ( i >= maxPlayersToShow )
 				break
 
 			string playerName = ""

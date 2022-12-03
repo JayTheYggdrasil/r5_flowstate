@@ -174,45 +174,66 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 		case eGameState.Playing: //wait round ends, set new player to spectate random player
 			if(!IsValid(player)) return
 			
+			player.p.isSpectating = true
+			
 			array<entity> playersON = GetPlayerArray_Alive()
 			playersON.fastremovebyvalue( player )
 			
-			//printt("Flowstate DEBUG - Prophunt player connected midround, setting spectator.", player)
+			printt("Flowstate DEBUG - Prophunt player connected midround, setting spectator.", player)
 			array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 			player.MakeInvisible()
 			player.p.PROPHUNT_isSpectatorDiedMidRound = false
-			
+			player.MovementDisable()
 			SetTeam(player, 15 )
 			
 			foreach(availablePlayers in playersON)
 			{
-				if(availablePlayers.p.isSpectating)
+				if(!IsValid(availablePlayers) || IsValid(availablePlayers) && !IsAlive(availablePlayers) || IsValid(availablePlayers) && availablePlayers.p.isSpectating)
 					playersON.fastremovebyvalue( availablePlayers )
 			}
 			
-			player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray().len() )
-			player.SetObserverTarget( playersON[RandomIntRangeInclusive(0,playersON.len()-1)] )
-			player.SetSpecReplayDelay( 2 )
-			player.StartObserverMode( OBS_MODE_IN_EYE )
-			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
-			player.p.isSpectating = true
-			
-			foreach(sPlayer in GetPlayerArray())
+			if(playersON.len() == 0) 
 			{
-				if(!IsValid(sPlayer)) continue
-				
-				if(sPlayer == player)
-				{
-					Message(player, "FS PROPHUNT", "You'll spawn in the next round.", 10)
-					return
-				}
-				
-				Message(player, "Player connected!", player.GetPlayerName() + " is in waiting room.", 5)
+				thread SetSpectatorAnotherTry(player)
+				return
+			}
+			entity specTarget = playersON.getrandom()
+			if( IsValid( specTarget ) && ShouldSetObserverTarget( specTarget ))
+			{
+				player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
+				player.SetObserverTarget( specTarget )
+				player.SetSpecReplayDelay( 2 )
+				player.StartObserverMode( OBS_MODE_IN_EYE )
+				Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
+			} else
+			{
+				thread SetSpectatorAnotherTry(player)
 			}
 			break
 		default:
 			break
+	}
+}
+
+void function SetSpectatorAnotherTry(entity player)
+{
+	wait 3
+	if(!FS_PROPHUNT.InProgress || !IsValid(player) || GetPlayerArray_Alive().len() == 0) 
+	{
+		Message(player, "FS PROPHUNT", "You will spawn next round")
+		return
+	}
+	entity specTarget = GetPlayerArray_Alive().getrandom()
+	if( IsValid( specTarget ) && ShouldSetObserverTarget( specTarget ))
+	{
+		player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
+		player.SetObserverTarget( specTarget )
+		player.SetSpecReplayDelay( 2 )
+		player.StartObserverMode( OBS_MODE_IN_EYE )
+		Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
+	} else {
+		Message(player, "FS PROPHUNT", "You will spawn next round")
 	}
 }
 
@@ -1264,6 +1285,7 @@ void function HandlePlayerTeam(entity player)
 		TakeAllWeapons(player)
 		player.SetThirdPersonShoulderModeOn()
 		player.MakeVisible()
+		player.MovementEnable()
 		GiveTeamToProphuntPlayer(player)
 		WaitFrame()
 		if(!IsValid(player)) return

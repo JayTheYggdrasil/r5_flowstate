@@ -141,7 +141,7 @@ void function PROPHUNT_StartMiscTimer()
 		
 		int time = PROPHUNT_TELEPORT_ATTACKERS_DELAY
 		string text
-		while(true)
+		while(IsValid(player))
 		{
 			if(time == 0)
 			{
@@ -171,7 +171,7 @@ void function UpdateWhistleTimer()
 	EndSignal(player, "PROPHUNT_ShutdownWhistleTimer")
 	int time = PROPHUNT_WHISTLE_TIMER
 	string text
-    while(true)
+    while(IsValid(player))
     {
 		if(time == 0)
 		{
