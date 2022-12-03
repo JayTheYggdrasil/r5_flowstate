@@ -183,6 +183,12 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			
 			SetTeam(player, 15 )
 			
+			foreach(availablePlayers in playersON)
+			{
+				if(availablePlayers.p.isSpectating)
+					playersON.fastremovebyvalue( availablePlayers )
+			}
+			
 			player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray().len() )
 			player.SetObserverTarget( playersON[RandomIntRangeInclusive(0,playersON.len()-1)] )
 			player.SetSpecReplayDelay( 2 )
@@ -552,9 +558,10 @@ void function PlayerwithLockedAngles_OnDamaged(entity ent, var damageInfo)
 
 void function NotifyDamageOnProp(entity ent, var damageInfo)
 {
-//props health bleedthrough
+	//props health bleedthrough
 	entity attacker = DamageInfo_GetAttacker(damageInfo)
 	entity victim = ent.GetParent()
+	
 	float damage = DamageInfo_GetDamage( damageInfo )
 	
 	if(!IsValid(attacker) || !IsValid(victim) || !IsValid(ent)) return
@@ -809,9 +816,11 @@ void function ActualPROPHUNTGameLoop()
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 		//if a player punch a prop, he/she will crash. This is a workaround. Colombia
-		//player.GiveWeapon( "mp_weapon_melee_survival", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
-		//player.GiveOffhandWeapon( "melee_data_knife", OFFHAND_MELEE, [] )
+		player.GiveWeapon( "mp_weapon_data_knife_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
+		player.GiveOffhandWeapon( "melee_data_knife", OFFHAND_MELEE, [] )
 		DeployAndEnableWeapons(player)
+		
+		Highlight_SetFriendlyHighlight( player, "survival_friendly_skydiving" )
 	}
 	
 	FS_PROPHUNT.ringBoundary_PreGame.Destroy()
@@ -924,7 +933,8 @@ void function ActualPROPHUNTGameLoop()
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
-			
+		
+		Highlight_ClearFriendlyHighlight( player )
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
 	}
 	
@@ -1665,8 +1675,8 @@ void function ClientCommand_CreatePropDecoy(entity player)
 	if (player.p.PROPHUNT_DecoysPropUsageLimit <= PROPHUNT_DECOYS_USAGE_LIMIT)
 	{
 		entity decoy = player.CreateTargetedPlayerDecoy( player.GetOrigin(), $"", player.p.PROPHUNT_LastModel, 0, 0 )
-		decoy.SetMaxHealth( 50 )
-		decoy.SetHealth( 50 )
+		decoy.SetMaxHealth( 100 )
+		decoy.SetHealth( 100 )
 		decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
 		SetObjectCanBeMeleed( decoy, true )
 		decoy.SetTimeout( 30 )

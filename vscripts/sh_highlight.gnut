@@ -563,16 +563,25 @@ void function Highlight_Init()
 	HighlightContext_SetFarFadeDistance( highlight, 3000.0 )
 
 	highlight = RegisterHighlight( "survival_friendly_skydiving" )
-	HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_OBJECTIVE ) //HIGHLIGHT_OUTLINE_CUSTOM_COLOR_PULSE
-	HighlightContext_SetFill( highlight, HIGHLIGHT_FILL_OBJECTIVE ) //HIGHLIGHT_FILL_SONAR
-	HighlightContext_SetParam( highlight, 0, <0, 0.47, 1.96> )//<0.34,0.59,0.86> )//<0,0.47,1.96> )//HIGHLIGHT_COLOR_OBJECTIVE )
-	HighlightContext_SetRadius( highlight, 2 )
-	HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.ALWAYS ) //eHighlightDrawFunc.LOS_LINE
+	// HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_OBJECTIVE ) //HIGHLIGHT_OUTLINE_CUSTOM_COLOR_PULSE
+	// HighlightContext_SetFill( highlight, HIGHLIGHT_FILL_OBJECTIVE ) //HIGHLIGHT_FILL_SONAR
+	// HighlightContext_SetParam( highlight, 0, <0, 0.47, 1.96> )//<0.34,0.59,0.86> )//<0,0.47,1.96> )//HIGHLIGHT_COLOR_OBJECTIVE )
+	// HighlightContext_SetRadius( highlight, 2 )
+	// HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.ALWAYS ) //eHighlightDrawFunc.LOS_LINE
+	// HighlightContext_SetADSFade( highlight, false )
+	// HighlightContext_SetAfterPostProcess( highlight, true )
+	// HighlightContext_SetFarFadeDistance( highlight, 999999.0 )
+	// HighlightContext_SetNearFadeDistance( highlight, 2048.0 )
+	HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_OBJECTIVE )
+	//HighlightContext_SetFill( highlight, HIGHLIGHT_FILL_OBJECTIVE )
+	HighlightContext_SetParam( highlight, 0, <0, 0.47, 1.96> )
+	HighlightContext_SetRadius( highlight, 1.5 )
+	HighlightContext_SetDrawFunc( highlight, eHighlightDrawFunc.ALWAYS )
 	HighlightContext_SetADSFade( highlight, false )
-	HighlightContext_SetAfterPostProcess( highlight, true )
+	HighlightContext_SetAfterPostProcess( highlight, false )
 	HighlightContext_SetFarFadeDistance( highlight, 999999.0 )
-	HighlightContext_SetNearFadeDistance( highlight, 2048.0 )
-
+	HighlightContext_SetNearFadeDistance( highlight, 0.0 )
+	
 	highlight = RegisterHighlight( "survival_enemy_skydiving" )
 	HighlightContext_SetOutline( highlight, HIGHLIGHT_OUTLINE_OBJECTIVE )
 	//HighlightContext_SetFill( highlight, HIGHLIGHT_FILL_OBJECTIVE )

@@ -607,7 +607,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 	VictoryPlatformModelData victoryPlatformModelData = GetVictorySequencePlatformModel()
 	entity platformModel
-
+	entity characterModel
 	int maxPlayersToShow = 1
 	if ( victoryPlatformModelData.isSet )
 	{
@@ -641,7 +641,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 					entity characterNode = CreateScriptRef( pos, characterAngles )
 					characterNode.SetParent( platformModel, "", true )
 
-					entity characterModel = CreateClientSidePropDynamic( pos, characterAngles, prophuntAssetsWE[data.prophuntModelIndex] )
+					characterModel = CreateClientSidePropDynamic( pos, characterAngles, prophuntAssetsWE[data.prophuntModelIndex] )
 					SetForceDrawWhileParented( characterModel, true )
 					characterModel.MakeSafeForUIScriptHack()
 					cleanupEnts.append( characterModel )
@@ -685,7 +685,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 				entity characterNode = CreateScriptRef( pos, characterAngles )
 				characterNode.SetParent( platformModel, "", true )
 
-				entity characterModel = CreateClientSidePropDynamic( pos, characterAngles, defaultModel )
+				characterModel = CreateClientSidePropDynamic( pos, characterAngles, defaultModel )
 				SetForceDrawWhileParented( characterModel, true )
 				characterModel.MakeSafeForUIScriptHack()
 				CharacterSkin_Apply( characterModel, characterSkin )
@@ -695,14 +695,14 @@ void function Show_FSDM_VictorySequence(int skinindex)
 				foreach( func in s_callbacks_OnVictoryCharacterModelSpawned )
 					func( characterModel, character, data.eHandle )
 
-				characterModel.SetParent( characterNode, "", false )
+				//characterModel.SetParent( characterNode, "", false )
 				ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
 				asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
 				
 				thread PlayAnim( characterModel, animtoplay, characterNode )
 				characterModel.Anim_SetPlaybackRate(0.8)
 				
-				characterModel.Anim_EnableUseAnimatedRefAttachmentInsteadOfRootMotion()
+				//characterModel.Anim_EnableUseAnimatedRefAttachmentInsteadOfRootMotion()
 
 				entity overheadNameEnt = CreateClientSidePropDynamic( pos + (AnglesToUp( file.victorySequenceAngles ) * 73), <0, 0, 0>, $"mdl/dev/empty_model.rmdl" )
 				overheadNameEnt.Hide()
@@ -738,10 +738,17 @@ void function Show_FSDM_VictorySequence(int skinindex)
             EmitSoundOnEntityAfterDelay( platformModel, dialogueApexChampion, 0.5 )
         // }
 		
+		vector AnglesToUseCamera
+		
+		// if(file.teamwon != 3 && GameRules_GetGameMode() == "custom_prophunt")
+			// AnglesToUseCamera = characterModel.GetAngles()
+		// else
+			AnglesToUseCamera = file.victorySequenceAngles
+		
 		VictoryCameraPackage victoryCameraPackage
-		victoryCameraPackage.camera_offset_start = <0, 320, 68>
-		victoryCameraPackage.camera_offset_end = <140, 200, 48>
-		if(CoinFlip()) victoryCameraPackage.camera_offset_end = <-200, 200, 48>
+		victoryCameraPackage.camera_offset_start = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 100
+		victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *200 + AnglesToUp( AnglesToUseCamera ) * 100
+		if(CoinFlip()) victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_focus_offset = <0, 0, 40>
 		//victoryCameraPackage.camera_fov = 20
 	
@@ -749,15 +756,15 @@ void function Show_FSDM_VictorySequence(int skinindex)
 		vector camera_offset_end   = victoryCameraPackage.camera_offset_end
 		vector camera_focus_offset = victoryCameraPackage.camera_focus_offset
 		
-		vector camera_start_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_start, AnglesToForward( file.victorySequenceAngles ) )
-		vector camera_end_pos   = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_end, AnglesToForward( file.victorySequenceAngles ) )
-		vector camera_focus_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_focus_offset, AnglesToForward( file.victorySequenceAngles ) )
+		vector camera_start_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_start, AnglesToForward( AnglesToUseCamera ) )
+		vector camera_end_pos   = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_end, AnglesToForward( AnglesToUseCamera ) )
+		vector camera_focus_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_focus_offset, AnglesToForward( AnglesToUseCamera ) )
 		vector camera_start_angles = VectorToAngles( camera_focus_pos - camera_start_pos )
 		vector camera_end_angles   = VectorToAngles( camera_focus_pos - camera_end_pos )
 
         //Create camera and mover
 		entity cameraMover = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", camera_start_pos, camera_start_angles )
-		entity camera      = CreateClientSidePointCamera( camera_start_pos, camera_start_angles, 28 )
+		entity camera      = CreateClientSidePointCamera( camera_start_pos, camera_start_angles, 35 )
 		player.SetMenuCameraEntity( camera )
 		camera.SetParent( cameraMover, "", false )
 		cleanupEnts.append( camera )

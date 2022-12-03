@@ -621,7 +621,8 @@ void function ClientCodeCallback_PlayerDidDamage( PlayerDidDamageParams params )
 	if ( victim.IsTitan() && isKillShot )
 		ClientScreenShake( 8, 10, 1, <0, 0, 0> )
 
-	BloodSprayDecals( attacker, victim, damagePosition, damageAmount, isHeadShot, isKillShot, isMelee, isExplosion, isBullet, isShotgun )
+	if ( GameRules_GetGameMode() != "custom_prophunt" )
+		BloodSprayDecals( attacker, victim, damagePosition, damageAmount, isHeadShot, isKillShot, isMelee, isExplosion, isBullet, isShotgun )
 
 	if ( isShieldBreak )
 		PlayShieldBreakEffect( victim )
