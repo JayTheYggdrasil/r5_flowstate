@@ -528,7 +528,7 @@ void function PlayerwithLockedAngles_OnDamaged(entity ent, var damageInfo)
 	entity attacker = DamageInfo_GetAttacker(damageInfo)
 	float damage = DamageInfo_GetDamage( damageInfo )
 	
-	if(!IsValid(attacker) || !IsValid(ent)) return
+	if(!IsValid(attacker) || !IsValid(ent) || IsValid(attacker) && !attacker.IsPlayer()) return
 		
 	attacker.NotifyDidDamage
 	(
@@ -548,10 +548,12 @@ void function PlayerwithLockedAngles_OnDamaged(entity ent, var damageInfo)
 	if (NextHealth > 0)
 	{
 		ent.SetHealth(NextHealth)
+		ent.p.lastDamageTime = Time()
 	} else
 	{
 		ent.SetTakeDamageType( DAMAGE_NO )
 		int damageSourceId = DamageInfo_GetDamageSourceIdentifier( damageInfo )
+		ent.p.lastDamageTime = Time()
 		ent.Die( attacker, attacker, { damageSourceId = damageSourceId } )
 		ent.kv.solid = 0
 		// ent.SetOwner( attacker )
@@ -588,10 +590,12 @@ void function NotifyDamageOnProp(entity ent, var damageInfo)
 	if (playerNextHealth > 0)
 	{
 		victim.SetHealth(playerNextHealth)
+		victim.p.lastDamageTime = Time()
 	} else 
 	{
 		int damageSourceId = DamageInfo_GetDamageSourceIdentifier( damageInfo )
 		ent.ClearParent()
+		victim.p.lastDamageTime = Time()
 		victim.Die( attacker, attacker, { damageSourceId = damageSourceId } )
 		ent.Destroy()
 	}
