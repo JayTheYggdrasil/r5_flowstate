@@ -713,7 +713,7 @@ global struct ServerPlayerStruct
 	int PROPHUNT_ChangePropUsageLimit
 	int PROPHUNT_DecoysPropUsageLimit
 	int PROPHUNT_FlashbangPropUsageLimit
-	
+	entity PROPHUNT_LastPropEntity
 	bool PROPHUNT_isSpectatorDiedMidRound = false
 	bool PROPHUNT_AreAnglesLocked = false
 	asset PROPHUNT_LastModel

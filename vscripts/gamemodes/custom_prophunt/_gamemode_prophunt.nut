@@ -281,7 +281,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 				RemoveButtonPressedPlayerInputCallback( victim, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 				RemoveButtonPressedPlayerInputCallback( victim, IN_MELEE, ClientCommand_CreatePropDecoy )
 				RemoveButtonPressedPlayerInputCallback( victim, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-				
+				//RemoveButtonPressedPlayerInputCallback( victim, IN_RELOAD, ClientCommand_MatchSlope )
 			}
 
 			// Atacante
@@ -347,6 +347,9 @@ void function _HandleRespawnPROPHUNT(entity player)
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 	player.SetPlayerNetBool( "pingEnabled", true )
 	player.SetHealth( 100 )
+	player.kv.solid = 6
+	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+	player.AllowMantle()
 	TakeAllWeapons(player)
 }
 
@@ -501,6 +504,7 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
+		player.p.PROPHUNT_LastPropEntity = prop
 		prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		prop.kv.solid = 6
 		prop.SetDamageNotifications( true )
@@ -558,10 +562,9 @@ void function PlayerwithLockedAngles_OnDamaged(entity ent, var damageInfo)
 
 void function NotifyDamageOnProp(entity ent, var damageInfo)
 {
-	//props health bleedthrough
+//props health bleedthrough
 	entity attacker = DamageInfo_GetAttacker(damageInfo)
 	entity victim = ent.GetParent()
-	
 	float damage = DamageInfo_GetDamage( damageInfo )
 	
 	if(!IsValid(attacker) || !IsValid(victim) || !IsValid(ent)) return
@@ -722,7 +725,8 @@ void function ActualPROPHUNTGameLoop()
 			AddButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 			AddButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
 			AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-
+			//AddButtonPressedPlayerInputCallback( player, IN_RELOAD, ClientCommand_MatchSlope )
+			
 			vector lastPosForCoolParticles = player.GetOrigin()
 			vector lastAngForCoolParticles = player.GetAngles()
 			StartParticleEffectInWorld( GetParticleSystemIndex( $"P_impact_shieldbreaker_sparks" ), lastPosForCoolParticles, lastAngForCoolParticles )
@@ -736,8 +740,10 @@ void function ActualPROPHUNTGameLoop()
 			player.p.PROPHUNT_LastModel = selectedModel
 			player.kv.solid = 6
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			player.AllowMantle()
 			player.Hide()
 			entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
+			player.p.PROPHUNT_LastPropEntity = prop
 			prop.kv.solid = 6
 			prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			prop.AllowMantle()
@@ -756,13 +762,15 @@ void function ActualPROPHUNTGameLoop()
 			player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 			player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 			//player.GiveOffhandWeapon("mp_ability_phase_walk", OFFHAND_ULTIMATE)
+			player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
+			player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 			DeployAndEnableWeapons(player)
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
 			Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
 		}
 
-	wait 0.2
+		wait 0.2 //is only a visual effect so ppl will slowly teleport from lobby
 	}
 		
 	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
@@ -799,6 +807,7 @@ void function ActualPROPHUNTGameLoop()
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.AllowMantle()
 		player.SetThirdPersonShoulderModeOff()
 		string pri = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon1", "~~none~~")
 		string sec = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon2", "~~none~~")
@@ -818,6 +827,8 @@ void function ActualPROPHUNTGameLoop()
 		//if a player punch a prop, he/she will crash. This is a workaround. Colombia
 		player.GiveWeapon( "mp_weapon_data_knife_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
 		player.GiveOffhandWeapon( "melee_data_knife", OFFHAND_MELEE, [] )
+		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
+		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 		DeployAndEnableWeapons(player)
 		
 		Highlight_SetFriendlyHighlight( player, "survival_friendly_skydiving" )
@@ -899,7 +910,7 @@ void function ActualPROPHUNTGameLoop()
 			RemoveButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 			RemoveButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-			
+			//RemoveButtonPressedPlayerInputCallback( player, IN_RELOAD, ClientCommand_MatchSlope )
 			Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			
 			bool clearOnClient = false
@@ -938,8 +949,8 @@ void function ActualPROPHUNTGameLoop()
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
 	}
 	
-	thread SendScoreboardToClient()
-	wait 5
+	SendScoreboardToClient()
+	wait 4
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
@@ -1593,6 +1604,7 @@ void function ClientCommand_ChangeProp(entity player)
 			player.SetArmsModelOverride( $"" )
 			player.kv.solid = 6
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			player.AllowMantle()
 			player.Hide()
 			player.p.PROPHUNT_AreAnglesLocked = false
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
@@ -1619,11 +1631,30 @@ void function ClientCommand_ChangeProp(entity player)
 void function ClientCommand_MatchSlope(entity player)
 {
 	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return //false
+
+	vector testOrg = player.GetOrigin()
+	vector mins = player.GetPlayerMins()
+	vector maxs = player.GetPlayerMaxs()
+	int collisionGroup = TRACE_COLLISION_GROUP_PLAYER
 	
-	// vector GoodAngles = AnglesOnSurface(normal, -AnglesToRight(player.EyeAngles()))
+	TraceResults result = TraceHull( testOrg, testOrg + < 0, 0, -150 >, mins, maxs, [ player ], TRACE_MASK_PLAYERSOLID | TRACE_MASK_SOLID | TRACE_MASK_SHOT, TRACE_COLLISION_GROUP_PLAYER )
+		
+	float slope = fabs( result.surfaceNormal.x ) + fabs( result.surfaceNormal.y )
+	if ( slope > 0.6 )
+	{
+		printt("is slope and now what")
+		
+	}
 	
-	// player.SetAngles( Vector(GoodAngles.x, player.GetAngles().y, player.GetAngles().z) )
-	Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3)
+	// vector GoodAngles = AnglesOnSurface(result.surfaceNormal, -AnglesToRight(player.EyeAngles()))
+	// player.SetAngles( GoodAngles )
+	
+	// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3)
+	
+	// if(!IsValid(player.p.PROPHUNT_LastPropEntity)) return
+	
+	// entity prop = player.p.PROPHUNT_LastPropEntity
+	// prop.SetAngles( GoodAngles )
 }
 
 void function ClientCommand_LockAngles(entity player)
@@ -1637,7 +1668,7 @@ void function ClientCommand_LockAngles(entity player)
 		player.Show()
 		player.SetBodyModelOverride( player.p.PROPHUNT_LastModel )
 		player.SetArmsModelOverride( player.p.PROPHUNT_LastModel )
-		player.kv.solid = SOLID_BBOX
+		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		player.AllowMantle()
 		player.SetDamageNotifications( true )
@@ -1657,6 +1688,7 @@ void function ClientCommand_LockAngles(entity player)
 		player.SetArmsModelOverride( $"" )
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.AllowMantle()
 		player.Hide()
 		
 		thread PROPHUNT_GiveAndManageProp(player, true)

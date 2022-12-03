@@ -80,7 +80,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		
 		Hud_SetText( HudElement( "ProphuntHint0"), "%attack% Change Prop x" + ( PROPHUNT_CHANGE_PROP_USAGE_LIMIT - player.p.PROPHUNT_ChangePropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Lock Angles")
-		Hud_SetText( HudElement( "ProphuntHint2"), "%weaponSelectPrimary0% Match Slope")
+		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
 		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
 		player.p.isAttackerProphunt = false
@@ -164,7 +164,7 @@ void function ReloadMenuRUI()
 		
 		Hud_SetText( HudElement( "ProphuntHint0"), "%attack% Change Prop x" + ( PROPHUNT_CHANGE_PROP_USAGE_LIMIT - player.p.PROPHUNT_ChangePropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Lock Angles")
-		Hud_SetText( HudElement( "ProphuntHint2"), "%weaponSelectPrimary0% Match Slope")
+		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
 		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
 	} else

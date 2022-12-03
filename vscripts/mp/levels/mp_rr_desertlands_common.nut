@@ -108,14 +108,14 @@ void function EntitiesDidLoad()
 	
 	if(GameRules_GetGameMode() != "custom_tdm"  && GetMapName() != "mp_rr_desertlands_64k_x_64k_tt") 
 	{
-		InitLootDrones()
-		InitLootRollers()
-		InitLootDronePaths()
-		SpawnLootDrones(GetCurrentPlaylistVarInt( "flowstateFlyersAndDronesToSpawn", 20 ))
+		//InitLootDrones()
+		//InitLootRollers()
+		//InitLootDronePaths()
+		//SpawnLootDrones(GetCurrentPlaylistVarInt( "flowstateFlyersAndDronesToSpawn", 20 ))
 	}
 	else{
 		SpawnFlowstateLobbyProps()
-		if(!GetCurrentPlaylistVarBool("flowstatePROPHUNT", false ) && !GetCurrentPlaylistVarBool("flowstateGrenadesDisabled", false ))
+		if(GameRules_GetGameMode() != "custom_prophunt" && !GetCurrentPlaylistVarBool("flowstateGrenadesDisabled", false ))
 		{
 			//Granadas-Grenades
 			SpawnGrenades(<19010,33300,-810>, <0, 0, 0>, 6, ["thermite", "frag", "arc"], 3)
