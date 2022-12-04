@@ -202,10 +202,10 @@ void function UpdateWhistleTimer()
 		}else if(time == -1)
 		{
 			time = PROPHUNT_WHISTLE_TIMER
-			text = "WHISTLE IN " + time.tostring()
+			text = "NOISE IN " + time.tostring()
 		} else
 		{
-			text = "WHISTLE IN " + time.tostring()
+			text = "NOISE IN " + time.tostring()
 		}
 		
         Hud_SetText( HudElement( "WhistleTimer"), text)
