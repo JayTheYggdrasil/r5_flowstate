@@ -161,20 +161,28 @@ void function SetCommonScoreRUIVars( var rui )
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
 		RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
 		RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
-		RuiSetVisible(rui, true)
-		printt("prophunt hud")
+		RuiSetVisible(rui, true)	
 		return
 	}
 	
 	if ( IsSoloMode() )
 	{
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", GameRules_GetGameMode() == "custom_tdm" ? "PLAYERS ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
+		RuiSetString( rui, "squadsRemainingTextSingular", GameRules_GetGameMode() == "custom_tdm" ? "PLAYER ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
 		RuiSetString( rui, "squadsRemainingTextPlural", GameRules_GetGameMode() == "custom_tdm" ? "PLAYERS ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
+		if( GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
+		{
+			RuiSetString( rui, "gameModeString", "APEX 1v1" )
+			return
+		}
+		
+		if(GameRules_GetGameMode() == "custom_tdm")
+			RuiSetString( rui, "gameModeString", "APEX DM" )
 	}
 	else if(GetCurrentPlaylistVarBool( "dummies_horde_enabled", false )){
+		RuiSetString( rui, "gameModeString", "DUMMIES HORDE" )
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", "DUMMIES REMAINING" )
+		RuiSetString( rui, "squadsRemainingTextSingular", "DUMMY REMAINING" )
 		RuiSetString( rui, "squadsRemainingTextPlural", "DUMMIES REMAINING" )
 	}
 	else

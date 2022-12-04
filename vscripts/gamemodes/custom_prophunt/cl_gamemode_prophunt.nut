@@ -44,6 +44,7 @@ void function ClGamemodeProphunt_Init()
 	
 	PrecacheParticleSystem($"P_shell_shock_FP")
 	AddClientCallback_OnResolutionChanged( ReloadMenuRUI )
+	AddCallback_EntitiesDidLoad( NotifyRingTimer )
 }
 
 void function PROPHUNT_EnableControlsUI(bool isAttacker)

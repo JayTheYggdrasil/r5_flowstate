@@ -3,6 +3,7 @@ global function Cl_RegisterLocation
 global function OpenTDMWeaponSelectorUI
 global function ServerCallback_SendScoreboardToClient
 global function ServerCallback_ClearScoreboardOnClient
+global function NotifyRingTimer
 
 //Statistics
 global function ServerCallback_OpenStatisticsUI
@@ -252,25 +253,25 @@ void function NotifyRingTimer()
 		}
 	}
 
-    if ( SURVIVAL_IsFinalDeathFieldStage() )
-        roundString = "#SURVIVAL_CIRCLE_ROUND_FINAL"
-    else
-        roundString = Localize( "#SURVIVAL_CIRCLE_ROUND", SURVIVAL_GetCurrentRoundString() )
+    // if ( SURVIVAL_IsFinalDeathFieldStage() )
+        // roundString = "#SURVIVAL_CIRCLE_ROUND_FINAL"
+    // else
+        // roundString = Localize( "#SURVIVAL_CIRCLE_ROUND", SURVIVAL_GetCurrentRoundString() )
 
-    float duration = 7.0
+    // float duration = 7.0
 
-    AnnouncementData announcement
-    announcement = Announcement_Create( "" )
-    Announcement_SetSubText( announcement, roundString )
-    Announcement_SetHeaderText( announcement, "#SURVIVAL_CIRCLE_WARNING" )
-    Announcement_SetDisplayEndTime( announcement, new )
-    Announcement_SetStyle( announcement, ANNOUNCEMENT_STYLE_CIRCLE_WARNING )
-    Announcement_SetSoundAlias( announcement, CIRCLE_CLOSING_IN_SOUND )
-    Announcement_SetPurge( announcement, true )
-    Announcement_SetPriority( announcement, 200 ) //
-    Announcement_SetDuration( announcement, duration )
+    // AnnouncementData announcement
+    // announcement = Announcement_Create( "" )
+    // Announcement_SetSubText( announcement, roundString )
+    // Announcement_SetHeaderText( announcement, "#SURVIVAL_CIRCLE_WARNING" )
+    // Announcement_SetDisplayEndTime( announcement, new )
+    // Announcement_SetStyle( announcement, ANNOUNCEMENT_STYLE_CIRCLE_WARNING )
+    // Announcement_SetSoundAlias( announcement, CIRCLE_CLOSING_IN_SOUND )
+    // Announcement_SetPurge( announcement, true )
+    // Announcement_SetPriority( announcement, 200 ) //
+    // Announcement_SetDuration( announcement, duration )
 
-    AnnouncementFromClass( GetLocalViewPlayer(), announcement )
+    // AnnouncementFromClass( GetLocalViewPlayer(), announcement )
 }
 
 void function OpenTDMWeaponSelectorUI()

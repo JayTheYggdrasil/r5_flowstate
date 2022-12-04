@@ -869,6 +869,10 @@ void function ActualPROPHUNTGameLoop()
 		// }			
 	}
 	
+	// SetGlobalNetInt( "currentDeathFieldStage", 0 )
+	// SetGlobalNetTime( "nextCircleStartTime", endTime )
+	// SetGlobalNetTime( "circleCloseTime", endTime + 8 )
+		
 	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
 		thread CheckForPlayersPlaying()
 	
@@ -1648,7 +1652,7 @@ void function ClientCommand_ChangeProp(entity player)
 
 void function ClientCommand_MatchSlope(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return //false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
 
 	vector testOrg = player.GetOrigin()
 	vector mins = player.GetPlayerMins()
