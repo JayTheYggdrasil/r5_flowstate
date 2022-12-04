@@ -8,7 +8,7 @@ global function _GamemodeProphunt_Init
 global function _RegisterLocationPROPHUNT
 global function _OnPlayerConnectedPROPHUNT
 global function _OnPlayerDiedPROPHUNT
-global function RunPROPHUNT
+global function PROPHUNT_StartGameThread
 global function helpMessagePROPHUNT
 global function returnPropBool
 
@@ -66,7 +66,7 @@ void function _GamemodeProphunt_Init()
 	
 	PrecacheCustomMapsProps()
 	
-	thread RunPROPHUNT()	
+	thread PROPHUNT_StartGameThread()	
 }
 
 void function _OnEntitiesDidLoadPROPHUNT()
@@ -104,15 +104,14 @@ array<LocationSettings> function shuffleLocationsArray(array<LocationSettings> a
 	return arr
 }
 
-void function RunPROPHUNT()
+void function PROPHUNT_StartGameThread()
 {
-    SetGameState( eGameState.Playing )
-	//FS_PROPHUNT.locationsShuffled = shuffleLocationsArray(FS_PROPHUNT.locationSettings)
+    WaitForGameState(eGameState.Playing)
 	
     while(true)
 	{
-		ActualPROPHUNTLobby()
-		ActualPROPHUNTGameLoop()
+		PROPHUNT_Lobby()
+		PROPHUNT_GameLoop()
 		WaitFrame()
 	}
 }
@@ -615,7 +614,7 @@ void function NotifyDamageOnProp(entity ent, var damageInfo)
 	}
 }
 
-void function ActualPROPHUNTLobby()
+void function PROPHUNT_Lobby()
 {
 	DestroyPlayerPropsPROPHUNT()
 	SetGameState(eGameState.MapVoting) //!FIXME
@@ -702,7 +701,7 @@ void function ActualPROPHUNTLobby()
 	wait 5
 }
 
-void function ActualPROPHUNTGameLoop()
+void function PROPHUNT_GameLoop()
 {
 	SetTdmStateToInProgress()
 	//printt("Flowstate DEBUG - tdmState is eTDMState.IN_PROGRESS Starting round.")
