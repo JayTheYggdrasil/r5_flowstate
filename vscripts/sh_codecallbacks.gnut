@@ -205,6 +205,8 @@ bool function CodeCallback_CanUseEntity( entity player, entity ent )
 
 void function ResetZiplineUsageDelayed(entity player)
 {
+	if(!IsValid(player)) return
+	
 	if(IsValid(player.Zipline_GetActiveZipline()) && IsValid(player.Zipline_GetLastZipline()) && player.Zipline_GetActiveZipline() != player.Zipline_GetLastZipline())
 	{
 		player.p.ziplineUsages = 0
@@ -216,12 +218,13 @@ void function ResetZiplineUsageDelayed(entity player)
 	
 	bool clearScore = false
 
-	float maxTime = Time() + 2
+	float maxTime = Time() + ZIPLINES_COOLDOWN
 	
 	while( Time() < maxTime )
 		WaitFrame()
 	
-	player.p.ziplineUsages = 0
+	if(IsValid(player))
+		player.p.ziplineUsages = 0
 }
 
 const float ZIPLINE_MAX_USE_ANGLE = 35.0

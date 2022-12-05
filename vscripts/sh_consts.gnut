@@ -1195,6 +1195,8 @@ NPCMF_WALK_NONCOMBAT
 
 global const ZIPLINE_IDLE_ANIM = "pt_zipline_slide_idle"
 
+global const int ZIPLINES_COOLDOWN = 1.5
+
 global const DEFAULT_CONVERSATION_DEBOUNCE_TIME 	= 10.0
 global const AI_CONVERSATION_RANGE_SQR 				= 20250000
 global const AI_CONVERSATION_RANGE 					= 4500 // should match above
