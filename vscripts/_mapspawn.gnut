@@ -387,6 +387,9 @@ void function CodeCallback_MapSpawn() // original script entry point
 
 	switch(GameRules_GetGameMode())
 	{
+		case "custom_prophunt":
+			PrecacheWeapon( $"mp_weapon_flashbang_fakeultimate" )
+			break
 		case "custom_tdm":
 			break
 		case "custom_aimtrainer":

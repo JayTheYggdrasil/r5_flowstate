@@ -781,6 +781,7 @@ void function PROPHUNT_GameLoop()
 			player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 			player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 			player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
+			player.GiveOffhandWeapon("mp_weapon_flashbang_fakeultimate", OFFHAND_ULTIMATE)
 			//player.GiveOffhandWeapon("mp_ability_phase_walk", OFFHAND_ULTIMATE)
 			player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 			player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
@@ -1778,6 +1779,9 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 		circle.SetParent(player)
 		
 		thread HandleCircleEntity(player, circle)
+		
+		if(player.p.PROPHUNT_FlashbangPropUsageLimit == PROPHUNT_FLASH_BANG_USAGE_LIMIT && IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+			player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
 	} else 
 	{
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
