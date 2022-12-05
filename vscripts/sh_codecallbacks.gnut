@@ -230,7 +230,9 @@ void function ResetZiplineUsageDelayed(entity player)
 const float ZIPLINE_MAX_USE_ANGLE = 35.0
 bool function CodeCallback_CanUseZipline( entity player, entity zipline, vector ziplineClosestPoint )
 {
-
+	if ( !IsValid( player ) )
+		return
+	
 	if ( !player.IsHuman() )
 		return false
 
