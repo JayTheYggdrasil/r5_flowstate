@@ -786,6 +786,7 @@ void function PROPHUNT_GameLoop()
 			
 			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", true)
+			wait 0.2
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
 			//Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
