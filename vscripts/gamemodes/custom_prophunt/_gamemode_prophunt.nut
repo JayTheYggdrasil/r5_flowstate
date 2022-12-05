@@ -65,7 +65,9 @@ void function _GamemodeProphunt_Init()
 	//AddClientCommandCallback("Attackers_ForceChangeProp", ClientCommand_ForceChangeProp_Attackers)
 	
 	PrecacheCustomMapsProps()
-	
+	PrecacheParticleSystem($"P_impact_exp_xo_shield_med_CP")
+	PrecacheParticleSystem($"P_plasma_exp_SM")
+
 	thread PROPHUNT_StartGameThread()	
 }
 
@@ -1760,11 +1762,13 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
 			if ( playerDist <= PROPHUNT_FLASH_BANG_RADIUS )
 			{
-				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)			
+				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)						
 			}
 		}
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
+		entity trailFXHandle = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_plasma_exp_SM" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
+		entity trailFXHandle2 = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_impact_exp_xo_shield_med_CP" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
 	} else 
 	{
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)

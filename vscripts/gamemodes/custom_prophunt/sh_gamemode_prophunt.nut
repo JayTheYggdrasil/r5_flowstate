@@ -12,8 +12,8 @@ global const int PROPHUNT_FLASH_BANG_RADIUS = 300
 global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 3
 global const int PROPHUNT_WHISTLE_RADIUS = 800
-global const int PROPHUNT_WHISTLE_TIMER = 35
-global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 15
+global const int PROPHUNT_WHISTLE_TIMER = 5
+global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 3
 
 global const array<asset> prophuntAssetsWE =
 [
@@ -42,10 +42,31 @@ void function GamemodeProphuntShared_Init()
 			NewLocationSettings(
 				"TTV Building",
 				[
-					NewLocPair(<8779, 5154, -4092>, <0, 90, 0>),
-					NewLocPair(<9351,6319,-4095>, <0, -120, 0>),
-					NewLocPair(<10462,6128,-4163>, <0, -45, 0>),
-					NewLocPair(<9635,4868,-4073>, <0, -135, 0>)
+					NewLocPair(<11360, 6151, -4079>, <0, 102, 0>),
+					NewLocPair(<11407, 6778, -4295>, <0, 88, 0>),
+					NewLocPair(<11973, 4158, -4220>, <0, 82, 0>),
+					NewLocPair(<9956, 3435, -4239>, <0, 0, 0>),
+					NewLocPair(<9038, 3800, -4120>, <0, -88, 0>),
+					NewLocPair(<7933, 6692, -4250>, <0, 76, 0>),
+					NewLocPair(<8990, 5380, -4250>, <0, 145, 0>),
+					NewLocPair(<8200, 5463, -3815>, <0, 0, 0>),
+					NewLocPair(<9789, 5363, -3480>, <0, 174, 0>),
+					NewLocPair(<9448, 5804, -4000>, <0, 0, 0>),
+					NewLocPair(<8135, 4087, -4233>, <0, 90, 0>),
+					NewLocPair(<9761, 5980, -4250>, <0, 135, 0>),
+					NewLocPair(<11393, 5477, -4289>, <0, 90, 0>),
+					NewLocPair(<12027, 7121, -4290>, <0, -120, 0>),
+					NewLocPair(<8105, 6156, -4300>, <0, -45, 0>),
+					NewLocPair(<9420, 5528, -4236>, <0, 90, 0>),
+					NewLocPair(<8277, 6304, -3940>, <0, 0, 0>),
+					NewLocPair(<8186, 5513, -3828>, <0, 0, 0>),
+					NewLocPair(<8243, 4537, -4235>, <-13, 32, 0>),
+					NewLocPair(<11700, 6207, -4435>, <-10, 90, 0>),
+					NewLocPair(<11181, 5862, -3900>, <0, -180, 0>),
+					NewLocPair(<9043, 5866, -4171>, <0, 90, 0>),
+					NewLocPair(<11210, 4164, -4235>, <0, 90, 0>),
+					NewLocPair(<12775, 4446, -4235>, <0, 150, 0>),
+					NewLocPair(<9012, 5386, -4242>, <0, 90, 0>)
 				],
 				<0, 0, 3000>,$"rui/flowstatelocations/ttvbuilding"
 			)

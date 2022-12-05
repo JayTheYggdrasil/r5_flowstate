@@ -700,8 +700,8 @@ void function Show_FSDM_VictorySequence(int skinindex)
 				ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
 				asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
 				
-				thread PlayAnim( characterModel, animtoplay, characterNode )
-				characterModel.Anim_SetPlaybackRate(0.8)
+				thread PlayAnim( characterModel, "ACT_MP_MENU_LOBBY_SELECT_IDLE", characterNode )
+				//characterModel.Anim_SetPlaybackRate(0.8)
 				
 				//characterModel.Anim_EnableUseAnimatedRefAttachmentInsteadOfRootMotion()
 
@@ -753,25 +753,23 @@ void function Show_FSDM_VictorySequence(int skinindex)
 		victoryCameraPackage.camera_focus_offset = <0, 0, 40>
 		//victoryCameraPackage.camera_fov = 20
 	
-		vector camera_offset_start = victoryCameraPackage.camera_offset_start
-		vector camera_offset_end   = victoryCameraPackage.camera_offset_end
-		vector camera_focus_offset = victoryCameraPackage.camera_focus_offset
-		
-		vector camera_start_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_start, AnglesToForward( AnglesToUseCamera ) )
-		vector camera_end_pos   = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_end, AnglesToForward( AnglesToUseCamera ) )
-		vector camera_focus_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_focus_offset, AnglesToForward( AnglesToUseCamera ) )
+		//Setup camera pos and angles
+		vector camera_start_pos = OffsetPointRelativeToVector( file.victorySequencePosition, <0, 480, 108>, AnglesToForward( file.victorySequenceAngles ) )
+		vector camera_end_pos   = OffsetPointRelativeToVector( file.victorySequencePosition, <0, 350, 88>, AnglesToForward( file.victorySequenceAngles ) )
+		vector camera_focus_pos = OffsetPointRelativeToVector( file.victorySequencePosition, <0, 0, 56>, AnglesToForward( file.victorySequenceAngles ) )
 		vector camera_start_angles = VectorToAngles( camera_focus_pos - camera_start_pos )
 		vector camera_end_angles   = VectorToAngles( camera_focus_pos - camera_end_pos )
 
         //Create camera and mover
 		entity cameraMover = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", camera_start_pos, camera_start_angles )
-		entity camera      = CreateClientSidePointCamera( camera_start_pos, camera_start_angles, 35 )
+		entity camera      = CreateClientSidePointCamera( camera_start_pos, camera_start_angles, 30 )
 		player.SetMenuCameraEntity( camera )
 		camera.SetParent( cameraMover, "", false )
 		cleanupEnts.append( camera )
-
+		cameraMover.NonPhysicsMoveTo( camera_end_pos, 6, 0.0, 6 / 2.0 )
+		cameraMover.NonPhysicsRotateTo( camera_end_angles, 6, 0.0, 6 / 2.0 )
 		cleanupEnts.append( cameraMover )
-		thread CameraMovement(cameraMover, camera_end_pos, camera_end_angles)
+		// thread CameraMovement(cameraMover, camera_end_pos, camera_end_angles)
 	}
 }
 
