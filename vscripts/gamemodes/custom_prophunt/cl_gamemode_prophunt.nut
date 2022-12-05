@@ -12,6 +12,7 @@ global function PROPHUNT_RemoveControlsUI
 global function PROPHUNT_CustomHint
 global function PROPHUNT_AddUsageToHint
 global function PROPHUNT_StartMiscTimer
+global function PROPHUNT_QuickText
 
 struct {
     LocationSettings &selectedLocation
@@ -61,6 +62,8 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	// RuiSetGameTime( ruitest, "startTime", Time() )
 	// RuiSetGameTime( ruitest, "endTime", endtime )
 	// RuiSetColorAlpha( ruitest, "timerColor", SrgbToLinear( <255,233,0> / 255.0 ), 1.0 )
+	
+	ScorebarInitTracking( player, ClGameState_GetRui() )
 	
 	if(!isAttacker)
 	{
@@ -181,6 +184,60 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 			time--
 			wait 1
 		}
+	}()
+}
+
+void function PROPHUNT_QuickText(int index, int duration)
+{
+	thread function() : (index, duration)
+	{
+		entity player = GetLocalClientPlayer() 
+		
+		EndSignal(player, "OnDeath")
+		
+		Hud_SetEnabled(HudElement( "DarkenBackground" ), true)
+		Hud_SetVisible(HudElement( "DarkenBackground" ), true)
+			
+		Hud_SetEnabled(HudElement( "MiscTimer" ), true)
+		Hud_SetVisible(HudElement( "MiscTimer" ), true)
+		
+		OnThreadEnd(
+			function() : ( player, index )
+			{
+				if(!IsValid(player)) return
+				
+				Hud_SetEnabled(HudElement( "DarkenBackground" ), false)
+				Hud_SetVisible(HudElement( "DarkenBackground" ), false)
+					
+				Hud_SetEnabled(HudElement( "MiscTimer" ), false)
+				Hud_SetVisible(HudElement( "MiscTimer" ), false)
+				
+				switch(index)
+				{
+					case 0:
+					EmitSoundOnEntity(player, "UI_InGame_HalftimeText_Exit")
+					break
+					case 1:
+					//EmitSoundOnEntity(player, "diag_ap_aiNotify_circleMoves30sec")
+					break
+				}
+			}
+		)
+		string msg = ""
+		switch(index)
+		{
+			case 0:
+			msg = "HALF TIME"
+			EmitSoundOnEntity(player, "UI_InGame_HalftimeText_Enter")
+			break
+			case 1:
+			msg = "30 SECONDS REMAINING"
+			EmitSoundOnEntity(player, "diag_ap_aiNotify_circleMoves30sec")
+			break
+		}
+		Hud_SetText( HudElement( "MiscTimer"), msg)
+		
+		wait duration
 	}()
 }
 
@@ -398,8 +455,7 @@ void function ChangeInputHintString( int index )
 void function PROPHUNT_CustomHint(int index)
 {
 	if(!IsValid(GetLocalViewPlayer())) return
-	//UI_InGame_HalftimeText_Enter
-	//UI_InGame_HalftimeText_Exit
+
 	switch(index)
 	{
 		case 0:

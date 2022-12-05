@@ -799,7 +799,7 @@ void function PROPHUNT_GameLoop()
 		}
 	}
 
-	wait PROPHUNT_TELEPORT_ATTACKERS_DELAY
+	wait PROPHUNT_TELEPORT_ATTACKERS_DELAY-4
 	
 	foreach(player in GetPlayerArray())
 	{
@@ -809,6 +809,8 @@ void function PROPHUNT_GameLoop()
 			ScreenFade( player, 0, 0, 0, 255, 4.0, 1, FFADE_OUT | FFADE_PURGE )
 	}
 	wait 4
+	
+	UpdatePlayerCounts()
 	
 	SetFallTriggersStatus(false)
 
@@ -883,34 +885,24 @@ void function PROPHUNT_GameLoop()
 	int TeamWon
 	while( Time() <= endTime )
 		{
-			if(Time() == endTime-60)
+			if(Time() == endTime-GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )/2)
 			{
 				foreach(player in GetPlayerArray())
 				{
 					if(!IsValid(player)) continue
 					
-					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"1 MINUTE REMAINING!", "", 5, "diag_ap_aiNotify_circleMoves60sec")
+					Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 0, 3)
 				}
 			}
+
 			if(Time() == endTime-30)
 			{
 				foreach(player in GetPlayerArray())
 				{
 					if(!IsValid(player)) continue
 					
-					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"30 SECONDS REMAINING", "", 5, "diag_ap_aiNotify_circleMoves30sec")
-				}
-			}
-			if(Time() == endTime-5)
-			{
-				foreach(player in GetPlayerArray())
-				{
-					if(!IsValid(player)) continue
-					
-					array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-					Message(player,"5 SECONDS REMAINING!",  "", 5, "diag_ap_aiNotify_circleMoves10sec")
+					//Message(player,"30 SECONDS REMAINING", "", 5, "diag_ap_aiNotify_circleMoves30sec")
+					Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 1, 4)
 				}
 			}
 			if(GetTDMState() == 1)

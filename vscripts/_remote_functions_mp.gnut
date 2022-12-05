@@ -89,6 +89,7 @@ void function RemoteFunctions_Init_Begin()
 			Remote_RegisterClientFunction("Minimap_EnableDraw_Internal")
 			Remote_RegisterClientFunction("Minimap_DisableDraw_Internal")
 			Remote_RegisterClientFunction("PROPHUNT_StartMiscTimer", "bool")
+			Remote_RegisterClientFunction("PROPHUNT_QuickText", "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX)
 			break
 		case MAP_EDITOR:
 			Remote_RegisterClientFunction("ServerCallback_NextProp", "entity")
