@@ -41,10 +41,9 @@ void function ClGamemodeProphunt_Init()
 	RegisterSignal("ChangeCameraToSelectedLocation")
 	RegisterSignal("PROPHUNT_ShutdownWhistleTimer")
 	RegisterSignal("PROPHUNT_ShutdownPropsHidingTimer")
-	
 	PrecacheParticleSystem($"P_shell_shock_FP")
 	AddClientCallback_OnResolutionChanged( ReloadMenuRUI )
-	AddCallback_EntitiesDidLoad( NotifyRingTimer )
+	//AddCallback_EntitiesDidLoad( NotifyRingTimer )
 }
 
 void function PROPHUNT_EnableControlsUI(bool isAttacker)
@@ -398,33 +397,46 @@ void function ChangeInputHintString( int index )
 
 void function PROPHUNT_CustomHint(int index)
 {
+	if(!IsValid(GetLocalViewPlayer())) return
+	//UI_InGame_HalftimeText_Enter
+	//UI_InGame_HalftimeText_Exit
 	switch(index)
 	{
 		case 0:
 		QuickHint("", "Angles locked!")
+		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_Menu_SelectMode_Close")
 		break
 		case 1:
-		QuickHint("", "Angles unlocked!")
+		QuickHint("", "Angles unlocked!", true)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_InGame_FD_SliderExit" )
 		break
 		case 2:
 		QuickHint("", "Limit reached!")
+		EmitSoundOnEntity(GetLocalViewPlayer(), "Survival_UI_Ability_NotReady")
 		break
 		case 3:
 		QuickHint("", "Slope matched!")
 		break
 		case 4:
-		QuickHint("", "Decoy placed!")
+		QuickHint("", "Decoy placed!", true)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "ui_ingame_switchingsides" )	
 		break
 		case 5:
 		QuickHint("", "Seekers arrived!")
+		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_PostGame_TitanSlideIn")
 		break
 		case 6:
-		QuickHint("", "Flashbang used!")
+		QuickHint("", "Flashbang used!", true)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "explo_proximityemp_impact_1p" )
+		break
+		case 7:
+		//QuickHint("", "Prop changed!")
+		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break		
 	}
 }
 
-void function QuickHint( string buttonText, string hintText)
+void function QuickHint( string buttonText, string hintText, bool blueText = false)
 {
 	if(file.activeQuickHint != null)
 	{
@@ -436,7 +448,11 @@ void function QuickHint( string buttonText, string hintText)
 	RuiSetGameTime( file.activeQuickHint, "startTime", Time() )
 	RuiSetString( file.activeQuickHint, "messageText", buttonText + " " + hintText )
 	RuiSetFloat( file.activeQuickHint, "duration", 2 )
-	RuiSetFloat3( file.activeQuickHint, "eventColor", SrgbToLinear( <255, 0, 119> / 255.0 ) )
+	
+	if(blueText)
+		RuiSetFloat3( file.activeQuickHint, "eventColor", SrgbToLinear( <48, 107, 255> / 255.0 ) )
+	else
+		RuiSetFloat3( file.activeQuickHint, "eventColor", SrgbToLinear( <255, 0, 119> / 255.0 ) )
 }
 
 void function RemoveAllHints(bool wasResolutionChanged = false)

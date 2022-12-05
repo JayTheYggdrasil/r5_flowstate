@@ -67,7 +67,8 @@ void function _GamemodeProphunt_Init()
 	PrecacheCustomMapsProps()
 	PrecacheParticleSystem($"P_impact_exp_xo_shield_med_CP")
 	PrecacheParticleSystem($"P_plasma_exp_SM")
-
+	PrecacheModel($"mdl/fx/ar_edge_sphere_512.rmdl")
+	
 	thread PROPHUNT_StartGameThread()	
 }
 
@@ -464,6 +465,7 @@ void function CheckForPlayersPlaying()
 
 void function PropWatcher(entity prop, entity player)
 {
+	EndSignal(player, "OnDeath")
 	EndSignal(player, "DestroyProp")
 	
 	OnThreadEnd(
@@ -862,7 +864,7 @@ void function PROPHUNT_GameLoop()
 		
 		if (player.GetTeam() == TEAM_MILITIA)
 		{
-			Message(player, "The seekers have arrived", "", 4, "Survival_UI_Ultimate_Ready")
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 5)
 		}
 		// else if (player.GetTeam() == TEAM_IMC)
 		// {
@@ -1633,6 +1635,7 @@ void function ClientCommand_ChangeProp(entity player)
 			player.p.PROPHUNT_AreAnglesLocked = false
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
 		} else 
 		{
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
@@ -1645,6 +1648,7 @@ void function ClientCommand_ChangeProp(entity player)
 		{
 			thread PROPHUNT_GiveAndManageProp(player)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
 		} else 
 		{
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
@@ -1740,6 +1744,7 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		decoy.SetAngles( player.GetAngles() )
 		PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 1)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 4)
 	} else
 	{
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
@@ -1766,14 +1771,41 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)						
 			}
 		}
+		EmitSoundOnEntityExceptToPlayer(player, player, "explo_proximityemp_impact_3p")
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
 		entity trailFXHandle = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_plasma_exp_SM" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
 		entity trailFXHandle2 = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_impact_exp_xo_shield_med_CP" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
+		
+		entity circle = CreateEntity( "prop_dynamic" )
+		circle.SetValueForModelKey( $"mdl/fx/ar_edge_sphere_512.rmdl" )
+		circle.kv.modelscale = 1
+		circle.SetOrigin( player.GetOrigin() + <0.0, 0.0, -25>)
+		circle.SetAngles( <0, 0, 0> )
+		DispatchSpawn(circle)
+		circle.SetParent(player)
+		
+		thread HandleCircleEntity(player, circle)
 	} else 
 	{
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
 	}
+}
+
+void function HandleCircleEntity(entity player, entity circle)
+{
+	EndSignal(player, "OnDeath")
+	float endTime = Time() + 1
+	
+	OnThreadEnd(
+	function() : ( circle )
+	{
+		if(IsValid(circle))
+			circle.Destroy()
+	})
+	
+	while( Time() <= endTime && IsValid(player) && FS_PROPHUNT.InProgress)
+		WaitFrame()
 }
 
 bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string > args) 
