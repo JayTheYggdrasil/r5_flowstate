@@ -185,12 +185,18 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 	}()
 }
 
-void function UpdateWhistleTimer()
+void function UpdateWhistleTimer(bool fromChangedResolution = false)
 {
 	entity player = GetLocalClientPlayer() 
 	
 	EndSignal(player, "PROPHUNT_ShutdownWhistleTimer")
-	int time = PROPHUNT_WHISTLE_TIMER
+	int time
+	
+	if(fromChangedResolution)
+		time = player.p.lastWhistleTimer
+	else
+		time = PROPHUNT_WHISTLE_TIMER
+	
 	string text
     while(IsValid(player) && IsAlive(player))
     {
@@ -210,6 +216,7 @@ void function UpdateWhistleTimer()
 		
         Hud_SetText( HudElement( "WhistleTimer"), text)
         time--
+		player.p.lastWhistleTimer = time
         wait 1
     }
 }
@@ -296,6 +303,8 @@ void function ReloadMenuRUI()
 		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
 		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
+		
+		thread UpdateWhistleTimer(true)
 	} else
 	{
 		player.p.isAttackerProphunt = true

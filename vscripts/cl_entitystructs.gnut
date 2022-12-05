@@ -179,6 +179,7 @@ global struct ClientPlayerStruct
 	int PROPHUNT_ChangePropUsageLimit
 	int PROPHUNT_DecoysPropUsageLimit
 	int PROPHUNT_FlashbangPropUsageLimit
+	int lastWhistleTimer = 0
 }
 
 
