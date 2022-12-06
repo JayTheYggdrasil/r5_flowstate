@@ -712,7 +712,7 @@ void function PROPHUNT_GameLoop()
 		SetChampion( GetBestPlayer() )
 
 	SurvivalCommentary_ResetAllData()
-	float endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
+	FS_PROPHUNT.endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
 	
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
 	array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
@@ -875,16 +875,16 @@ void function PROPHUNT_GameLoop()
 	}
 	
 	// SetGlobalNetInt( "currentDeathFieldStage", 0 )
-	// SetGlobalNetTime( "nextCircleStartTime", endTime )
-	// SetGlobalNetTime( "circleCloseTime", endTime + 8 )
+	// SetGlobalNetTime( "nextCircleStartTime", FS_PROPHUNT.endTime )
+	// SetGlobalNetTime( "circleCloseTime", FS_PROPHUNT.endTime + 8 )
 		
 	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
 		thread CheckForPlayersPlaying()
 	
 	int TeamWon
-	while( Time() <= endTime )
+	while( Time() <= FS_PROPHUNT.endTime )
 		{
-			if(Time() == endTime-GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )/2)
+			if(Time() == FS_PROPHUNT.endTime-GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )/2)
 			{
 				foreach(player in GetPlayerArray())
 				{
@@ -894,7 +894,7 @@ void function PROPHUNT_GameLoop()
 				}
 			}
 
-			if(Time() == endTime-30)
+			if(Time() == FS_PROPHUNT.endTime-30)
 			{
 				foreach(player in GetPlayerArray())
 				{
@@ -1742,7 +1742,7 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		decoy.SetHealth( 100 )
 		decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
 		SetObjectCanBeMeleed( decoy, true )
-		decoy.SetTimeout( 30 )
+		decoy.SetTimeout( Time()-FS_PROPHUNT.endTime )
 		decoy.SetPlayerOneHits( true )
 		decoy.SetAngles( player.GetAngles() )
 		PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
