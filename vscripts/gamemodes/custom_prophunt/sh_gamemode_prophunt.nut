@@ -42,7 +42,6 @@ void function GamemodeProphuntShared_Init()
 			NewLocationSettings(
 				"TTV Building",
 				[
-					NewLocPair(<11360, 6151, -4079>, <0, 102, 0>),
 					NewLocPair(<11407, 6778, -4295>, <0, 88, 0>),
 					NewLocPair(<11973, 4158, -4220>, <0, 82, 0>),
 					NewLocPair(<9956, 3435, -4239>, <0, 0, 0>),
