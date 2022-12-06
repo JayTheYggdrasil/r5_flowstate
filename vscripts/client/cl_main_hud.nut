@@ -114,11 +114,6 @@ void function MainHud_AddClient( entity player )
 	player.cv.burnCardAnnouncementQueue <- []
 
 	clGlobal.empScreenEffect = Hud.HudElement( "EMPScreenFX" )
-
-	// var elem = HudElement( "Dev_Info3" )
-	// Hud_SetText( elem, "Apex Flowstate" )
-	// Hud_Show( elem )
-	// Hud_SetVisible( elem, true )
 }
 
 void function CockpitHudInit( entity cockpit )
@@ -693,43 +688,6 @@ void function DrawAttentionToTestMap( var elem )
 		Hud_ReturnToBasePosOverTime( elem, 4, 2 )
 	}
 }
-
-
-void function ClientHudInit( entity player )
-{
-	// Assert( player == GetLocalClientPlayer() )
-
-	#if DEVELOPER
-		// HudElement( "Dev_Info1" ).Hide()
-		// HudElement( "Dev_Info2" ).Hide()
-		// HudElement( "Dev_Info3" ).Hide()
-		// {
-			// if ( IsTestMap() )
-			// {
-				// var elem = HudElement( "Dev_Info3" )
-				// Hud_SetText( elem, "Test Map" )
-				// Hud_Show( elem )
-
-				/*switch( GetMapName() )
-				{
-					case "sp_danger_room":
-					case "sp_script_samples":
-					case "sp_enemies":
-					case "sp_grunt_battle":
-					case "mp_rr_box":
-					case "mp_box":
-					case "mp_test_engagement_range":
-						// blessed calm, like a smooth ocean
-						break
-					default:
-						thread DrawAttentionToTestMap( elem )
-						break
-				}*/
-			// }
-		// }
-	#endif // DEVELOPER
-}
-
 
 void function CinematicEventUpdateDoF( entity player )
 {

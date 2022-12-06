@@ -170,11 +170,11 @@ void function SetCommonScoreRUIVars( var rui )
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
 		RuiSetString( rui, "squadsRemainingTextSingular", GameRules_GetGameMode() == "custom_tdm" ? "PLAYER ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
 		RuiSetString( rui, "squadsRemainingTextPlural", GameRules_GetGameMode() == "custom_tdm" ? "PLAYERS ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
-		if( GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
-		{
-			RuiSetString( rui, "gameModeString", "APEX 1v1" )
-			return
-		}
+		// if( GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
+		// {
+			// RuiSetString( rui, "gameModeString", "APEX 1v1" )
+			// return
+		// }
 		
 		if(GameRules_GetGameMode() == "custom_tdm")
 			RuiSetString( rui, "gameModeString", "APEX DM" )
