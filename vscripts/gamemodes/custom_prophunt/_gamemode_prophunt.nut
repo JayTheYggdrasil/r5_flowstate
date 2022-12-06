@@ -968,7 +968,7 @@ void function PROPHUNT_GameLoop()
 	}
 	
 	SendScoreboardToClient()
-	wait 4
+	wait 5
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
@@ -999,17 +999,23 @@ void function PROPHUNT_GameLoop()
 	// Only do voting for maps with multi locations
 	// if ( FS_PROPHUNT.locationSettings.len() >= NUMBER_OF_MAP_SLOTS_FSDM )
 	// {
-
 		// for each player, open the vote menu and set it to the winning team screen
-		foreach( player in GetPlayerArray() )
-		{
-			if( !IsValid( player ) )
-				continue
-			
-			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_OpenVotingPhase", true)
-			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_ChampionScreenHandle", true, TeamWon, 0)
-			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.WinnerScreen, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
-		}
+		
+	FS_PROPHUNT.mapVotes[0] = 0
+	FS_PROPHUNT.mapVotes[1] = 0
+	FS_PROPHUNT.mapVotes[2] = 0
+	FS_PROPHUNT.mapVotes[3] = 0
+	
+	foreach( player in GetPlayerArray() )
+	{
+		if( !IsValid( player ) )
+			continue
+		
+		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_UpdateMapVotesClient", FS_PROPHUNT.mapVotes[0], FS_PROPHUNT.mapVotes[1], FS_PROPHUNT.mapVotes[2], FS_PROPHUNT.mapVotes[3])
+		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_OpenVotingPhase", true)
+		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_ChampionScreenHandle", true, TeamWon, 0)
+		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.WinnerScreen, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
+	}
 		
 		
 		thread function() : ()
