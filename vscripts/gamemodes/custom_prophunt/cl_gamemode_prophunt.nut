@@ -49,7 +49,7 @@ void function ClGamemodeProphunt_Init()
 
 void function PROPHUNT_EnableControlsUI(bool isAttacker)
 {
-	entity player = GetLocalViewPlayer()
+	entity player = GetLocalClientPlayer()
 	SetDpadMenuHidden()
 	Minimap_DisableDraw_Internal()
 	player.p.PROPHUNT_ChangePropUsageLimit = 0
@@ -284,7 +284,7 @@ void function PROPHUNT_RemoveControlsUI()
 
 void function PROPHUNT_DoScreenFlashFX(entity player, entity propAttacker)
 {
-	entity viewPlayer = GetLocalViewPlayer()
+	entity viewPlayer = GetLocalClientPlayer()
 	int fxHandle = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
 	EffectSetIsWithCockpit( fxHandle, true )
 	int fxHandle2 = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
@@ -318,7 +318,7 @@ void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandl
 void function ReloadMenuRUI()
 {
 	RemoveAllHints(true)
-	entity player = GetLocalViewPlayer()
+	entity player = GetLocalClientPlayer()
 	
 	if(!player.p.isAttackerProphunt)
 	{
@@ -386,7 +386,7 @@ void function AddInputHint( string buttonText, string hintText)
 
 void function PROPHUNT_AddUsageToHint( int index )
 {
-	entity player = GetLocalViewPlayer()
+	entity player = GetLocalClientPlayer()
 	
 	switch(index)
 	{
@@ -411,7 +411,7 @@ void function PROPHUNT_AddUsageToHint( int index )
 
 void function ChangeInputHintString( int index )
 {
-	entity player = GetLocalViewPlayer()
+	entity player = GetLocalClientPlayer()
 	
 	// var hintRui = file.inputHintRuis[index]
 	
@@ -488,11 +488,23 @@ void function PROPHUNT_CustomHint(int index)
 		case 7:
 		//QuickHint("", "Prop changed!")
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
+		break
+		case 8:
+		QuickHint("", "We have enough players. Starting now.", true, 4)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
+		break
+		case 9:
+		QuickHint("", "Waiting another player to start. Please wait.", false, 3)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
+		break		
+		case 10:
+		QuickHint("", "You're a prop. Teleporting in 5 seconds.", true, 4)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break		
 	}
 }
 
-void function QuickHint( string buttonText, string hintText, bool blueText = false)
+void function QuickHint( string buttonText, string hintText, bool blueText = false, int duration = 2)
 {
 	if(file.activeQuickHint != null)
 	{
@@ -503,7 +515,7 @@ void function QuickHint( string buttonText, string hintText, bool blueText = fal
 	
 	RuiSetGameTime( file.activeQuickHint, "startTime", Time() )
 	RuiSetString( file.activeQuickHint, "messageText", buttonText + " " + hintText )
-	RuiSetFloat( file.activeQuickHint, "duration", 2 )
+	RuiSetFloat( file.activeQuickHint, "duration", duration.tofloat() )
 	
 	if(blueText)
 		RuiSetFloat3( file.activeQuickHint, "eventColor", SrgbToLinear( <48, 107, 255> / 255.0 ) )
@@ -548,7 +560,7 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 	Hud_SetEnabled(HudElement( "ProphuntHint4" ), false)
 	Hud_SetVisible(HudElement( "ProphuntHint4" ), false)
 	
-	entity player = GetLocalViewPlayer()
+	entity player = GetLocalClientPlayer()
 	Signal(player, "PROPHUNT_ShutdownWhistleTimer")
 		
 	if(!wasResolutionChanged)
@@ -557,4 +569,13 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 		player.p.PROPHUNT_DecoysPropUsageLimit = 0
 		player.p.PROPHUNT_FlashbangPropUsageLimit = 0
 	}
+}
+
+void function ResetAbilitiesCounterOnClient()
+{
+	if(!IsValid(GetLocalClientPlayer())) return
+	
+	GetLocalClientPlayer().p.PROPHUNT_ChangePropUsageLimit = 0
+	GetLocalClientPlayer().p.PROPHUNT_DecoysPropUsageLimit = 0
+	GetLocalClientPlayer().p.PROPHUNT_FlashbangPropUsageLimit = 0
 }

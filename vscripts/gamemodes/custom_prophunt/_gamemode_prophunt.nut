@@ -656,7 +656,6 @@ void function PROPHUNT_Lobby()
 		if(!IsValid(player)) continue
 		
 		player.p.PROPHUNT_isSpectatorDiedMidRound = false
-		player.p.PROPHUNT_ChangePropUsageLimit = 0
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
 		//Message(player, "FS PROPHUNT", "                Made by @CafeFPS. Game is starting.\n" + helpMessagePROPHUNT(), 10)
@@ -674,10 +673,10 @@ void function PROPHUNT_Lobby()
 				{
 					if(!IsValid(player)) continue
 		
-					//Message(player, "FS PROPHUNT", "We have enough players, starting now.", 5, "diag_ap_aiNotify_circleMoves10sec")
+					// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 8)
 				}
 				wait 5
-				break
+				// break
 				
 			} else {
 				
@@ -685,7 +684,7 @@ void function PROPHUNT_Lobby()
 				{
 					if(!IsValid(player)) continue
 		
-					Message(player, "FS PROPHUNT", "Waiting another player to start. Please wait.", 1)
+					Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 9)
 				}
 				wait 5			
 			}
@@ -700,7 +699,7 @@ void function PROPHUNT_Lobby()
 	{
 		if(!IsValid(player)) continue
 		
-		//Message(player, "ATTENTION", "            You're a prop. Teleporting in 5 seconds! \n Use your ULTIMATE to CHANGE PROP up to 3 times. ", 5)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 10)
 	}
 	wait 5
 }
@@ -724,7 +723,6 @@ void function PROPHUNT_GameLoop()
 	FS_PROPHUNT.InProgress = true
 	//thread EmitSoundOnSprintingProp()
 	
-	ResetMapVotes()
 	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
 	SetGameState( eGameState.Playing )
 	//printt("Flowstate DEBUG - Tping props team.")
@@ -800,7 +798,7 @@ void function PROPHUNT_GameLoop()
 		}
 	}
 
-	wait PROPHUNT_TELEPORT_ATTACKERS_DELAY-4
+	wait PROPHUNT_TELEPORT_ATTACKERS_DELAY-3
 	
 	foreach(player in GetPlayerArray())
 	{
@@ -1001,17 +999,22 @@ void function PROPHUNT_GameLoop()
 	// {
 		// for each player, open the vote menu and set it to the winning team screen
 		
-	FS_PROPHUNT.mapVotes[0] = 0
-	FS_PROPHUNT.mapVotes[1] = 0
-	FS_PROPHUNT.mapVotes[2] = 0
-	FS_PROPHUNT.mapVotes[3] = 0
+	ResetMapVotes()
 	
 	foreach( player in GetPlayerArray() )
 	{
 		if( !IsValid( player ) )
 			continue
 		
+		//reset props abilities
+		player.p.PROPHUNT_ChangePropUsageLimit = 0
+		player.p.PROPHUNT_DecoysPropUsageLimit = 0
+		player.p.PROPHUNT_FlashbangPropUsageLimit = 0
+		
+		//reset votes
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_UpdateMapVotesClient", FS_PROPHUNT.mapVotes[0], FS_PROPHUNT.mapVotes[1], FS_PROPHUNT.mapVotes[2], FS_PROPHUNT.mapVotes[3])
+		
+		//launch champion screen + voting phase
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_OpenVotingPhase", true)
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_ChampionScreenHandle", true, TeamWon, 0)
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.WinnerScreen, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
@@ -1039,17 +1042,17 @@ void function PROPHUNT_GameLoop()
 		
 		wait 7
 
-		foreach( player in GetPlayerArray() )
-		{
-			if( !IsValid( player ) )
-				continue
+		// foreach( player in GetPlayerArray() )
+		// {
+			// if( !IsValid( player ) )
+				// continue
 			
-			Remote_CallFunction_NonReplay(player, "ServerCallback_FSDM_CoolCamera")
-			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.ScoreboardUI, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
-			EmitSoundOnEntityOnlyToPlayer(player, player, "UI_Menu_RoundSummary_Results")
-		}
+			// Remote_CallFunction_NonReplay(player, "ServerCallback_FSDM_CoolCamera")
+			// Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.ScoreboardUI, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
+			// EmitSoundOnEntityOnlyToPlayer(player, player, "UI_Menu_RoundSummary_Results")
+		// }
 		
-		wait 7
+		// wait 7
 	
 		// Set voting to be allowed
 		FS_PROPHUNT.votingtime = true
@@ -1060,6 +1063,7 @@ void function PROPHUNT_GameLoop()
 			if( !IsValid( player ) )
 				continue
 			
+			Remote_CallFunction_NonReplay(player, "ServerCallback_FSDM_CoolCamera")
 			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_UpdateVotingMaps", FS_PROPHUNT.mapIds[0], FS_PROPHUNT.mapIds[1], FS_PROPHUNT.mapIds[2], FS_PROPHUNT.mapIds[3])
 			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.VoteScreen, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
 		}

@@ -421,7 +421,7 @@ void function ServerCallback_FSDM_SetScreen(int screen, int team, int mapid, int
     switch(screen)
     {
         case eFSDMScreen.ScoreboardUI: //Sets the screen to the winners screen
-			DestroyChampionUI()
+			//DestroyChampionUI()
             RunUIScript("Set_FSDM_ScoreboardScreen")
             break
 
@@ -430,6 +430,7 @@ void function ServerCallback_FSDM_SetScreen(int screen, int team, int mapid, int
             break
 
         case eFSDMScreen.VoteScreen: //Sets the screen to the vote screen
+			DestroyChampionUI()
             EmitSoundOnEntity( GetLocalClientPlayer(), "UI_PostGame_CoinMove" )
             thread UpdateUIVoteTimer()
             RunUIScript("Set_FSDM_VotingScreen")
