@@ -11,8 +11,8 @@ global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 3
 global const int PROPHUNT_FLASH_BANG_RADIUS = 300
 global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 3
-global const int PROPHUNT_WHISTLE_RADIUS = 800
-global const int PROPHUNT_WHISTLE_TIMER = 35
+global const int PROPHUNT_WHISTLE_RADIUS = 1500
+global const int PROPHUNT_WHISTLE_TIMER = 30
 global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 15
 
 global const array<asset> prophuntAssetsWE =
