@@ -65,6 +65,10 @@ void function _GamemodeProphunt_Init()
 	//AddClientCommandCallback("Attackers_ForceChangeProp", ClientCommand_ForceChangeProp_Attackers)
 	
 	PrecacheCustomMapsProps()
+	
+	foreach(prop in prophuntAssetsWE)
+		PrecacheModel(prop)
+	
 	PrecacheParticleSystem($"P_impact_exp_xo_shield_med_CP")
 	PrecacheParticleSystem($"P_plasma_exp_SM")
 	PrecacheModel($"mdl/fx/ar_edge_sphere_512.rmdl")
@@ -502,6 +506,11 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	else
 	{
 		int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+		while(modelindex == player.p.PROPHUNT_LastModelIndex) //remove me
+		{
+			modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+			WaitFrame()
+		}
 		player.p.PROPHUNT_LastModelIndex = modelindex
 		selectedModel = prophuntAssetsWE[modelindex]
 		player.p.PROPHUNT_LastModel = selectedModel
@@ -1773,7 +1782,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			{
 				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)						
 
-				StatusEffect_AddTimed( sPlayer, eStatusEffect.turn_slow, EMP_SEVERITY_SLOWTURN, 1.0, 0.5 )
+				StatusEffect_AddTimed( sPlayer, eStatusEffect.turn_slow, 0.35, 1.0, 0.5 )
 				//StatusEffect_AddTimed( sPlayer, eStatusEffect.move_slow, EMP_SEVERITY_SLOWMOVE, 1.0, 0.5 )
 			}
 		}

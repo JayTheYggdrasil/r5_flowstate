@@ -34,6 +34,22 @@ global const array<asset> prophuntAssetsWE =
 	$"mdl/IMC_base/generator_IMC_01.rmdl",
 	$"mdl/garbage/trash_can_metal_02_b.rmdl",
 	$"mdl/garbage/trash_bin_single_wtrash.rmdl"
+	//nuevos
+	$"mdl/containers/slumcity_oxygen_bag_large_01_b.rmdl",
+	$"mdl/containers/slumcity_oxygen_tank_blue.rmdl",
+	$"mdl/containers/barrel.rmdl",
+	$"mdl/containers/container_medium_tanks_blue.rmdl",
+	$"mdl/containers/underbelly_cargo_container_128_red_02.rmdl",
+	$"mdl/containers/underbelly_cargo_container_128_blue_02.rmdl",
+	$"mdl/containers/pelican_case_large.rmdl",
+	$"mdl/containers/box_med_cardboard_03.rmdl",
+	$"mdl/furniture/couch_suede_brown_01.rmdl",
+	$"mdl/colony/farmland_crate_md_80x64x72_01.rmdl",
+	$"mdl/colony/farmland_crate_md_80x64x72_03.rmdl",
+	$"mdl/industrial/vending_machine_02.rmdl",
+	$"mdl/angel_city/jersey_barrier_large_02.rmdl",
+	$"mdl/angel_city/vending_machine.rmdl"
+	
 ]
 
 void function GamemodeProphuntShared_Init()
