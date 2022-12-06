@@ -1772,8 +1772,12 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			if ( playerDist <= PROPHUNT_FLASH_BANG_RADIUS )
 			{
 				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)						
+
+				StatusEffect_AddTimed( sPlayer, eStatusEffect.turn_slow, EMP_SEVERITY_SLOWTURN, 1.0, 0.5 )
+				//StatusEffect_AddTimed( sPlayer, eStatusEffect.move_slow, EMP_SEVERITY_SLOWMOVE, 1.0, 0.5 )
 			}
 		}
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_DoScreenFlashFX", player, player)
 		EmitSoundOnEntityExceptToPlayer(player, player, "explo_proximityemp_impact_3p")
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)

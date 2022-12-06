@@ -7,13 +7,13 @@
 global function GamemodeProphuntShared_Init
 global function RegisterLocationPROPHUNT
 
-global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 3
+global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_RADIUS = 300
 global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
-global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 3
-global const int PROPHUNT_WHISTLE_RADIUS = 1500
+global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 4
+global const int PROPHUNT_WHISTLE_RADIUS = 2000
 global const int PROPHUNT_WHISTLE_TIMER = 30
-global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 15
+global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 30 //hiding props time too
 
 global const array<asset> prophuntAssetsWE =
 [
@@ -108,7 +108,32 @@ void function GamemodeProphuntShared_Init()
 				<0, 0, 2000>,$"rui/flowstatelocations/trainyard"
 			)
 		)
-
+		
+	RegisterLocationPROPHUNT(
+                NewLocationSettings(
+                    "Dome",
+                    [
+                        NewLocPair(<19351, -41456, -2192>, <0, 96, 0>),
+                        NewLocPair(<22925, -37060, -2169>, <0, -156, 0>),
+                        NewLocPair(<19772, -34549, -2232>, <0, -137, 0>),
+						NewLocPair(<17010, -37125, -2129>, <0, 81, 0>),
+						NewLocPair(<15223, -40222, -1998>, <0, 86, 0>)
+                    ],
+                    <0, 0, 2000>,$"rui/flowstatelocations/dome"
+                )
+            )
+			
+	RegisterLocationPROPHUNT(
+                NewLocationSettings(
+                    "Little Town",
+                    [
+                        NewLocPair(<22857, 3449, -4050>, <0, -157, 0>),
+                        NewLocPair(<19559, 232, -4035>, <0, 33, 0>),
+                        NewLocPair(<19400, 4384, -4027>, <0, -35, 0>)
+                    ],
+                    <0, 0, 2000>,$"rui/flowstatelocations/littletown"
+                )
+            )
 }
 
 void function RegisterLocationPROPHUNT(LocationSettings locationSettings)

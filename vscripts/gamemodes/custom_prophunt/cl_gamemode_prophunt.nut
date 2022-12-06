@@ -291,6 +291,8 @@ void function PROPHUNT_DoScreenFlashFX(entity player, entity propAttacker)
 	EffectSetIsWithCockpit( fxHandle2, true )
 	thread ShellShock_ScreenFXThink(player, fxHandle, fxHandle2)
 	
+	if(player == propAttacker) return
+	
 	Obituary_Print_Localized( "Enemy prop " + propAttacker.GetPlayerName() + " used flashbang!", GetChatTitleColorForPlayer( player ), BURN_COLOR )
 }
 
