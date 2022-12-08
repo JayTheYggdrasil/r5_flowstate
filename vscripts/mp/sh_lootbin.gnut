@@ -266,12 +266,11 @@ void function InitLootBin( entity lootbin )
 		DebugDrawLine( lootbin.GetOrigin(), lootbin.GetOrigin() + <0, 0, 1000>, 255, 255, 255, true, 100.0 )
 	}
 
-	if(CoinFlip() || GameRules_GetGameMode() == "custom_prophunt")
+	if(CoinFlip())
 	{
 		lootbin.SetScriptName("smartbin")
 		lootbin.SetSkin(2)
-		if(GameRules_GetGameMode() != "custom_prophunt")
-			AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( "data_knife_vault", 4 ) )
+		AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( "data_knife_vault", 4 ) )
 		return
 	}
 	
