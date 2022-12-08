@@ -37,8 +37,8 @@ WeaponData
 			"melee_damage"									"0"
 			"melee_damage_heavyarmor"						"0"
 			"melee_lunge_no_target_range"					"0"
-			"melee_lunge_target_angle"						"5"
-			"melee_lunge_target_range"						"350"
+			"melee_lunge_target_angle"						"20"
+			"melee_lunge_target_range"						"1000"
 			"melee_range"									"40"
 			
 			"melee_lunge_time"        "*0.5"

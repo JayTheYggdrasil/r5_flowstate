@@ -332,6 +332,11 @@ WeaponData
         survival_finite_ordnance
         {
         }
+
+		prophunt
+		{
+			"red_crosshair_range" 							"1"
+		}
 	}
 
 

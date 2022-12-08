@@ -844,12 +844,19 @@ void function PROPHUNT_GameLoop()
 		if(pri != "")
 		{
 			player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_0 )
-			player.GiveWeapon( pri, WEAPON_INVENTORY_SLOT_PRIMARY_0, [] )
+			entity weapon = player.GiveWeapon( pri, WEAPON_INVENTORY_SLOT_PRIMARY_0, [] )
+			array<string> mods = weapon.GetMods()
+			mods.append( "prophunt" )
+			try{weapon.SetMods( mods )} catch(e42069){printt("failed to put prophunt mod.")}
+			
 		}
 		if(sec != "")
 		{
 			player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_1 )
-			player.GiveWeapon( sec, WEAPON_INVENTORY_SLOT_PRIMARY_1, [] )
+			entity weapon = player.GiveWeapon( sec, WEAPON_INVENTORY_SLOT_PRIMARY_1, [] )
+			array<string> mods = weapon.GetMods()
+			mods.append( "prophunt" )
+			try{weapon.SetMods( mods )} catch(e42069){printt("failed to put prophunt mod.")}
 		}
 		
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
