@@ -326,6 +326,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 				RemoveButtonPressedPlayerInputCallback( victim, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
 				//RemoveButtonPressedPlayerInputCallback( victim, IN_RELOAD, ClientCommand_MatchSlope )
 				Remote_CallFunction_NonReplay(victim, "Minimap_DisableDraw_Internal")
+				Remote_CallFunction_NonReplay(victim, "PROPHUNT_RemoveControlsUI")
 			}
 
 			// Atacante
@@ -1022,6 +1023,7 @@ void function PROPHUNT_GameLoop()
 			continue
 		
 		//reset props abilities
+		player.p.PROPHUNT_AreAnglesLocked = false
 		player.p.PROPHUNT_ChangePropUsageLimit = 0
 		player.p.PROPHUNT_DecoysPropUsageLimit = 0
 		player.p.PROPHUNT_FlashbangPropUsageLimit = 0

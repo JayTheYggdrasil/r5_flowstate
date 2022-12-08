@@ -55,6 +55,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	player.p.PROPHUNT_ChangePropUsageLimit = 0
 	player.p.PROPHUNT_DecoysPropUsageLimit = 0
 	player.p.PROPHUNT_FlashbangPropUsageLimit = 0
+	player.p.PROPHUNT_AreAnglesLocked = false
 	
 	// var ruitest = CreateFullscreenRui( $"ui/generic_timer.rpak" )
 	// float endtime = Time() + 5
@@ -356,7 +357,12 @@ void function ReloadMenuRUI()
 		Hud_SetVisible(HudElement( "ProphuntHint4" ), true)	
 		
 		Hud_SetText( HudElement( "ProphuntHint0"), "%attack% Change Prop x" + ( PROPHUNT_CHANGE_PROP_USAGE_LIMIT - player.p.PROPHUNT_ChangePropUsageLimit ).tostring() )
-		Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Lock Angles")
+		
+		if(player.p.PROPHUNT_AreAnglesLocked)
+			Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Unlock Angles")
+		else
+			Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Lock Angles")
+		
 		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
 		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
