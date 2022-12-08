@@ -854,7 +854,6 @@ void function PROPHUNT_GameLoop()
 		
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
-		//if a player punch a prop, he/she will crash. This is a workaround. Colombia
 		player.GiveWeapon( "mp_weapon_data_knife_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
 		player.GiveOffhandWeapon( "melee_data_knife", OFFHAND_MELEE, [] )
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
@@ -1623,6 +1622,54 @@ bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> arg
 
     return true
 }
+void function ClientCommand_Seekers_ForceChangeProp(entity seekerPlayer)
+{
+	if(!IsValid(seekerPlayer) || IsValid(seekerPlayer) && seekerPlayer.GetTeam() != TEAM_IMC) return
+
+	foreach(player in GetPlayerArray())
+	{
+		if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) continue
+		
+		if(player.p.PROPHUNT_AreAnglesLocked)
+		{
+			// int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
+			// player.p.PROPHUNT_ChangePropUsageLimit = newscore
+			// if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
+			// {
+				ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
+				asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
+				player.SetPlayerSettingsWithMods( characterSetFile, [] )
+				SetPlayerSettings(player, PROPHUNT_SETTINGS)
+				player.SetBodyModelOverride( $"" )
+				player.SetArmsModelOverride( $"" )
+				player.kv.solid = 6
+				player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+				player.AllowMantle()
+				player.Hide()
+				//player.p.PROPHUNT_AreAnglesLocked = false
+				thread PROPHUNT_GiveAndManageProp(player, false, true)
+				// Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
+				// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
+			// } else 
+			// {
+				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
+			// }		
+		} else if(!player.p.PROPHUNT_AreAnglesLocked)
+		{
+			// int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
+			// player.p.PROPHUNT_ChangePropUsageLimit = newscore
+			// if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
+			// {
+				thread PROPHUNT_GiveAndManageProp(player)
+				// Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
+				// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
+			// } else 
+			// {
+				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
+			// }		
+		}
+	}
+}
 
 void function ClientCommand_ChangeProp(entity player)
 {
@@ -1644,7 +1691,7 @@ void function ClientCommand_ChangeProp(entity player)
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			player.AllowMantle()
 			player.Hide()
-			player.p.PROPHUNT_AreAnglesLocked = false
+			//player.p.PROPHUNT_AreAnglesLocked = false
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
@@ -1831,16 +1878,18 @@ bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string >
 {	
 	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
 	
-	foreach(sPlayer in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
-	{
-		if(!IsValid(sPlayer)) continue
+	// foreach(sPlayer in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
+	// {
+		// if(!IsValid(sPlayer)) continue
 
-		float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
-		if ( playerDist <= PROPHUNT_WHISTLE_RADIUS )
-		{
-			EmitSoundOnEntityOnlyToPlayer( player, sPlayer, "pilot_phaseembark_end_3p" )			
-		}
-	}
-	EmitSoundOnEntityOnlyToPlayer( player, player, "pilot_phaseembark_end_3p" )	
+		// float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
+		// if ( playerDist <= PROPHUNT_WHISTLE_RADIUS )
+		// {
+			// EmitSoundOnEntityOnlyToPlayer( player, sPlayer, "Wattson_Tactical_M_3p" )			
+		// }
+	// }
+	// EmitSoundOnEntityOnlyToPlayer( player, player, "Wattson_Tactical_M_1p" )
+	
+	EmitSoundOnEntity( player, "explo_mgl_impact_3p" )
 	return true
 }
