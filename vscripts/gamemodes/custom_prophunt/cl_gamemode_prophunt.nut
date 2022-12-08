@@ -104,6 +104,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
 		
 		player.p.isAttackerProphunt = false
+		
 	} else
 	{
 		player.p.isAttackerProphunt = true
@@ -500,10 +501,6 @@ void function PROPHUNT_CustomHint(int index)
 		break		
 		case 10:
 		QuickHint("", "You're a prop. Teleporting in 5 seconds.", true, 4)
-		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
-		break
-		case 11:
-		Obituary_Print_Localized( "An enemy changed your prop!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break		
 	}
