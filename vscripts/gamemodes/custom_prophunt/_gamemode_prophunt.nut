@@ -9,7 +9,6 @@ global function _RegisterLocationPROPHUNT
 global function _OnPlayerConnectedPROPHUNT
 global function _OnPlayerDiedPROPHUNT
 global function PROPHUNT_StartGameThread
-global function helpMessagePROPHUNT
 global function returnPropBool
 
 struct{
@@ -666,9 +665,9 @@ void function PROPHUNT_Lobby()
 		if(!IsValid(player)) continue
 		
 		player.p.PROPHUNT_isSpectatorDiedMidRound = false
+		MakeInvincible( player )
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
-		//Message(player, "FS PROPHUNT", "                Made by @CafeFPS. Game is starting.\n" + helpMessagePROPHUNT(), 10)
 	}
 	wait 2
 
@@ -746,6 +745,7 @@ void function PROPHUNT_GameLoop()
 		player.p.playerDamageDealt = 0.0
 		if(player.GetTeam() == TEAM_MILITIA)
 		{
+			ClearInvincible( player )
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", false)
 
 			AddButtonPressedPlayerInputCallback( player, IN_ATTACK, ClientCommand_ChangeProp )
@@ -927,7 +927,7 @@ void function PROPHUNT_GameLoop()
 			}
 			WaitFrame()	
 		}
-	FS_PROPHUNT.InProgress = false
+	
 	array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)	
 	if(MILITIAplayersAlive.len() > 0){
 		TeamWon = TEAM_MILITIA
@@ -947,7 +947,7 @@ void function PROPHUNT_GameLoop()
 			bool clearOnClient = false
 			
 			int i = 0
-			foreach( Winnerplayer in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA) )
+			foreach( Winnerplayer in MILITIAplayersAlive )
 			{
 				if(i == 0)
 					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", true, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
@@ -958,6 +958,15 @@ void function PROPHUNT_GameLoop()
 			
 			player.SetThirdPersonShoulderModeOn()
 			HolsterAndDisableWeapons(player)
+			player.FreezeControlsOnServer()
+			MakeInvincible( player )
+		}
+		
+		foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
+		{
+			if(!IsValid(player)) continue
+			
+			Remote_CallFunction_NonReplay(player, "CreateAndMoveCameraToWinnerProp", MILITIAplayersAlive[0])
 		}
 	} else {
 		TeamWon = TEAM_IMC
@@ -968,7 +977,7 @@ void function PROPHUNT_GameLoop()
 			
 			Message(player, "SEEKERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()	
-			HolsterAndDisableWeapons(player)		
+			HolsterAndDisableWeapons(player)
 		}	
 	}
 	
@@ -976,12 +985,16 @@ void function PROPHUNT_GameLoop()
 	{
 		if(!IsValid(player)) continue
 		
+		AddCinematicFlag( player, CE_FLAG_HIDE_MAIN_HUD )
+		//AddCinematicFlag( player, CE_FLAG_EXECUTION )
+		
 		Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
 		Highlight_ClearFriendlyHighlight( player )
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
 	}
 	
 	SendScoreboardToClient()
+	
 	wait 5
 	foreach(player in GetPlayerArray())
 	{
@@ -997,8 +1010,10 @@ void function PROPHUNT_GameLoop()
 			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Deactivate")
 		}
 	}
+	
 	SetGameState(eGameState.MapVoting)
 	UpdatePlayerCounts()
+	FS_PROPHUNT.InProgress = false
 	FS_PROPHUNT.ringBoundary.Destroy()
 	SetDeathFieldParams( <0,0,0>, 100000, 0, 90000, 99999 )
 	//printt("Flowstate DEBUG - Prophunt round finished Swapping teams.")
@@ -1571,7 +1586,7 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 			{
 			   SetTdmStateToNextRound()
 			   FS_PROPHUNT.mapIndexChanged = false
-			   FS_PROPHUNT.InProgress = false
+			   // FS_PROPHUNT.InProgress = false
 			}
 			
 			if(args.len() > 1){
@@ -1579,7 +1594,7 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 				if (now == "now")
 				{
 				   SetTdmStateToNextRound()
-				   FS_PROPHUNT.InProgress = false
+				   // FS_PROPHUNT.InProgress = false
 				}
 			}
 		}
@@ -1589,12 +1604,6 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 	}
 	
 	return true
-}
-
-string function helpMessagePROPHUNT()
-//by michae\l/#1125
-{
-	return " Use your ULTIMATE to CHANGE PROP up to 3 times. \n Use your ULTIMATE to LOCK ANGLES as attackers arrive. "
 }
 
 bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> args)

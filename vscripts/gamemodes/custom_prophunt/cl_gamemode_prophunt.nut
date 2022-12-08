@@ -14,6 +14,7 @@ global function PROPHUNT_AddUsageToHint
 global function PROPHUNT_StartMiscTimer
 global function PROPHUNT_QuickText
 global function CreateAndMoveCameraToWinnerProp
+global function GetWinnerPropCameraEntities
 
 struct {
     LocationSettings &selectedLocation
@@ -600,26 +601,34 @@ void function ResetAbilitiesCounterOnClient()
 }
 void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 {
-	entity localplayer = GetLocalClientPlayer()
-	
-    winnerpropcam.m = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", localplayer.GetOrigin(), localplayer.CameraAngles() )
-    winnerpropcam.e = CreateClientSidePointCamera( localplayer.GetOrigin(), localplayer.CameraAngles(), 90 )
-    winnerpropcam.e.SetParent( winnerpropcam.m, "", false )
-    localplayer.SetMenuCameraEntityWithAudio( winnerpropcam.e )
-    winnerpropcam.e.SetTargetFOV( 90, true, EASING_CUBIC_INOUT, 0.50 )
+	thread function() : (winnerProp)
+	{
+		entity localplayer = GetLocalClientPlayer()
+		
+		if(!IsValid(winnerProp) || localplayer != GetLocalViewPlayer() ) return 
+		
+		
+		winnerpropcam.m = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", localplayer.GetOrigin(), localplayer.CameraAngles() )
+		winnerpropcam.e = CreateClientSidePointCamera( localplayer.GetOrigin(), localplayer.CameraAngles(), 90 )
+		winnerpropcam.e.SetParent( winnerpropcam.m, "", false )
+		localplayer.SetMenuCameraEntityWithAudio( winnerpropcam.e )
+		winnerpropcam.e.SetTargetFOV( 90, true, EASING_CUBIC_INOUT, 0.50 )
 
-	//last movement
-    vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.GetAngles() ) * 200
-	finalorg.z+= 100
-	vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
+		//last movement
+		vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.GetAngles() ) * 150
+		finalorg.z+= 100
+		vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
 
-    winnerpropcam.m.NonPhysicsMoveTo( finalorg, 3, 0, 0.3 )
-    winnerpropcam.m.NonPhysicsRotateTo( finalang, 2, 0, 0.3 )
-	
-	wait 6
-	
-	localplayer.ClearMenuCameraEntity()
-	//HealthHUD_Update( player )
+		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 3, 0, 0.3 )
+		winnerpropcam.m.NonPhysicsRotateTo( finalang, 3, 0, 0.3 )
+	}()
+}
 
-    try { winnerpropcam.e.ClearParent(); winnerpropcam.e.Destroy(); winnerpropcam.m.Destroy() } catch (exceptio2n){ }
+array<entity> function GetWinnerPropCameraEntities()
+{
+	array<entity> cameras
+	cameras.append(winnerpropcam.e)
+	cameras.append(winnerpropcam.m)
+	
+	return cameras
 }

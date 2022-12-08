@@ -599,6 +599,8 @@ void function Show_FSDM_VictorySequence(int skinindex)
 {
 	entity player = GetLocalClientPlayer()
 
+	try { GetWinnerPropCameraEntities()[0].ClearParent(); GetWinnerPropCameraEntities()[0].Destroy(); GetWinnerPropCameraEntities()[1].Destroy() } catch (exceptio2n){ }
+
     //Todo: each maps victory pos and ang
     file.victorySequencePosition = file.selectedLocation.victorypos.origin - < 0, 0, 52>
 	file.victorySequenceAngles = file.selectedLocation.victorypos.angles

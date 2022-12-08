@@ -3407,10 +3407,7 @@ bool function ClientCommand_Help(entity player, array<string> args)
 		{
 			Message(player, "WELCOME TO FLOWSTATE: GUNGAME", helpMessage(), 10)
 
-		} else if (FlowState_PROPHUNT())
-		{
-			Message(player, "WELCOME TO FLOWSTATE: PROPHUNT", helpMessagePROPHUNT(), 10)
-		} else if (FlowState_SURF())
+		}else if (FlowState_SURF())
 		{
 			Message(player, "Apex SURF", "", 5)
 		} else{
