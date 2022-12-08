@@ -13,6 +13,7 @@ global function PROPHUNT_CustomHint
 global function PROPHUNT_AddUsageToHint
 global function PROPHUNT_StartMiscTimer
 global function PROPHUNT_QuickText
+global function CreateAndMoveCameraToWinnerProp
 
 struct {
     LocationSettings &selectedLocation
@@ -25,6 +26,11 @@ struct {
 	array<var> inputHintRuis
 	var activeQuickHint = null
 } file
+
+struct {
+    entity e
+    entity m
+} winnerpropcam
 
 void function ClGamemodeProphunt_Init()
 {
@@ -576,6 +582,7 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 		
 	if(!wasResolutionChanged)
 	{
+		player.p.PROPHUNT_AreAnglesLocked = false
 		player.p.PROPHUNT_ChangePropUsageLimit = 0
 		player.p.PROPHUNT_DecoysPropUsageLimit = 0
 		player.p.PROPHUNT_FlashbangPropUsageLimit = 0
@@ -586,7 +593,33 @@ void function ResetAbilitiesCounterOnClient()
 {
 	if(!IsValid(GetLocalClientPlayer())) return
 	
+	GetLocalClientPlayer().p.PROPHUNT_AreAnglesLocked = false
 	GetLocalClientPlayer().p.PROPHUNT_ChangePropUsageLimit = 0
 	GetLocalClientPlayer().p.PROPHUNT_DecoysPropUsageLimit = 0
 	GetLocalClientPlayer().p.PROPHUNT_FlashbangPropUsageLimit = 0
+}
+void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
+{
+	entity localplayer = GetLocalClientPlayer()
+	
+    winnerpropcam.m = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", localplayer.GetOrigin(), localplayer.CameraAngles() )
+    winnerpropcam.e = CreateClientSidePointCamera( localplayer.GetOrigin(), localplayer.CameraAngles(), 90 )
+    winnerpropcam.e.SetParent( winnerpropcam.m, "", false )
+    localplayer.SetMenuCameraEntityWithAudio( winnerpropcam.e )
+    winnerpropcam.e.SetTargetFOV( 90, true, EASING_CUBIC_INOUT, 0.50 )
+
+	//last movement
+    vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.GetAngles() ) * 200
+	finalorg.z+= 100
+	vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
+
+    winnerpropcam.m.NonPhysicsMoveTo( finalorg, 2.5, 0, 0.3 )
+    winnerpropcam.m.NonPhysicsRotateTo( finalang, 1.5, 0, 0.3 )
+	
+	wait 5
+	
+	localplayer.ClearMenuCameraEntity()
+	//HealthHUD_Update( player )
+
+    try { winnerpropcam.e.ClearParent(); winnerpropcam.e.Destroy(); winnerpropcam.m.Destroy() } catch (exceptio2n){ }
 }
