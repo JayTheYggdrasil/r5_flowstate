@@ -613,10 +613,10 @@ void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 	finalorg.z+= 100
 	vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
 
-    winnerpropcam.m.NonPhysicsMoveTo( finalorg, 2.5, 0, 0.3 )
-    winnerpropcam.m.NonPhysicsRotateTo( finalang, 1.5, 0, 0.3 )
+    winnerpropcam.m.NonPhysicsMoveTo( finalorg, 3, 0, 0.3 )
+    winnerpropcam.m.NonPhysicsRotateTo( finalang, 2, 0, 0.3 )
 	
-	wait 5
+	wait 6
 	
 	localplayer.ClearMenuCameraEntity()
 	//HealthHUD_Update( player )
