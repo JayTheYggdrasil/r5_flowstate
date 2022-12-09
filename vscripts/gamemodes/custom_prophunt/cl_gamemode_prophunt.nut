@@ -638,8 +638,8 @@ void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 
 		vector finalang = VectorToAngles( winnerProp.GetWorldSpaceCenter() - finalorg )
 
-		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 2.5, 0, 0.3 )
-		winnerpropcam.m.NonPhysicsRotateTo( finalang, 2.5, 0, 0.3 )
+		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 2, 0, 0.3 )
+		winnerpropcam.m.NonPhysicsRotateTo( finalang, 2, 0, 0.3 )
 	}()
 }
 

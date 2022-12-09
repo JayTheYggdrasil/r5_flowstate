@@ -976,7 +976,7 @@ void function PROPHUNT_GameLoop()
 			if(!IsValid(player)) continue
 			
 			Remote_CallFunction_NonReplay(player, "CreateAndMoveCameraToWinnerProp", MILITIAplayersAlive[0])
-			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 2, 5)
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 2, 4)
 		}
 	} else {
 		TeamWon = TEAM_IMC
