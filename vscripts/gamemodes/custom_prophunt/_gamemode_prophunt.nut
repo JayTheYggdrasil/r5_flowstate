@@ -151,6 +151,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 	player.SetHealth( 100 )
 	player.kv.solid = 6
 	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+	player.kv.fadedist = 999999
 	player.AllowMantle()
 			
 	switch(GetGameState())
@@ -393,6 +394,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 	player.SetHealth( 100 )
 	player.kv.solid = 6
 	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+	player.kv.fadedist = 999999
 	player.AllowMantle()
 	TakeAllWeapons(player)
 }
@@ -524,6 +526,7 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 		player.p.PROPHUNT_LastModel = selectedModel
 		player.kv.solid = SOLID_BBOX
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.SetDamageNotifications( true )
 		player.SetTakeDamageType( DAMAGE_YES )
@@ -537,6 +540,7 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	player.p.PROPHUNT_LastPropEntity = prop
 	prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 	prop.kv.solid = 6
+	prop.kv.fadedist = 999999
 	prop.SetDamageNotifications( true )
 	prop.SetTakeDamageType( DAMAGE_YES )
 	prop.AllowMantle()
@@ -766,12 +770,14 @@ void function PROPHUNT_GameLoop()
 			player.p.PROPHUNT_LastModel = selectedModel
 			player.kv.solid = 6
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
 			entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
 			player.p.PROPHUNT_LastPropEntity = prop
 			prop.kv.solid = 6
 			prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			prop.kv.fadedist = 999999
 			prop.AllowMantle()
 			prop.SetDamageNotifications( true )
 			prop.SetTakeDamageType( DAMAGE_YES )
@@ -835,6 +841,7 @@ void function PROPHUNT_GameLoop()
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.SetThirdPersonShoulderModeOff()
 		string pri = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon1", "~~none~~")
@@ -1660,6 +1667,7 @@ void function ClientCommand_Seekers_ForceChangeProp(entity seekerPlayer)
 				player.SetArmsModelOverride( $"" )
 				player.kv.solid = 6
 				player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+				player.kv.fadedist = 999999
 				player.AllowMantle()
 				player.Hide()
 				//player.p.PROPHUNT_AreAnglesLocked = false
@@ -1705,6 +1713,7 @@ void function ClientCommand_ChangeProp(entity player)
 			player.SetArmsModelOverride( $"" )
 			player.kv.solid = 6
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
 			//player.p.PROPHUNT_AreAnglesLocked = false
@@ -1773,6 +1782,7 @@ void function ClientCommand_LockAngles(entity player)
 		player.SetArmsModelOverride( player.p.PROPHUNT_LastModel )
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.SetDamageNotifications( true )
 		player.SetTakeDamageType( DAMAGE_YES )
@@ -1791,6 +1801,7 @@ void function ClientCommand_LockAngles(entity player)
 		player.SetArmsModelOverride( $"" )
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.Hide()
 		

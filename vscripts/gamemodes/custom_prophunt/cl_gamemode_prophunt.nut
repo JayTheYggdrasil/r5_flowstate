@@ -626,8 +626,8 @@ void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 		winnerpropcam.e.SetTargetFOV( 100, true, EASING_CUBIC_INOUT, 0.50 )
 
 		//last movement
-		vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.EyeAngles() ) * 150
-		finalorg.z+= 80
+		vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.EyeAngles() ) * 130
+		finalorg.z+= 100
 		vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
 
 		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 3, 0, 0.3 )

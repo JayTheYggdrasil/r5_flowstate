@@ -1090,19 +1090,6 @@ void function Sh_CustomTDM_Init()
 
 		Shared_RegisterLocation(
                 NewLocationSettings(
-                    "Overlook",
-                    [
-                        NewLocPair(<32774, 6031, -3239>, <0, 117, 0>),
-                        NewLocPair(<28381, 8963, -3224>, <0, 48, 0>),
-                        NewLocPair(<26327, 11857, -2477>, <0, -43, 0>),
-						NewLocPair(<27303, 14528, -3047>, <0, -42, 0>)
-                    ],
-                    <0, 0, 2000>,$"rui/flowstatelocations/overlook"
-                )
-            )
-
-		Shared_RegisterLocation(
-                NewLocationSettings(
                     "Refinery",
                     [
                         NewLocPair(<22970, 27159, -4612>, <0, 135, 0>),

@@ -12,8 +12,8 @@ global const int PROPHUNT_FLASH_BANG_RADIUS = 300
 global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 4
 global const int PROPHUNT_WHISTLE_RADIUS = 2000
-global const int PROPHUNT_WHISTLE_TIMER = 30
-global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 30 //hiding props time too
+global const int PROPHUNT_WHISTLE_TIMER = 15
+global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 5 //hiding props time too
 
 global const array<asset> prophuntAssetsWE =
 [
@@ -127,15 +127,27 @@ void function GamemodeProphuntShared_Init()
 		
 	RegisterLocationPROPHUNT(
                 NewLocationSettings(
-                    "Dome",
+                    "Overlook",
                     [
-                        NewLocPair(<19351, -41456, -2192>, <0, 96, 0>),
-                        NewLocPair(<22925, -37060, -2169>, <0, -156, 0>),
-                        NewLocPair(<19772, -34549, -2232>, <0, -137, 0>),
-						NewLocPair(<17010, -37125, -2129>, <0, 81, 0>),
-						NewLocPair(<15223, -40222, -1998>, <0, 86, 0>)
+                        NewLocPair(<32774, 6031, -3239>, <0, 117, 0>),
+                        NewLocPair(<28381, 8963, -3224>, <0, 48, 0>),
+                        NewLocPair(<26327, 11857, -2477>, <0, -43, 0>),
+						NewLocPair(<27303, 14528, -3047>, <0, -42, 0>)
                     ],
-                    <0, 0, 2000>,$"rui/flowstatelocations/dome"
+                    <0, 0, 2000>,$"rui/flowstatelocations/overlook"
+                )
+            )
+	
+	RegisterLocationPROPHUNT(
+                NewLocationSettings(
+                    "TTV Building 2",
+                    [
+                        NewLocPair(<1313, 4450, -2990>, <0, 50, 0>),
+                        NewLocPair(<2300, 6571, -4490>, <0, -96, 0>),
+						NewLocPair(<2617, 4668, -4250>, <0, 85, 0>),
+                        NewLocPair(<1200, 4471, -4150>, <0, 50, 0>)
+                    ],
+                    <0, 0, 2000>,$"rui/flowstatelocations/ttvbuilding2"
                 )
             )
 			
