@@ -626,10 +626,13 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 		foreach( int i, SquadSummaryPlayerData data in file.winnerSquadSummaryData.playerData )
 		{
-			if ( file.teamwon != 3 && i >= maxPlayersToShow )
+			if ( i >= maxPlayersToShow && GameRules_GetGameMode() != "custom_prophunt")
+				break
+			
+			if ( file.teamwon != 3 && i >= maxPlayersToShow && GameRules_GetGameMode() == "custom_prophunt")
 				break
 
-			if ( file.teamwon == 3 && i >= maxPropsToShow)
+			if ( file.teamwon == 3 && i >= maxPropsToShow && GameRules_GetGameMode() == "custom_prophunt")
 				break
 			
 			string playerName = ""
