@@ -50,6 +50,7 @@ void function ClGamemodeProphunt_Init()
 	RegisterSignal("PROPHUNT_ShutdownWhistleTimer")
 	RegisterSignal("PROPHUNT_ShutdownPropsHidingTimer")
 	PrecacheParticleSystem($"P_shell_shock_FP")
+	PrecacheParticleSystem($"P_screen_smoke_bangalore_FP")
 	AddClientCallback_OnResolutionChanged( ReloadMenuRUI )
 	//AddCallback_EntitiesDidLoad( NotifyRingTimer )
 }
@@ -292,23 +293,29 @@ void function PROPHUNT_RemoveControlsUI()
 void function PROPHUNT_DoScreenFlashFX(entity player, entity propAttacker)
 {
 	entity viewPlayer = GetLocalClientPlayer()
+	
 	int fxHandle = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
 	EffectSetIsWithCockpit( fxHandle, true )
+	
 	int fxHandle2 = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
 	EffectSetIsWithCockpit( fxHandle2, true )
-	thread ShellShock_ScreenFXThink(player, fxHandle, fxHandle2)
+
+	int smokes = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_screen_smoke_bangalore_FP"), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
+	EffectSetIsWithCockpit( smokes, true )
+
+	thread ShellShock_ScreenFXThink(player, fxHandle, fxHandle2, smokes)
 	
 	if(player == propAttacker) return
 	
 	Obituary_Print_Localized( "Enemy prop " + propAttacker.GetPlayerName() + " used flashbang!", GetChatTitleColorForPlayer( player ), BURN_COLOR )
 }
 
-void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandle2 )
+void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandle2, int smokes)
 {
 	player.EndSignal( "OnDeath" )
 
 	OnThreadEnd(
-		function() : ( fxHandle, fxHandle2 )
+		function() : ( fxHandle, fxHandle2, smokes )
 		{
 			if ( !EffectDoesExist( fxHandle ) )
 				return
@@ -319,9 +326,14 @@ void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandl
 				return
 
 			EffectStop( fxHandle2, false, true )
+			
+			if ( !EffectDoesExist( smokes ) )
+				return
+
+			EffectStop( smokes, false, true )
 		}
 	)
-	wait 1
+	wait 3
 }
 
 void function ReloadMenuRUI()

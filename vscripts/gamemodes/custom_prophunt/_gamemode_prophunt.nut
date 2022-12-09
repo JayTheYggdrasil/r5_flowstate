@@ -71,7 +71,7 @@ void function _GamemodeProphunt_Init()
 	PrecacheParticleSystem($"P_impact_exp_xo_shield_med_CP")
 	PrecacheParticleSystem($"P_plasma_exp_SM")
 	PrecacheModel($"mdl/fx/ar_edge_sphere_512.rmdl")
-	
+	PrecacheParticleSystem($"P_smokescreen_FD")
 	thread PROPHUNT_StartGameThread()	
 }
 
@@ -1838,8 +1838,8 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			{
 				Remote_CallFunction_NonReplay( sPlayer, "PROPHUNT_DoScreenFlashFX", sPlayer, player)						
 
-				StatusEffect_AddTimed( sPlayer, eStatusEffect.turn_slow, 0.35, 1.0, 0.5 )
-				//StatusEffect_AddTimed( sPlayer, eStatusEffect.move_slow, EMP_SEVERITY_SLOWMOVE, 1.0, 0.5 )
+				StatusEffect_AddTimed( sPlayer, eStatusEffect.turn_slow, 0.35, 3.0, 0.5 )
+				StatusEffect_AddTimed( sPlayer, eStatusEffect.move_slow, 0.50, 3.0, 0.5 )
 			}
 		}
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_DoScreenFlashFX", player, player)
@@ -1848,6 +1848,9 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
 		entity trailFXHandle = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_plasma_exp_SM" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
 		entity trailFXHandle2 = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_impact_exp_xo_shield_med_CP" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
+		
+		entity smokes = StartParticleEffectInWorld_ReturnEntity( GetParticleSystemIndex( $"P_smokescreen_FD" ), player.GetOrigin(), <0,0,0> )
+		EmitSoundOnEntity( smokes, "bangalore_smoke_grenade_explosion_3p" )
 		
 		entity circle = CreateEntity( "prop_dynamic" )
 		circle.SetValueForModelKey( $"mdl/fx/ar_edge_sphere_512.rmdl" )
@@ -1858,6 +1861,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 		circle.SetParent(player)
 		
 		thread HandleCircleEntity(player, circle)
+		thread HandleSmokesEntity(player, smokes)
 		
 		if(player.p.PROPHUNT_FlashbangPropUsageLimit == PROPHUNT_FLASH_BANG_USAGE_LIMIT && IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
 			player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
@@ -1883,6 +1887,22 @@ void function HandleCircleEntity(entity player, entity circle)
 		WaitFrame()
 }
 
+void function HandleSmokesEntity(entity player, entity smokes)
+{
+	EndSignal(player, "OnDeath")
+	float endTime = Time() + 5
+	
+	OnThreadEnd(
+	function() : ( smokes )
+	{
+		if(IsValid(smokes))
+			smokes.Destroy()
+	})
+	
+	while( Time() <= endTime && IsValid(player) && FS_PROPHUNT.InProgress)
+		WaitFrame()
+}
+
 bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string > args) 
 {	
 	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
@@ -1899,6 +1919,7 @@ bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string >
 	// }
 	// EmitSoundOnEntityOnlyToPlayer( player, player, "Wattson_Tactical_M_1p" )
 	
-	EmitSoundOnEntity( player, "explo_mgl_impact_3p" )
+	//EmitSoundOnEntity( player, "explo_mgl_impact_3p" )
+	EmitSoundAtPosition( TEAM_UNASSIGNED, player.GetOrigin(), "explo_mgl_impact_3p" )
 	return true
 }
