@@ -607,16 +607,15 @@ void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 		
 		if(!IsValid(winnerProp) || localplayer != GetLocalViewPlayer() ) return 
 		
-		
-		winnerpropcam.m = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", localplayer.GetOrigin(), localplayer.CameraAngles() )
-		winnerpropcam.e = CreateClientSidePointCamera( localplayer.GetOrigin(), localplayer.CameraAngles(), 90 )
+		winnerpropcam.m = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", localplayer.EyePosition(), localplayer.CameraAngles() )
+		winnerpropcam.e = CreateClientSidePointCamera( localplayer.GetOrigin(), localplayer.CameraAngles(), 100 )
 		winnerpropcam.e.SetParent( winnerpropcam.m, "", false )
 		localplayer.SetMenuCameraEntityWithAudio( winnerpropcam.e )
-		winnerpropcam.e.SetTargetFOV( 90, true, EASING_CUBIC_INOUT, 0.50 )
+		winnerpropcam.e.SetTargetFOV( 100, true, EASING_CUBIC_INOUT, 0.50 )
 
 		//last movement
-		vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.GetAngles() ) * 150
-		finalorg.z+= 100
+		vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.EyeAngles() ) * 150
+		finalorg.z+= 80
 		vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
 
 		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 3, 0, 0.3 )

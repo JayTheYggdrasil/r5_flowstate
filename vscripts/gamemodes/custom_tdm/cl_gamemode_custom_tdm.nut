@@ -597,6 +597,7 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 //Modifed slightly
 void function Show_FSDM_VictorySequence(int skinindex)
 {
+	DoF_SetFarDepth( 500, 1000 )
 	entity player = GetLocalClientPlayer()
 
 	try { GetWinnerPropCameraEntities()[0].ClearParent(); GetWinnerPropCameraEntities()[0].Destroy(); GetWinnerPropCameraEntities()[1].Destroy() } catch (exceptio2n){ }
@@ -750,7 +751,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 			AnglesToUseCamera = file.victorySequenceAngles
 		
 		VictoryCameraPackage victoryCameraPackage
-		victoryCameraPackage.camera_offset_start = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 100
+		victoryCameraPackage.camera_offset_start = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 50
 		victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *200 + AnglesToUp( AnglesToUseCamera ) * 100
 		if(CoinFlip()) victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_focus_offset = <0, 0, 40>

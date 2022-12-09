@@ -665,7 +665,6 @@ void function PROPHUNT_Lobby()
 		if(!IsValid(player)) continue
 		
 		player.p.PROPHUNT_isSpectatorDiedMidRound = false
-		MakeInvincible( player )
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
 	}
@@ -741,11 +740,12 @@ void function PROPHUNT_GameLoop()
 		
 		//try{TakePassive(player, ePassives.PAS_PILOT_BLOOD)}catch(e420){}
 		//Inventory_SetPlayerEquipment(player, WHITE_SHIELD, "armor") //props dont like shields FX
-		ClearInvincible(player)
+		ClearInvincible( player )
+		
 		player.p.playerDamageDealt = 0.0
 		if(player.GetTeam() == TEAM_MILITIA)
 		{
-			ClearInvincible( player )
+			
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", false)
 
 			AddButtonPressedPlayerInputCallback( player, IN_ATTACK, ClientCommand_ChangeProp )
@@ -832,7 +832,6 @@ void function PROPHUNT_GameLoop()
 		
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
 		//Inventory_SetPlayerEquipment(player, WHITE_SHIELD, "armor")
-		ClearInvincible(player)
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
@@ -1230,14 +1229,6 @@ void function PROPHUNT_GameLoop()
 
 		// GameRules_ChangeMap( GetMapName(), GameRules_GetGameMode() )
 	// }
-
-	foreach( player in GetPlayerArray() )
-	{
-		if( !IsValid( player ) ) continue
-		
-		ClearInvincible( player )
-		player.UnfreezeControlsOnServer()
-	}
 
 	FS_PROPHUNT.currentRound++
 	
