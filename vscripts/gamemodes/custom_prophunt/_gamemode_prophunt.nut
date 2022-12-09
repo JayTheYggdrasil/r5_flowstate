@@ -716,8 +716,6 @@ void function PROPHUNT_GameLoop()
 {
 	SetTdmStateToInProgress()
 	//printt("Flowstate DEBUG - tdmState is eTDMState.IN_PROGRESS Starting round.")
-	if( GetBestPlayer() != null )
-		SetChampion( GetBestPlayer() )
 
 	SurvivalCommentary_ResetAllData()
 	FS_PROPHUNT.endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
@@ -927,7 +925,9 @@ void function PROPHUNT_GameLoop()
 			WaitFrame()	
 		}
 	
-	array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)	
+	array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
+	array<entity> IMCplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_IMC)		
+	entity champion
 	if(MILITIAplayersAlive.len() > 0){
 		TeamWon = TEAM_MILITIA
 				
@@ -961,6 +961,8 @@ void function PROPHUNT_GameLoop()
 			MakeInvincible( player )
 		}
 		
+		champion = MILITIAplayersAlive[0]
+		
 		foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
 		{
 			if(!IsValid(player)) continue
@@ -977,8 +979,13 @@ void function PROPHUNT_GameLoop()
 			Message(player, "SEEKERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)
-		}	
+		}
+		
+		champion = IMCplayersAlive[0]
 	}
+	
+	if(IsValid(champion))
+		SetChampion( champion )
 	
 	foreach(player in GetPlayerArray())
 	{

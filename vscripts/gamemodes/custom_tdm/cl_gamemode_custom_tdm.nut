@@ -338,7 +338,7 @@ void function CreateChampionUI(int skinindex)
 		AddWinningSquadData( -1, -1)
 		
 		//Set Squad Data For Each Player In Winning Team
-		foreach( int i, entity player in GetPlayerArrayOfTeam( file.teamwon ) )
+		foreach( int i, entity player in GetPlayerArrayOfTeam_Alive( file.teamwon ) )
 		{
 			AddWinningSquadData( i, player.GetEncodedEHandle())
 		}
@@ -613,7 +613,8 @@ void function Show_FSDM_VictorySequence(int skinindex)
 	VictoryPlatformModelData victoryPlatformModelData = GetVictorySequencePlatformModel()
 	entity platformModel
 	entity characterModel
-	int maxPlayersToShow = 1
+	int maxPlayersToShow = 3
+	int maxPropsToShow = 1
 	if ( victoryPlatformModelData.isSet )
 	{
 		platformModel = CreateClientSidePropDynamic( file.victorySequencePosition + victoryPlatformModelData.originOffset, victoryPlatformModelData.modelAngles, victoryPlatformModelData.modelAsset )
@@ -625,9 +626,12 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 		foreach( int i, SquadSummaryPlayerData data in file.winnerSquadSummaryData.playerData )
 		{
-			if ( i >= maxPlayersToShow )
+			if ( file.teamwon != 3 && i >= maxPlayersToShow )
 				break
 
+			if ( file.teamwon == 3 && i >= maxPropsToShow)
+				break
+			
 			string playerName = ""
 			if ( EHIHasValidScriptStruct( data.eHandle ) )
 				playerName = EHI_GetName( data.eHandle )
