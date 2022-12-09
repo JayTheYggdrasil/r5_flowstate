@@ -873,6 +873,7 @@ void function PROPHUNT_GameLoop()
 		DeployAndEnableWeapons(player)
 		
 		Highlight_SetFriendlyHighlight( player, "prophunt_teammate" )
+		Highlight_SetEnemyHighlight( player, "survival_enemy_skydiving" )
 		Remote_CallFunction_NonReplay(player, "Minimap_EnableDraw_Internal")
 	}
 	
@@ -975,6 +976,7 @@ void function PROPHUNT_GameLoop()
 			if(!IsValid(player)) continue
 			
 			Remote_CallFunction_NonReplay(player, "CreateAndMoveCameraToWinnerProp", MILITIAplayersAlive[0])
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 2, 5)
 		}
 	} else {
 		TeamWon = TEAM_IMC
@@ -1002,6 +1004,7 @@ void function PROPHUNT_GameLoop()
 		//AddCinematicFlag( player, CE_FLAG_EXECUTION )
 		
 		Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
+		Highlight_ClearEnemyHighlight( player )
 		Highlight_ClearFriendlyHighlight( player )
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
 	}
@@ -1872,7 +1875,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 		
 		entity circle = CreateEntity( "prop_dynamic" )
 		circle.SetValueForModelKey( $"mdl/fx/ar_edge_sphere_512.rmdl" )
-		circle.kv.modelscale = 1
+		circle.kv.modelscale = 1.2
 		circle.SetOrigin( player.GetOrigin() + <0.0, 0.0, -25>)
 		circle.SetAngles( <0, 0, 0> )
 		DispatchSpawn(circle)

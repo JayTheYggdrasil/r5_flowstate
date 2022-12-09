@@ -228,6 +228,9 @@ void function PROPHUNT_QuickText(int index, int duration)
 					case 1:
 					//EmitSoundOnEntity(player, "diag_ap_aiNotify_circleMoves30sec")
 					break
+					case 2:
+					//EmitSoundOnEntity(player, "diag_ap_aiNotify_circleMoves30sec")
+					break
 				}
 			}
 		)
@@ -241,6 +244,10 @@ void function PROPHUNT_QuickText(int index, int duration)
 			case 1:
 			msg = "30 SECONDS REMAINING"
 			EmitSoundOnEntity(player, "diag_ap_aiNotify_circleMoves30sec")
+			break
+			case 2:
+			msg = "PROP REVEAL"
+			EmitSoundOnEntity(player, "Titan_Legion_Smart_Core_Activated_3P_enemy")
 			break
 		}
 		Hud_SetText( HudElement( "MiscTimer"), msg)
@@ -628,10 +635,11 @@ void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 		//last movement
 		vector finalorg = winnerProp.GetOrigin() + AnglesToForward( winnerProp.EyeAngles() ) * 130
 		finalorg.z+= 100
-		vector finalang = VectorToAngles( winnerProp.GetOrigin() - finalorg )
 
-		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 3, 0, 0.3 )
-		winnerpropcam.m.NonPhysicsRotateTo( finalang, 3, 0, 0.3 )
+		vector finalang = VectorToAngles( winnerProp.GetWorldSpaceCenter() - finalorg )
+
+		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 2.5, 0, 0.3 )
+		winnerpropcam.m.NonPhysicsRotateTo( finalang, 2.5, 0, 0.3 )
 	}()
 }
 

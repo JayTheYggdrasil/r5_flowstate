@@ -8,7 +8,7 @@ global function GamemodeProphuntShared_Init
 global function RegisterLocationPROPHUNT
 
 global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 4
-global const int PROPHUNT_FLASH_BANG_RADIUS = 300
+global const int PROPHUNT_FLASH_BANG_RADIUS = 500
 global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 4
 global const int PROPHUNT_WHISTLE_RADIUS = 2000
