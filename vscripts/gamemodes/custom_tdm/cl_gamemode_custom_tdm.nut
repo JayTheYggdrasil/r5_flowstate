@@ -16,7 +16,6 @@ global function ServerCallback_FSDM_UpdateMapVotesClient
 global function ServerCallback_FSDM_SetScreen
 global function ServerCallback_FSDM_CoolCamera
 global function PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex
-global function Show_FSDM_VictorySequence
 
 //Ui callbacks
 global function UI_To_Client_VoteForMap_FSDM
@@ -507,8 +506,6 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 			case "character_bangalore":
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00775529591" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02041779191" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02122844468" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01046964932" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_bloodhound":
@@ -532,7 +529,6 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 		
 			case "character_lifeline":
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00294421454" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00545796048" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01386679009" ) ) )
 		return actualGoodAnimsForThisCharacter
 
