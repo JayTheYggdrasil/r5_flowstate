@@ -278,11 +278,14 @@ entity function GetPlayerMeleeAttackWeapon( entity player )
 #if SERVER || CLIENT
 bool function IsValidMeleeAttackTarget( entity attacker, entity inputWeaponOrNull, entity attackWeapon, entity target )
 {
+	if( GameRules_GetGameMode() == "custom_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" )
+		return true
+
 	if ( attacker == target )
 		return false
 
 	if ( target.IsBreakableGlass() )
-		return true //
+		return true
 
 	if ( !target.CanBeMeleed() )
 		return false
@@ -574,7 +577,7 @@ void function CodeCallback_OnMeleeAttackAnimEvent( entity attacker, entity melee
 	
 	Assert( attacker.PlayerMelee_GetState() == PLAYER_MELEE_STATE_HUMAN_KICK_ATTACK )
 	Assert( !attacker.PlayerMelee_GetAttackHitEntity() )
-
+	
 	#if SERVER
 		PIN_OnWeaponAttack( attacker, meleeAttackWeapon, meleeAttackWeapon.GetWeaponClassName(), 1, attacker.GetOrigin(), attacker.GetViewForward() )
 	#endif
@@ -595,7 +598,10 @@ void function CodeCallback_OnMeleeAttackAnimEvent( entity attacker, entity melee
 	vector startPosition  = expect vector(legacyTraceResults.startPosition)
 	vector hitNormal      = Normalize( startPosition - endPosition )
 	int meleeAttackWeaponImpactTableIndex = meleeAttackWeapon.GetImpactTableIndex()
-
+	
+	if( GameRules_GetGameMode() == "custom_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" && IsValid(target.GetParent()))
+		target = target.GetParent()
+	
 	// Early out if we didn't hit anything
 	if ( !IsValid( target ) )
 		return
@@ -666,7 +672,6 @@ void function CodeCallback_OnMeleeAttackAnimEvent( entity attacker, entity melee
 		target.TakeDamage( damageAmount, attacker, attacker, damageTable )
 		attacker.TraceAttackToTriggers( damageAmount, attacker, attacker, damageTable, startPosition, endPosition, hitNormal )
 	#endif
-
 	// knockback
 	{
 		vector lookDirection    = attacker.GetViewForward()
