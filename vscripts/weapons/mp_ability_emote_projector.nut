@@ -14,7 +14,6 @@ global function GetEmotesTable
 global const int HOLO_PROJECTOR_INDEX = 6
 
 const asset LIGHT_PARTICLE_TEST = $"P_BT_eye_proj_holo"
-const asset TEST_MODEL = $"mdl/fx/ar_holopulse.rmdl"
 
 const vector EMOTE_ICON_TEXT_OFFSET = <0,0,60>
 
@@ -37,8 +36,8 @@ struct
 void function MpWeaponEmoteProjector_Init()
 {
 	#if CLIENT || SERVER
-		PrecacheModel(TEST_MODEL)
 		PrecacheModel( HOLO_SPRAY_BASE )
+		PrecacheParticleSystem(LIGHT_PARTICLE_TEST)
 	#endif
 
 	#if CLIENT
@@ -54,8 +53,6 @@ void function MpWeaponEmoteProjector_Init()
 				file.emotes[id] <- [CastStringToAsset(emote)]
 			
 		}
-		
-		PrecacheParticleSystem(LIGHT_PARTICLE_TEST)
 	#endif
 	
 	#if SERVER
@@ -73,7 +70,7 @@ table<int, array<asset> > function GetEmotesTable()
 
 void function OnProjectileCollision_holospray( entity projectile, vector pos, vector normal, entity hitEnt, int hitbox, bool isCritical )
 {
-	if( !IsValid(projectile) ) return
+	if( !IsValid(projectile) || !IsValid(projectile.GetOwner()) ) return
 	entity player = projectile.GetOwner()
 	
 	if ( IsValid(hitEnt) && hitEnt.IsPlayer() )
@@ -97,10 +94,43 @@ void function OnProjectileCollision_holospray( entity projectile, vector pos, ve
 
 		#if SERVER
 		entity prop = CreatePropDynamic(HOLO_SPRAY_BASE, origin, GoodAngles, 6, -1)
-		// EmitSoundOnEntity(prop, "weapon_sentryfragdrone_pinpull_3p")
+		
+		if( !IsValid( prop ) || !IsValid( player ) ) return
+		
+		
+		entity fx = StartParticleEffectInWorld_ReturnEntity( GetParticleSystemIndex( LIGHT_PARTICLE_TEST ), prop.GetOrigin(), Vector(-90,0,0) )
+
+		prop.e.holoSpraysFX.append(fx)
+		player.p.holoSpraysBase.append(prop)
+
+		
+		bool shouldDestroyFirstHolo = false
+		
+		if(player.p.holoSpraysBase.len() == 4)
+			shouldDestroyFirstHolo = true
+
+		if(shouldDestroyFirstHolo)
+		{
+			foreach ( sPlayer in GetPlayerArray() )
+				printt("destroy my first holospray for all players")
+			
+			entity holoToDestroy = player.p.holoSpraysBase[0]
+			player.p.holoSpraysBase.removebyvalue(holoToDestroy)
+			
+			if(IsValid(holoToDestroy))
+			{
+				foreach(Fx in holoToDestroy.e.holoSpraysFX)
+					if(IsValid(Fx))
+						Fx.Destroy()
+				
+				holoToDestroy.Destroy()
+			}
+		}
+		
 		foreach ( sPlayer in GetPlayerArray() )
 			Remote_CallFunction_NonReplay( sPlayer, "HoloSpray_OnUse", prop, player.p.holosprayChoice)
-		// prop.Anim_PlayOnly("animseq/props/holo_spray/holo_spray_open_idle.rseq")
+
+
 		projectile.Destroy()
 		#endif
 	}
@@ -165,7 +195,7 @@ void function HoloSpray_OnUse(entity prop, int choice)
 	float width = 40
 	float height = 40
 	
-	origin += (AnglesToUp( angles )*-1) * (height*0.5)  // instead of pinning from center, pin from top center
+	origin += (AnglesToUp( angles )*-1) * (height*0.5)
 	origin.z += 110
 	
 	var topo = CreateRUITopology_Worldspace( origin, Vector(0,angles.y,0), width, height )
@@ -173,51 +203,62 @@ void function HoloSpray_OnUse(entity prop, int choice)
 	
 	RuiSetFloat(rui, "basicImageAlpha", 0.8)
 	
-	thread EmotePlayAsset(rui, choice)
-	
-	// GetDatatableRowCount
-	// GetDataTableColumnByName( dataTable, "name" )
-	// GetDataTableString( dataTable, i, GetDataTableColumnByName( dataTable, "name" ) )
-	// GetDataTableInt( passDataTable, numRows - 1, GetDataTableColumnByName( passDataTable, "levelIndex" ) ) + 1
-	// GetDataTableAsset( datatable, rowIndex, GetDataTableColumnByName( datatable, columnName ) )
-	// GetDataTableBool( datatable, rowIndex, GetDataTableColumnByName( datatable, columnName ) )
-	// GetDataTableFloat( datatable, rowIndex, GetDataTableColumnByName( datatable, columnName ) )
-	// int row = GetDataTableRowMatchingStringValue( attachmentTable, GetDataTableColumnByName( attachmentTable, "mod" ), data.ref )
-
-	var fx = StartParticleEffectInWorld( GetParticleSystemIndex( LIGHT_PARTICLE_TEST ), prop.GetOrigin(), Vector(-90,0,0) )
-	thread EmoteSetAngles(topo, origin)
+	thread EmotePlayAsset(prop, rui, choice)
+	thread EmoteSetAngles(prop, topo, origin)
 }
 
-void function EmotePlayAsset(var rui, int index)
+void function EmotePlayAsset(entity prop, var rui, int index)
 {
 	array<asset> assetsToPlay = file.emotes[index]
 	
 	if(assetsToPlay.len() == 1) //is static
 	{
 		RuiSetImage( rui, "basicImage", assetsToPlay[0])
+		thread PlayAnimatedEmote(prop, rui, assetsToPlay, true)
 	}
 	else if(assetsToPlay.len() > 1) //is gif?
-		thread PlayAnimatedEmote(rui, assetsToPlay)
+		thread PlayAnimatedEmote(prop, rui, assetsToPlay)
 }
 
-void function PlayAnimatedEmote(var rui, array<asset> assetsToPlay)
+void function PlayAnimatedEmote(entity prop, var rui, array<asset> assetsToPlay, bool watchNotAnimated = false)
 {
-	while(true)
-	{
-		foreach(Asset in assetsToPlay)
-		{
-			RuiSetImage( rui, "basicImage", Asset)
-			wait 0.05
+	OnThreadEnd(
+		function() : ( rui ) {
+			if(rui != null)
+				RuiDestroyIfAlive(rui)
 		}
-		WaitFrame()
+	)
+	
+	if(watchNotAnimated)
+	{
+		WaitSignal(prop, "OnDestroy")
+	} else 
+	{
+		while(IsValid(prop))
+		{
+			foreach(Asset in assetsToPlay)
+			{
+				if(!IsValid(prop)) break
+				RuiSetImage( rui, "basicImage", Asset)
+				wait 0.05
+			}
+			WaitFrame()
+		}
 	}
 }
 
-void function EmoteSetAngles(var topo, vector origin)
+void function EmoteSetAngles(entity prop, var topo, vector origin)
 {
 	vector angles
 	
-	while(true)
+	OnThreadEnd(
+		function() : ( topo ) {
+			if(topo != null)
+				RuiDestroyIfAlive(topo)
+		}
+	)
+	
+	while(IsValid(prop))
 	{
 		entity player = GetLocalViewPlayer()
 		vector camPos = player.CameraPosition()

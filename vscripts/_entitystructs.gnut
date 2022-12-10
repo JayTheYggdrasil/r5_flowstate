@@ -416,6 +416,9 @@ global struct ServerEntityStruct
 	
 	bool alreadyPingedUltraDecoy = false
 	bool isBeingAttackedByDroneMedic = false
+	
+	//HoloSprays mp
+	array<entity> holoSpraysFX
 }
 
 global struct MeritData
@@ -779,6 +782,9 @@ global struct ServerPlayerStruct
 	
 	//Asked for team, prophunt
 	int teamasked = -1
+	
+	//HoloSprays mp
+	array<entity> holoSpraysBase
 }
 
 global struct ChallengeScore
