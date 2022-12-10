@@ -599,13 +599,17 @@ void function CodeCallback_OnMeleeAttackAnimEvent( entity attacker, entity melee
 	vector hitNormal      = Normalize( startPosition - endPosition )
 	int meleeAttackWeaponImpactTableIndex = meleeAttackWeapon.GetImpactTableIndex()
 	
-	if( GameRules_GetGameMode() == "custom_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" && IsValid(target.GetParent()))
-		target = target.GetParent()
-	
 	// Early out if we didn't hit anything
 	if ( !IsValid( target ) )
 		return
-
+	
+	if( GameRules_GetGameMode() == "custom_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" && IsValid(target.GetParent()))
+	{
+		target = target.GetParent()
+	
+		if ( !IsValid( target ) )
+			return
+	}
 	// Impact effects
 	if ( !attacker.PlayerMelee_IsAttackActive() )
 		return
