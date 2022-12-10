@@ -47,6 +47,26 @@ void function Open_FSDM_VotingPhase()
 	Hud_SetVisible( Hud_GetChild( file.menu, "VotingPhaseChatBox"), false )
 	Hud_SetAboveBlur( Hud_GetChild( file.menu, "VotingPhaseChatBox"), false )
 	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "VotingPhaseChatBox"), "ChatInputLine" ), false)
+	
+	if(IsConnected() )
+	{
+		switch(GetCurrentPlaylistName())
+		{
+			case "custom_prophunt":
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "APEX PROPHUNT" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS" )
+			break
+			
+			case "custom_tdm":
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE DM" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS and collaborators." )
+			break
+			default:
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE SCRIPTS" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS." )
+			break
+		}
+	}
 }
 
 //Sets and updates the team won screen
