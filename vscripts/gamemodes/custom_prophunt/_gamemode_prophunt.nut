@@ -580,55 +580,19 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 	prop.kv.solid = 6
 	prop.kv.fadedist = 999999
-	prop.SetDamageNotifications( true )
+	
 	prop.SetTakeDamageType( DAMAGE_YES )
 	prop.AllowMantle()
 	prop.SetCanBeMeleed( true )
+	prop.SetShieldHealthMax( player.GetShieldHealthMax() )
+	prop.SetShieldHealth( player.GetShieldHealth() )
 	prop.SetMaxHealth( 100 )
-	prop.SetHealth( 100 )
+	prop.SetHealth( player.GetHealth() )
 	prop.SetParent(player)
-	AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
+	
+	prop.SetPassDamageToParent(true)
+	
 	thread PropWatcher(prop, player) 
-}
-
-void function NotifyDamageOnProp(entity ent, var damageInfo)
-{
-//props health bleedthrough
-	entity attacker = DamageInfo_GetAttacker(damageInfo)
-	entity victim = ent.GetParent()
-	float damage = DamageInfo_GetDamage( damageInfo )
-	
-	if(!IsValid(attacker) || IsValid(attacker) && !attacker.IsPlayer() || !IsValid(victim) || !IsValid(ent)) return
-		
-	attacker.NotifyDidDamage
-	(
-		ent,
-		DamageInfo_GetHitBox( damageInfo ),
-		DamageInfo_GetDamagePosition( damageInfo ), 
-		DamageInfo_GetCustomDamageType( damageInfo ),
-		DamageInfo_GetDamage( damageInfo ),
-		DamageInfo_GetDamageFlags( damageInfo ), 
-		DamageInfo_GetHitGroup( damageInfo ),
-		DamageInfo_GetWeapon( damageInfo ), 
-		DamageInfo_GetDistFromAttackOrigin( damageInfo )
-	)
-	
-	if(!IsAlive(victim)) return
-	
-	float playerNextHealth = ent.GetHealth() - DamageInfo_GetDamage( damageInfo )
-	
-	if (playerNextHealth > 0)
-	{
-		victim.SetHealth(playerNextHealth)
-		victim.p.lastDamageTime = Time()
-	} else 
-	{
-		int damageSourceId = DamageInfo_GetDamageSourceIdentifier( damageInfo )
-		ent.ClearParent()
-		victim.p.lastDamageTime = Time()
-		victim.Die( attacker, attacker, { damageSourceId = damageSourceId } )
-		ent.Destroy()
-	}
 }
 
 void function PROPHUNT_Lobby()
@@ -786,10 +750,12 @@ void function PROPHUNT_GameLoop()
 			prop.AllowMantle()
 			prop.SetDamageNotifications( true )
 			prop.SetTakeDamageType( DAMAGE_YES )
-			prop.SetMaxHealth( 100 )	
-			prop.SetHealth( 100 )
+			prop.SetShieldHealthMax( player.GetShieldHealthMax() )
+			prop.SetShieldHealth( player.GetShieldHealth() )
+			prop.SetMaxHealth( 100 )
+			prop.SetHealth( player.GetHealth() )
 			
-			AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
+			prop.SetPassDamageToParent(true)
 			
 			thread PropWatcher(prop, player) //destroys prop on end round and restores player model.
 			
