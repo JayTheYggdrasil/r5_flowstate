@@ -32,6 +32,11 @@ struct{
     array<int> mapIds
     int mappicked = 0
 	int currentRound = 1
+	
+	int maxvotesallowedforTeams = -1
+	
+	int requestsforIMC = -1
+	int requestsforMILITIA = -1	
 } FS_PROPHUNT
 
 void function _GamemodeProphunt_Init()
@@ -54,6 +59,7 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("commands", ClientCommand_Help)
 	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
 	AddClientCommandCallback("EmitWhistle", ClientCommand_PROPHUNT_EmitWhistle)
+	AddClientCommandCallback("AskForTeam", ClientCommand_PROPHUNT_AskForTeam)
 	
 	//Controls
 	// AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
@@ -408,6 +414,23 @@ void function GiveTeamToProphuntPlayer(entity player)
 {
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
 	array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
+	
+	if(player.p.teamasked != -1)
+	{
+		switch(player.p.teamasked)
+		{
+			case 0:
+				SetTeam(player, TEAM_IMC )
+				break
+			case 1:
+				SetTeam(player, TEAM_MILITIA )
+				break
+			default:
+			break
+		}
+		
+		return
+	}
 	
 	if(IMCplayers.len() > MILITIAplayers.len())
 	{
@@ -985,7 +1008,7 @@ void function PROPHUNT_GameLoop()
 		{
 			if(!IsValid(player)) continue
 			
-			Message(player, "SEEKERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
+			Message(player, "hunterS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)
 		}
@@ -1047,7 +1070,7 @@ void function PROPHUNT_GameLoop()
 		// for each player, open the vote menu and set it to the winning team screen
 		
 	ResetMapVotes()
-	
+
 	foreach( player in GetPlayerArray() )
 	{
 		if( !IsValid( player ) )
@@ -1058,6 +1081,7 @@ void function PROPHUNT_GameLoop()
 		player.p.PROPHUNT_ChangePropUsageLimit = 0
 		player.p.PROPHUNT_DecoysPropUsageLimit = 0
 		player.p.PROPHUNT_FlashbangPropUsageLimit = 0
+		player.p.teamasked = -1
 		
 		//reset votes
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_UpdateMapVotesClient", FS_PROPHUNT.mapVotes[0], FS_PROPHUNT.mapVotes[1], FS_PROPHUNT.mapVotes[2], FS_PROPHUNT.mapVotes[3])
@@ -1101,7 +1125,11 @@ void function PROPHUNT_GameLoop()
 		// }
 		
 		// wait 7
-	
+
+		FS_PROPHUNT.maxvotesallowedforTeams = int(ceil(GetPlayerArray().len()/2))
+		FS_PROPHUNT.requestsforIMC = 0
+		FS_PROPHUNT.requestsforMILITIA = 0
+		
 		// Set voting to be allowed
 		FS_PROPHUNT.votingtime = true
 
@@ -1363,9 +1391,12 @@ void function HandlePlayerTeam(entity player)
 		_HandleRespawnPROPHUNT(player)
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
+	
+		return
+	}
 		
 	//for ded players midround
-	} else if ( player.p.PROPHUNT_isSpectatorDiedMidRound)
+	if ( player.p.PROPHUNT_isSpectatorDiedMidRound )
 	{
 		player.p.isSpectating = false
 		player.SetPlayerNetInt( "spectatorTargetCount", 0 )
@@ -1373,6 +1404,35 @@ void function HandlePlayerTeam(entity player)
 		player.SetObserverTarget( null )
         player.StopObserverMode()
 		Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Deactivate")
+
+		if(player.p.teamasked != -1)
+		{
+			TakeAllWeapons(player)
+			player.SetThirdPersonShoulderModeOn()
+			
+			switch(player.p.teamasked)
+			{
+				case 0:
+					SetTeam(player, TEAM_IMC )
+					break
+				case 1:
+					SetTeam(player, TEAM_MILITIA )
+					break
+				default:
+				break
+			}
+		
+			WaitFrame()
+			if(!IsValid(player)) return
+			
+			_HandleRespawnPROPHUNT(player)
+			player.MakeVisible()
+			player.UnforceStand()
+			player.UnfreezeControlsOnServer()			
+			
+			return
+		}
+		
 		if(player.GetTeam() == TEAM_IMC){
 			TakeAllWeapons(player)
 			player.SetThirdPersonShoulderModeOn()
@@ -1399,6 +1459,35 @@ void function HandlePlayerTeam(entity player)
 	} else 
 	{
 	//for alive players swap teams
+
+		if(player.p.teamasked != -1)
+		{
+			TakeAllWeapons(player)
+			player.SetThirdPersonShoulderModeOn()
+			
+			switch(player.p.teamasked)
+			{
+				case 0:
+					SetTeam(player, TEAM_IMC )
+					break
+				case 1:
+					SetTeam(player, TEAM_MILITIA )
+					break
+				default:
+				break
+			}
+		
+				WaitFrame()
+				if(!IsValid(player)) return
+				
+				_HandleRespawnPROPHUNT(player)
+				player.MakeVisible()
+				player.UnforceStand()
+				player.UnfreezeControlsOnServer()			
+			
+			return
+		}
+	
 		if(player.GetTeam() == TEAM_IMC){
 				TakeAllWeapons(player)
 				player.SetThirdPersonShoulderModeOn()
@@ -1648,9 +1737,9 @@ bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> arg
 
     return true
 }
-void function ClientCommand_Seekers_ForceChangeProp(entity seekerPlayer)
+void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 {
-	if(!IsValid(seekerPlayer) || IsValid(seekerPlayer) && seekerPlayer.GetTeam() != TEAM_IMC) return
+	if(!IsValid(hunterPlayer) || IsValid(hunterPlayer) && hunterPlayer.GetTeam() != TEAM_IMC) return
 
 	foreach(player in GetPlayerArray())
 	{
@@ -1942,5 +2031,51 @@ bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string >
 	
 	//EmitSoundOnEntity( player, "explo_mgl_impact_3p" )
 	EmitSoundAtPosition( TEAM_UNASSIGNED, player.GetOrigin(), "explo_mgl_impact_3p" )
+	return true
+}
+
+bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > args) 
+{	
+	if( !IsValid(player) || args.len() != 1 || !FS_PROPHUNT.votingtime || player.p.teamasked != -1 ) return false
+
+	switch(args[0])
+	{
+		case "0":
+			if(FS_PROPHUNT.requestsforIMC <= FS_PROPHUNT.maxvotesallowedforTeams)
+			{
+				player.p.teamasked = 0
+			}
+			
+			if(FS_PROPHUNT.requestsforIMC == FS_PROPHUNT.maxvotesallowedforTeams)
+			{
+				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for imc, disable this button for all players that have not voted yet
+					if(sPlayer.p.teamasked == -1)
+						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_IMCButton")	
+			}
+			
+			FS_PROPHUNT.requestsforIMC++
+		break
+		
+		case "1":
+			if(FS_PROPHUNT.requestsforMILITIA <= FS_PROPHUNT.maxvotesallowedforTeams)
+			{
+				player.p.teamasked = 1
+			}
+			
+			if(FS_PROPHUNT.requestsforMILITIA == FS_PROPHUNT.maxvotesallowedforTeams)
+			{
+				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for militia, disable this button for all players that have not voted yet
+					if(sPlayer.p.teamasked == -1)
+						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_MILITIAButton")			
+			}
+			
+			FS_PROPHUNT.requestsforMILITIA++
+		break
+		
+		default:
+			player.p.teamasked = -1
+		break
+	}	
+	
 	return true
 }

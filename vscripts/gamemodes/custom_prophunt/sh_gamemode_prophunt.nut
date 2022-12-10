@@ -137,20 +137,7 @@ void function GamemodeProphuntShared_Init()
                     <0, 0, 2000>,$"rui/flowstatelocations/overlook"
                 )
             )
-	
-	RegisterLocationPROPHUNT(
-                NewLocationSettings(
-                    "TTV Building 2",
-                    [
-                        NewLocPair(<1313, 4450, -2990>, <0, 50, 0>),
-                        NewLocPair(<2300, 6571, -4490>, <0, -96, 0>),
-						NewLocPair(<2617, 4668, -4250>, <0, 85, 0>),
-                        NewLocPair(<1200, 4471, -4150>, <0, 50, 0>)
-                    ],
-                    <0, 0, 2000>,$"rui/flowstatelocations/ttvbuilding2"
-                )
-            )
-			
+
 	RegisterLocationPROPHUNT(
                 NewLocationSettings(
                     "Little Town",
@@ -162,6 +149,20 @@ void function GamemodeProphuntShared_Init()
                     <0, 0, 2000>,$"rui/flowstatelocations/littletown"
                 )
             )
+
+	RegisterLocationPROPHUNT(
+			NewLocationSettings(
+				"Little Town 2",
+				[
+					NewLocPair(<-27219, -24393, -4497>, <0, 87, 0>),
+					NewLocPair(<-26483, -28042, -4209>, <0, 122, 0>),
+					NewLocPair(<-25174, -26091, -4550>, <0, 177, 0>),
+					NewLocPair(<-29512, -25863, -4462>, <0, 3, 0>),
+					NewLocPair(<-28380, -28984, -4102>, <0, 54, 0>)
+				],
+				<0, 0, 2000>,$"rui/flowstatelocations/littletown2"
+			)
+		)
 }
 
 void function RegisterLocationPROPHUNT(LocationSettings locationSettings)

@@ -776,6 +776,9 @@ global struct ServerPlayerStruct
 	
 	//Super doc (lifeline buff)
 	entity lastdocdrone
+	
+	//Asked for team, prophunt
+	int teamasked = -1
 }
 
 global struct ChallengeScore

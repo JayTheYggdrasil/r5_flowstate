@@ -91,6 +91,8 @@ void function RemoteFunctions_Init_Begin()
 			Remote_RegisterClientFunction("PROPHUNT_StartMiscTimer", "bool")
 			Remote_RegisterClientFunction("PROPHUNT_QuickText", "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX)
 			Remote_RegisterClientFunction("CreateAndMoveCameraToWinnerProp", "entity")
+			Remote_RegisterClientFunction("PROPHUNT_Disable_MILITIAButton")
+			Remote_RegisterClientFunction("PROPHUNT_Disable_IMCButton")
 			break
 		case MAP_EDITOR:
 			Remote_RegisterClientFunction("ServerCallback_NextProp", "entity")

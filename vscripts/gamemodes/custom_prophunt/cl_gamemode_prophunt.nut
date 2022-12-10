@@ -15,6 +15,9 @@ global function PROPHUNT_StartMiscTimer
 global function PROPHUNT_QuickText
 global function CreateAndMoveCameraToWinnerProp
 global function GetWinnerPropCameraEntities
+global function ClientAskedForTeam
+global function PROPHUNT_Disable_MILITIAButton
+global function PROPHUNT_Disable_IMCButton
 
 struct {
     LocationSettings &selectedLocation
@@ -650,4 +653,42 @@ array<entity> function GetWinnerPropCameraEntities()
 	cameras.append(winnerpropcam.m)
 	
 	return cameras
+}
+
+void function ClientAskedForTeam(int index)
+{
+	entity player = GetLocalClientPlayer()
+	
+	switch(index)
+	{
+		case 0:
+		player.ClientCommand("AskForTeam 0")
+		break
+		
+		case 1:
+		player.ClientCommand("AskForTeam 1")
+		break
+		
+		default:
+		break
+	}	
+}
+
+void function PROPHUNT_Disable_MILITIAButton()
+{
+	entity player = GetLocalClientPlayer()
+	
+	if(!IsValid(player)) return
+	
+	RunUIScript("Disable_MILITIAButton")
+	
+}
+
+void function PROPHUNT_Disable_IMCButton()
+{
+	entity player = GetLocalClientPlayer()
+	
+	if(!IsValid(player)) return
+	
+	RunUIScript("Disable_IMCButton")
 }

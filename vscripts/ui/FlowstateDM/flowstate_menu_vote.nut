@@ -15,6 +15,8 @@ global function UpdateVotedLocation_FSDM
 global function UpdateVotedLocation_FSDMTied
 global function SendScoreboardToUI
 global function ClearScoreboardOnUI
+global function Disable_MILITIAButton
+global function Disable_IMCButton
 
 global struct PlayerInfo
 {
@@ -182,7 +184,7 @@ void function UpdateVotesUI_FSDM(int map1, int map2, int map3, int map4)
 void function UpdateVotedFor_FSDM(int id)
 {
 	for(int i = 1; i < 5; i++ ) {
-		// RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "MapVote" + i )), "status", eFriendStatus.OFFLINE )
+		// RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "MapVote" + i )), "status", eFriendStatus.ONLINE_AWAY )
 		Hud_SetEnabled( Hud_GetChild( file.menu, "MapVote" + i ), false )
 	}
 	Hud_SetVisible( Hud_GetChild( file.menu, "MapVoteLabelNameFrame" + id ), false )
@@ -219,6 +221,12 @@ void function Init_FSDM_VoteMenu( var newMenuArg )
 	AddButtonEventHandler( Hud_GetChild( menu, "MapVote2" ), UIE_CLICK, OnClickMap )
 	AddButtonEventHandler( Hud_GetChild( menu, "MapVote3" ), UIE_CLICK, OnClickMap )
 	AddButtonEventHandler( Hud_GetChild( menu, "MapVote4" ), UIE_CLICK, OnClickMap )
+
+	AddButtonEventHandler( Hud_GetChild( menu, "TeamSeekersButton"), UIE_CLICK, SetTeam_IMC )
+	AddButtonEventHandler( Hud_GetChild( menu, "TeamPropsButton"), UIE_CLICK, SetTeam_MILITIA )
+	
+	RuiSetInt( Hud_GetRui( Hud_GetChild( menu, "TeamSeekersButton")), "status", eFriendStatus.ONLINE_AWAY )
+	RuiSetInt( Hud_GetRui( Hud_GetChild( menu, "TeamPropsButton")), "status", eFriendStatus.ONLINE_AWAY )
 	
 	//Hide all server buttons
 	array<var> serverbuttons = GetElementsByClassname( file.menu, "ScoreboardUIButton" )
@@ -226,6 +234,34 @@ void function Init_FSDM_VoteMenu( var newMenuArg )
 	{
 		Hud_SetVisible(elem, false)
 	}
+}
+
+void function SetTeam_IMC(var button)
+{
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.ONLINE )
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamPropsButton")), "status", eFriendStatus.OFFLINE )
+	RunClientScript("ClientAskedForTeam", 0)
+	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamPropsButton"), false)
+}
+
+void function SetTeam_MILITIA(var button)
+{
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.OFFLINE )
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamPropsButton")), "status", eFriendStatus.ONLINE )
+	RunClientScript("ClientAskedForTeam", 1)
+	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamSeekersButton"), false)
+}
+
+void function Disable_MILITIAButton()
+{
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamPropsButton")), "status", eFriendStatus.OFFLINE )
+	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamPropsButton"), false)
+}
+
+void function Disable_IMCButton()
+{
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.OFFLINE )
+	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamSeekersButton"), false)
 }
 
 void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bool TimerText, bool MapVoteFrame, bool _FSDM_BottomFrame, bool ObjectiveText, bool MapVoteFrame2, bool VotedForLbl, bool WinnerLbl, bool WinnerFrame, bool Scoreboard)
@@ -261,6 +297,25 @@ void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bo
 
 	Hud_SetVisible( Hud_GetChild( file.menu, "MapVoteFrame2" ), MapVoteFrame2 )
 	Hud_SetVisible( Hud_GetChild( file.menu, "VotedForLbl" ), VotedForLbl )
+	
+	Hud_SetVisible( Hud_GetChild( file.menu, "SelectTeamText" ), MapVote )
+	Hud_SetEnabled( Hud_GetChild( file.menu, "SelectTeamText" ), MapVote )
+	
+	Hud_SetVisible( Hud_GetChild( file.menu, "SelectTeamFrame" ), MapVote )
+	Hud_SetEnabled( Hud_GetChild( file.menu, "SelectTeamFrame" ), MapVote )
+	
+	Hud_SetVisible( Hud_GetChild( file.menu, "TeamPropsButton" ), MapVote )
+	Hud_SetEnabled( Hud_GetChild( file.menu, "TeamPropsButton" ), MapVote )
+	
+	Hud_SetVisible( Hud_GetChild( file.menu, "TeamSeekersButton" ), MapVote )
+	Hud_SetEnabled( Hud_GetChild( file.menu, "TeamSeekersButton" ), MapVote )
+	
+	if(MapVote)
+	{
+		RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.ONLINE_AWAY )
+		RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamPropsButton")), "status", eFriendStatus.ONLINE_AWAY )	
+	}
+	
 	if(VotedForLbl)
 	{
 		Hud_SetVisible(Hud_GetChild( file.menu, "TextCredits2"), false)
