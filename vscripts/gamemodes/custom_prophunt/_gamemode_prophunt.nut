@@ -128,6 +128,22 @@ void function PROPHUNT_StartGameThread()
 	}
 }
 
+void function PROPHUNT_CharSelect( entity player)
+//By Retículo Endoplasmático#5955 (CaféDeColombiaFPS)//
+{
+	if(FlowState_ForceCharacter())
+	{
+		ItemFlavor PersonajeEscogido = GetAllCharacters()[FlowState_ChosenCharacter()]
+		CharacterSelect_AssignCharacter( ToEHI( player ), PersonajeEscogido )		
+	}
+	else
+	{
+		ItemFlavor PersonajeEscogido = GetAllCharacters()[RandomInt(9)]
+		CharacterSelect_AssignCharacter( ToEHI( player ), PersonajeEscogido )		
+	}
+	TakeAllWeapons(player)
+}
+
 void function _OnPlayerConnectedPROPHUNT(entity player)
 {
 	while(IsDisconnected( player )) WaitFrame()
@@ -138,7 +154,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 	
 	if(FlowState_ForceCharacter())
 	{
-		CharSelect(player)
+		PROPHUNT_CharSelect(player)
 	}
 	
 	GivePassive(player, ePassives.PAS_PILOT_BLOOD)
@@ -376,7 +392,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 
 	if(FlowState_ForceCharacter())
 	{
-		CharSelect(player)
+		PROPHUNT_CharSelect(player)
 	}
 	
 	if(!IsAlive(player)) 

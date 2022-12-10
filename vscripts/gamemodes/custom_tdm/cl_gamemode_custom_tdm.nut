@@ -16,6 +16,7 @@ global function ServerCallback_FSDM_UpdateMapVotesClient
 global function ServerCallback_FSDM_SetScreen
 global function ServerCallback_FSDM_CoolCamera
 global function PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex
+global function Show_FSDM_VictorySequence
 
 //Ui callbacks
 global function UI_To_Client_VoteForMap_FSDM
@@ -500,36 +501,25 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 	array<ItemFlavor> actualGoodAnimsForThisCharacter
 	switch(ItemFlavor_GetHumanReadableRef( character )){
 			case "character_pathfinder":
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00267302733" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00543164026" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01261908739" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00913866781" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01749100240" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_bangalore":
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00775529591" ) ) )
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00775529591" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02041779191" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02122844468" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01046964932" ) ) )
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01046964932" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_bloodhound":
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00982377873" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00091072289" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01817535639" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00921909335" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01299384641" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00924111436" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_caustic":
-		if(GetMapName() != "mp_rr_canyonlands_mu1" && GetMapName() != "mp_rr_canyonlands_mu1_night" && GetMapName() != "mp_rr_canyonlands_64k_x_64k") 
-		{actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01037940994" ) ) )}
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01037940994" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01924098215" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00844387739" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01590253725" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01450555761" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_gibraltar":
@@ -538,55 +528,38 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01066049905" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01139949206" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00558533496" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02081761479" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_lifeline":
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00294421454" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00693685311" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00545796048" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00036505096" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01386679009" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01657023826" ) ) )
 		return actualGoodAnimsForThisCharacter
 
 			case "character_mirage":
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01262193178" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00986179205" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02083161296" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00859145007" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00563654629" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00002234092" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_octane":
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01115114314" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00718158226" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00914410572" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01698467954" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00796629018" ) ) )
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01698467954" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_wraith":
-		// actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02046254916" ) ) )
-		// actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01527711638" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01474484292" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01587991597" ) ) )
-		//actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02088801000" ) ) )
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02046254916" ) ) )
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01527711638" ) ) )
 		return actualGoodAnimsForThisCharacter
 
 			case "character_wattson":
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01198897745" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01638491567" ) ) )
-		if(GetMapName() != "mp_rr_canyonlands_mu1" && GetMapName() != "mp_rr_canyonlands_mu1_night" && GetMapName() != "mp_rr_canyonlands_64k_x_64k") 
-		{actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01313080345" ) ) )}
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_crypto":
-		if(GetMapName() != "mp_rr_canyonlands_mu1" && GetMapName() != "mp_rr_canyonlands_mu1_night" && GetMapName() != "mp_rr_canyonlands_64k_x_64k") 
-		{actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00269538572" ) ) )}
+		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00269538572" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00814728196" ) ) )
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01157264561" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID01574566414" ) ) )
 		return actualGoodAnimsForThisCharacter
 	}
@@ -608,7 +581,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 	asset defaultModel                = GetGlobalSettingsAsset( DEFAULT_PILOT_SETTINGS, "bodyModel" )
 	LoadoutEntry loadoutSlotCharacter = Loadout_CharacterClass()
-	vector characterAngles            = < file.victorySequenceAngles.x / 2.0, file.victorySequenceAngles.y, file.victorySequenceAngles.z >
+	vector characterAngles            = < file.victorySequenceAngles.x / 2.0, Clamp(file.victorySequenceAngles.y-60, -180, 180), file.victorySequenceAngles.z >
 
 	VictoryPlatformModelData victoryPlatformModelData = GetVictorySequencePlatformModel()
 	entity platformModel
@@ -662,9 +635,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 						func( characterModel, character, data.eHandle )
 
 					characterModel.SetParent( characterNode, "", false )
-					ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
-					asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
-					
+
 					entity overheadNameEnt = CreateClientSidePropDynamic( pos + (AnglesToUp( file.victorySequenceAngles ) * 73), <0, 0, 0>, $"mdl/dev/empty_model.rmdl" )
 					overheadNameEnt.Hide()
 
@@ -708,12 +679,12 @@ void function Show_FSDM_VictorySequence(int skinindex)
 					func( characterModel, character, data.eHandle )
 
 				//characterModel.SetParent( characterNode, "", false )
+				
 				ItemFlavor anim = GetAllGoodAnimsFromGladcardStancesForCharacter_ChampionScreen(character).getrandom()
 				asset animtoplay = GetGlobalSettingsAsset( ItemFlavor_GetAsset( anim ), "movingAnimSeq" )
-				
-				thread PlayAnim( characterModel, "ACT_MP_MENU_LOBBY_SELECT_IDLE", characterNode )
-				//characterModel.Anim_SetPlaybackRate(0.8)
-				
+				thread PlayAnim( characterModel, animtoplay, characterNode )
+				characterModel.Anim_SetPlaybackRate(0.8)
+
 				//characterModel.Anim_EnableUseAnimatedRefAttachmentInsteadOfRootMotion()
 
 				entity overheadNameEnt = CreateClientSidePropDynamic( pos + (AnglesToUp( file.victorySequenceAngles ) * 73), <0, 0, 0>, $"mdl/dev/empty_model.rmdl" )
@@ -758,29 +729,31 @@ void function Show_FSDM_VictorySequence(int skinindex)
 			AnglesToUseCamera = file.victorySequenceAngles
 		
 		VictoryCameraPackage victoryCameraPackage
-		victoryCameraPackage.camera_offset_start = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 50
+		victoryCameraPackage.camera_offset_start = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *200 + AnglesToUp( AnglesToUseCamera ) * 100
 		if(CoinFlip()) victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_focus_offset = <0, 0, 40>
 		//victoryCameraPackage.camera_fov = 20
 	
-		//Setup camera pos and angles
-		vector camera_start_pos = OffsetPointRelativeToVector( file.victorySequencePosition, <0, 480, 108>, AnglesToForward( file.victorySequenceAngles ) )
-		vector camera_end_pos   = OffsetPointRelativeToVector( file.victorySequencePosition, <0, 350, 88>, AnglesToForward( file.victorySequenceAngles ) )
-		vector camera_focus_pos = OffsetPointRelativeToVector( file.victorySequencePosition, <0, 0, 56>, AnglesToForward( file.victorySequenceAngles ) )
+		vector camera_offset_start = victoryCameraPackage.camera_offset_start
+		vector camera_offset_end   = victoryCameraPackage.camera_offset_end
+		vector camera_focus_offset = victoryCameraPackage.camera_focus_offset
+		
+		vector camera_start_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_start, AnglesToForward( AnglesToUseCamera ) )
+		vector camera_end_pos   = OffsetPointRelativeToVector( file.victorySequencePosition, camera_offset_end, AnglesToForward( AnglesToUseCamera ) )
+		vector camera_focus_pos = OffsetPointRelativeToVector( file.victorySequencePosition, camera_focus_offset, AnglesToForward( AnglesToUseCamera ) )
 		vector camera_start_angles = VectorToAngles( camera_focus_pos - camera_start_pos )
 		vector camera_end_angles   = VectorToAngles( camera_focus_pos - camera_end_pos )
 
         //Create camera and mover
 		entity cameraMover = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", camera_start_pos, camera_start_angles )
-		entity camera      = CreateClientSidePointCamera( camera_start_pos, camera_start_angles, 30 )
+		entity camera      = CreateClientSidePointCamera( camera_start_pos, camera_start_angles, 35 )
 		player.SetMenuCameraEntity( camera )
 		camera.SetParent( cameraMover, "", false )
 		cleanupEnts.append( camera )
-		cameraMover.NonPhysicsMoveTo( camera_end_pos, 6, 0.0, 6 / 2.0 )
-		cameraMover.NonPhysicsRotateTo( camera_end_angles, 6, 0.0, 6 / 2.0 )
+
 		cleanupEnts.append( cameraMover )
-		// thread CameraMovement(cameraMover, camera_end_pos, camera_end_angles)
+		thread CameraMovement(cameraMover, camera_end_pos, camera_end_angles)
 	}
 }
 
