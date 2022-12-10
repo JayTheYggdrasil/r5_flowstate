@@ -171,6 +171,8 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 	player.SetPlayerNetBool( "pingEnabled", true )
 	player.SetHealth( 100 )
+	Inventory_SetPlayerEquipment(player, "armor_pickup_lv2", "armor")
+	player.SetShieldHealth( 75 )
 	player.kv.solid = 6
 	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 	player.kv.fadedist = 999999
@@ -413,6 +415,8 @@ void function _HandleRespawnPROPHUNT(entity player)
 	Survival_SetInventoryEnabled( player, false )
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 	player.SetPlayerNetBool( "pingEnabled", true )
+	Inventory_SetPlayerEquipment(player, "armor_pickup_lv2", "armor")
+	player.SetShieldHealth( 75 )
 	player.SetHealth( 100 )
 	player.kv.solid = 6
 	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
@@ -539,7 +543,8 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 {
 	if(!IsValid(player)) return
 	
-	Signal(player, "DestroyProp")
+	if(!forcelockedangles)
+		Signal(player, "DestroyProp")
 
 	asset selectedModel
 	if(giveOldProp)
@@ -559,22 +564,17 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	
 	if(forcelockedangles)
 	{
-		player.Show()
 		player.SetBodyModelOverride( selectedModel )
 		player.SetArmsModelOverride( selectedModel )
+		
+		if(IsValid(player.p.PROPHUNT_LastPropEntity))
+			player.p.PROPHUNT_LastPropEntity.SetModel( selectedModel )
 		player.p.PROPHUNT_LastModel = selectedModel
-		player.kv.solid = SOLID_BBOX
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		player.kv.fadedist = 999999
-		player.AllowMantle()
-		player.SetDamageNotifications( true )
-		player.SetTakeDamageType( DAMAGE_YES )
+
 		player.p.PROPHUNT_AreAnglesLocked = true
 		return
 	}
-	
-	player.kv.solid = 6
-	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+
 	entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
 	player.p.PROPHUNT_LastPropEntity = prop
 	prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
@@ -589,45 +589,6 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	prop.SetParent(player)
 	AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
 	thread PropWatcher(prop, player) 
-}
-
-
-void function PlayerwithLockedAngles_OnDamaged(entity ent, var damageInfo)
-{
-	entity attacker = DamageInfo_GetAttacker(damageInfo)
-	float damage = DamageInfo_GetDamage( damageInfo )
-	
-	if(!IsValid(attacker) || !IsValid(ent) || IsValid(attacker) && !attacker.IsPlayer()) return
-		
-	attacker.NotifyDidDamage
-	(
-		ent,
-		DamageInfo_GetHitBox( damageInfo ),
-		DamageInfo_GetDamagePosition( damageInfo ), 
-		DamageInfo_GetCustomDamageType( damageInfo ),
-		DamageInfo_GetDamage( damageInfo ),
-		DamageInfo_GetDamageFlags( damageInfo ), 
-		DamageInfo_GetHitGroup( damageInfo ),
-		DamageInfo_GetWeapon( damageInfo ), 
-		DamageInfo_GetDistFromAttackOrigin( damageInfo )
-	)
-	
-	float NextHealth = ent.GetHealth() - DamageInfo_GetDamage( damageInfo )
-	
-	if (NextHealth > 0)
-	{
-		ent.SetHealth(NextHealth)
-		ent.p.lastDamageTime = Time()
-	} else
-	{
-		ent.SetTakeDamageType( DAMAGE_NO )
-		int damageSourceId = DamageInfo_GetDamageSourceIdentifier( damageInfo )
-		ent.p.lastDamageTime = Time()
-		ent.Die( attacker, attacker, { damageSourceId = damageSourceId } )
-		ent.kv.solid = 0
-		// ent.SetOwner( attacker )
-		// ent.kv.teamnumber = attacker.GetTeam()
-	}
 }
 
 void function NotifyDamageOnProp(entity ent, var damageInfo)
@@ -807,14 +768,19 @@ void function PROPHUNT_GameLoop()
 			player.p.PROPHUNT_LastModelIndex = modelindex
 			asset selectedModel = prophuntAssetsWE[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
-			player.kv.solid = 6
+			
+			player.kv.solid = 0
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			
 			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
+			
 			entity prop = CreatePropDynamic(selectedModel, player.GetOrigin(), player.GetAngles(), 6, -1)
-			player.p.PROPHUNT_LastPropEntity = prop
+			prop.SetParent(player)
 			prop.kv.solid = 6
+			
+			player.p.PROPHUNT_LastPropEntity = prop
 			prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			prop.kv.fadedist = 999999
 			prop.AllowMantle()
@@ -822,7 +788,6 @@ void function PROPHUNT_GameLoop()
 			prop.SetTakeDamageType( DAMAGE_YES )
 			prop.SetMaxHealth( 100 )	
 			prop.SetHealth( 100 )
-			prop.SetParent(player)
 			
 			AddEntityCallback_OnDamaged(prop, NotifyDamageOnProp)
 			
@@ -843,11 +808,7 @@ void function PROPHUNT_GameLoop()
 			wait 0.2
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
-			//Message(player, "PROPS ARE HIDING", "Teleporting in 25 seconds.", 10)
-			// if(GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
-				// PROPHUNT_TELEPORT_ATTACKERS_DELAY = 2
-	
-			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", false)
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", false) //props are hiding, seekers arriving
 		}
 	}
 
@@ -1386,6 +1347,7 @@ void function HandlePlayerTeam(entity player)
 	if(!IsValid(player)) return
 	
 	player.Show()
+	player.MakeVisible()
 	//printt(player, player.GetTeam())
 	//for connected players midround
 	if( player.GetTeam() == 15 && !player.p.PROPHUNT_isSpectatorDiedMidRound)
@@ -1759,7 +1721,7 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 
 	foreach(player in GetPlayerArray())
 	{
-		if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) continue
+		if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || IsValid(player) && player == hunterPlayer) continue
 		
 		if(player.p.PROPHUNT_AreAnglesLocked)
 		{
@@ -1767,18 +1729,13 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 			// player.p.PROPHUNT_ChangePropUsageLimit = newscore
 			// if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
 			// {
-				ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
-				asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
-				player.SetPlayerSettingsWithMods( characterSetFile, [] )
-				SetPlayerSettings(player, PROPHUNT_SETTINGS)
 				player.SetBodyModelOverride( $"" )
 				player.SetArmsModelOverride( $"" )
-				player.kv.solid = 6
+				player.kv.solid = 0
 				player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 				player.kv.fadedist = 999999
 				player.AllowMantle()
 				player.Hide()
-				//player.p.PROPHUNT_AreAnglesLocked = false
 				thread PROPHUNT_GiveAndManageProp(player, false, true)
 				// Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
 				// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
@@ -1813,18 +1770,13 @@ void function ClientCommand_ChangeProp(entity player)
 		player.p.PROPHUNT_ChangePropUsageLimit = newscore
 		if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
 		{
-			ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
-			asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
-			player.SetPlayerSettingsWithMods( characterSetFile, [] )
-			SetPlayerSettings(player, PROPHUNT_SETTINGS)
 			player.SetBodyModelOverride( $"" )
 			player.SetArmsModelOverride( $"" )
-			player.kv.solid = 6
+			player.kv.solid = 0
 			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
-			//player.p.PROPHUNT_AreAnglesLocked = false
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
@@ -1880,39 +1832,23 @@ void function ClientCommand_MatchSlope(entity player)
 void function ClientCommand_LockAngles(entity player)
 {
 	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
-	
-	Signal(player, "DestroyProp")
-	
+
 	if(!player.p.PROPHUNT_AreAnglesLocked)
 	{
-		player.Show()
 		player.SetBodyModelOverride( player.p.PROPHUNT_LastModel )
 		player.SetArmsModelOverride( player.p.PROPHUNT_LastModel )
-		player.kv.solid = 6
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		player.kv.fadedist = 999999
-		player.AllowMantle()
-		player.SetDamageNotifications( true )
-		player.SetTakeDamageType( DAMAGE_YES )
+
 		player.p.PROPHUNT_AreAnglesLocked = true
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 0)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 3)
 		//Angles are locked!!
 	} else if(player.p.PROPHUNT_AreAnglesLocked)
 	{
-		ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
-		asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
-		player.SetPlayerSettingsWithMods( characterSetFile, [] )
-		SetPlayerSettings(player, PROPHUNT_SETTINGS)
-		
+		Signal(player, "DestroyProp")
+
 		player.SetBodyModelOverride( $"" )
 		player.SetArmsModelOverride( $"" )
-		player.kv.solid = 6
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-		player.kv.fadedist = 999999
-		player.AllowMantle()
-		player.Hide()
-		
+
 		thread PROPHUNT_GiveAndManageProp(player, true)
 		player.p.PROPHUNT_AreAnglesLocked = false
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 1)

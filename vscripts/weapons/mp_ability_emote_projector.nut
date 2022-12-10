@@ -111,9 +111,6 @@ void function OnProjectileCollision_holospray( entity projectile, vector pos, ve
 
 		if(shouldDestroyFirstHolo)
 		{
-			foreach ( sPlayer in GetPlayerArray() )
-				printt("destroy my first holospray for all players")
-			
 			entity holoToDestroy = player.p.holoSpraysBase[0]
 			player.p.holoSpraysBase.removebyvalue(holoToDestroy)
 			

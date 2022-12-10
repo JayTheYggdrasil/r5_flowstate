@@ -504,7 +504,6 @@ array<ItemFlavor> function GetAllGoodAnimsFromGladcardStancesForCharacter_Champi
 		return actualGoodAnimsForThisCharacter
 		
 			case "character_bangalore":
-		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID00775529591" ) ) )
 		actualGoodAnimsForThisCharacter.append( GetItemFlavorByGUID( ConvertItemFlavorGUIDStringToGUID( "SAID02041779191" ) ) )
 		return actualGoodAnimsForThisCharacter
 		
