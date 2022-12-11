@@ -1065,7 +1065,7 @@ void function PROPHUNT_GameLoop()
 		
 		// wait 7
 
-		FS_PROPHUNT.maxvotesallowedforTeams = int(ceil(GetPlayerArray().len()/2))
+		FS_PROPHUNT.maxvotesallowedforTeams = int(floor(GetPlayerArray().len()/2))
 		FS_PROPHUNT.requestsforIMC = 0
 		FS_PROPHUNT.requestsforMILITIA = 0
 		
@@ -1958,6 +1958,7 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 			if(FS_PROPHUNT.requestsforIMC <= FS_PROPHUNT.maxvotesallowedforTeams)
 			{
 				player.p.teamasked = 0
+				FS_PROPHUNT.requestsforIMC++
 			}
 			
 			if(FS_PROPHUNT.requestsforIMC == FS_PROPHUNT.maxvotesallowedforTeams)
@@ -1965,15 +1966,14 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for imc, disable this button for all players that have not voted yet
 					if(sPlayer.p.teamasked == -1)
 						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_IMCButton")	
-			}
-			
-			FS_PROPHUNT.requestsforIMC++
+			}			
 		break
 		
 		case "1":
 			if(FS_PROPHUNT.requestsforMILITIA <= FS_PROPHUNT.maxvotesallowedforTeams)
 			{
 				player.p.teamasked = 1
+				FS_PROPHUNT.requestsforMILITIA++
 			}
 			
 			if(FS_PROPHUNT.requestsforMILITIA == FS_PROPHUNT.maxvotesallowedforTeams)
@@ -1981,9 +1981,7 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for militia, disable this button for all players that have not voted yet
 					if(sPlayer.p.teamasked == -1)
 						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_MILITIAButton")			
-			}
-			
-			FS_PROPHUNT.requestsforMILITIA++
+			}			
 		break
 		
 		default:
