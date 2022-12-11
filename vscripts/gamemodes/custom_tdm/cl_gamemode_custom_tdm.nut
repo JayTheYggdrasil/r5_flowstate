@@ -5,6 +5,13 @@ global function ServerCallback_SendScoreboardToClient
 global function ServerCallback_ClearScoreboardOnClient
 global function NotifyRingTimer
 
+	// UISize screenSize   = GetScreenSize()
+	// float resMultiplier = screenSize.height / 1080.0
+	// int width           = 630
+	// int height          = 155
+
+	// HudElement( "IngameTextChat" ).SetSize( width * resMultiplier, height * resMultiplier )
+	
 //Statistics
 global function ServerCallback_OpenStatisticsUI
 
@@ -22,11 +29,6 @@ global function UI_To_Client_VoteForMap_FSDM
 
 const string CIRCLE_CLOSING_IN_SOUND = "UI_InGame_RingMoveWarning" //"survival_circle_close_alarm_01"
 
-struct CameraLocationPair
-{
-    vector origin = <0, 0, 0>
-    vector angles = <0, 0, 0>
-}
 
 struct {
     LocationSettings &selectedLocation
@@ -80,9 +82,9 @@ void function ServerCallback_FSDM_CoolCamera()
     thread CoolCamera()
 }
 
-CameraLocationPair function NewCameraPair(vector origin, vector angles)
+LocPair function NewCameraPair(vector origin, vector angles)
 {
-    CameraLocationPair locPair
+    LocPair locPair
     locPair.origin = origin
     locPair.angles = angles
 
@@ -94,7 +96,7 @@ void function CoolCamera()
 {
     entity player = GetLocalClientPlayer()
 	player.EndSignal("ChangeCameraToSelectedLocation")
-	array<CameraLocationPair> cutsceneSpawns
+	array<LocPair> cutsceneSpawns
 	
     if(!IsValid(player)) return
 	
@@ -141,7 +143,7 @@ void function CoolCamera()
 		{
 			thread function() : (player, cutsceneMover, camera, cutsceneSpawns)
 			{
-				 
+				
 				EndSignal(player, "ChallengeStartRemoveCameras")
 				
 				OnThreadEnd(
@@ -162,8 +164,7 @@ void function CoolCamera()
 					DoF_SetFarDepthToDefault()			
 				})
 				
-				
-				waitthread CoolCameraMovement(player, cutsceneMover, camera, cutsceneSpawns, true)
+				waitthread CoolCameraMovement(player, cutsceneMover, camera, file.selectedLocation.spawns, true)
 			}()
 		}
 	)
@@ -171,22 +172,31 @@ void function CoolCamera()
 	waitthread CoolCameraMovement(player, cutsceneMover, camera, cutsceneSpawns)
 }
 
-void function CoolCameraMovement(entity player, entity cutsceneMover, entity camera, array<CameraLocationPair> cutsceneSpawns, bool isSelectedZoneCamera = false)
+void function CoolCameraMovement(entity player, entity cutsceneMover, entity camera, array<LocPair> cutsceneSpawns, bool isSelectedZoneCamera = false)
 {
+	printt("debug camera " + isSelectedZoneCamera)
 	int locationindex = 0
 	
-	vector moveto
-	vector anglesto
+	vector startpos
+	vector startangs
+	
+	vector finalpos
+	vector finalangs	
 	
 	if(isSelectedZoneCamera)
 	{
-		moveto = cutsceneSpawns[locationindex].origin
-		anglesto = cutsceneSpawns[locationindex].angles		
+		LocPair random = cutsceneSpawns.getrandom()
+		startpos = random.origin
+		startpos.z+= 2000
+		startangs = random.angles
+		
+		finalpos = GetUbicacionMasLejana(random).origin
+		//calcular el más lejano
 	}
 	else
 	{
-		moveto = cutsceneSpawns[locationindex].origin
-		anglesto = cutsceneSpawns[locationindex].angles
+		startpos = cutsceneSpawns[locationindex].origin
+		startangs = cutsceneSpawns[locationindex].angles
 	}
 		
 	while(true){
@@ -196,19 +206,52 @@ void function CoolCameraMovement(entity player, entity cutsceneMover, entity cam
 		
 		if(!isSelectedZoneCamera)
 		{
-			moveto = cutsceneSpawns[locationindex].origin
-			anglesto = cutsceneSpawns[locationindex].angles		
+			startpos = cutsceneSpawns[locationindex].origin
+			startangs = cutsceneSpawns[locationindex].angles		
 		}
 		locationindex++
-		cutsceneMover.SetOrigin(moveto)
-		cutsceneMover.SetAngles(anglesto)
-		camera.SetOrigin(moveto)
-		camera.SetAngles(anglesto)
-		cutsceneMover.NonPhysicsMoveTo(moveto + AnglesToRight(anglesto) * 700, 15, 0, 0)
+		cutsceneMover.SetOrigin(startpos)
+		cutsceneMover.SetAngles(startangs)
+		camera.SetOrigin(startpos)
+		camera.SetAngles(startangs)
 		
-		if(isSelectedZoneCamera) WaitForever()
-		else wait 5
+		if(isSelectedZoneCamera)
+		{
+			camera.SetFOV(110)
+			cutsceneMover.NonPhysicsMoveTo(finalpos, 30, 0, 0)
+			cutsceneMover.NonPhysicsRotateTo( VectorToAngles( finalpos - startpos ), 5, 0.0, 6 / 2.0 )
+			WaitForever()
+		}
+		else
+		{
+			cutsceneMover.NonPhysicsMoveTo(startpos + AnglesToRight(startangs) * 700, 15, 0, 0)
+			cutsceneMover.NonPhysicsRotateTo( startangs, 10, 0.0, 6 / 2.0 )	
+			wait 5
+		}
 	}	
+}
+
+LocPair function GetUbicacionMasLejana(LocPair random)
+{
+	array<float> allspawnsDistances
+	
+	for(int i = 0; i<file.selectedLocation.spawns.len(); i++)
+	{
+		allspawnsDistances.append(Distance(random.origin, file.selectedLocation.spawns[i].origin))
+	}
+	
+	float compareDis = -1
+	int bestpos = 0
+	for(int j = 1; j<allspawnsDistances.len(); j++)
+	{
+		if(allspawnsDistances[j] > compareDis)
+		{
+			compareDis = allspawnsDistances[j]
+			bestpos = j
+		}	
+	}
+
+    return file.selectedLocation.spawns[bestpos]
 }
 
 void function NotifyRingTimer()

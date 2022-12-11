@@ -86,18 +86,18 @@ void function GamemodeProphuntShared_Init()
 				<0, 0, 3000>,$"rui/flowstatelocations/ttvbuilding"
 			)
 		)
-	RegisterLocationPROPHUNT(
-			NewLocationSettings(
-				"Skill trainer By CafeFPS",
-				[
-					NewLocPair(<15008, 30040, -680>, <20, 50, 0>),
-					NewLocPair(<19265, 30022, -680>, <11, 132, 0>),
-					NewLocPair(<19267, 33522, -680>, <10, -138, 0>),
-					NewLocPair(<14995, 33566, -680>, <16, -45, 0>)
-				],
-				<0, 0, 3000>,$"rui/flowstatelocations/skilltrainer"
-			)
-		)
+	// RegisterLocationPROPHUNT(
+			// NewLocationSettings(
+				// "Skill trainer By CafeFPS",
+				// [
+					// NewLocPair(<15008, 30040, -680>, <20, 50, 0>),
+					// NewLocPair(<19265, 30022, -680>, <11, 132, 0>),
+					// NewLocPair(<19267, 33522, -680>, <10, -138, 0>),
+					// NewLocPair(<14995, 33566, -680>, <16, -45, 0>)
+				// ],
+				// <0, 0, 3000>,$"rui/flowstatelocations/skilltrainer"
+			// )
+		// )
 	RegisterLocationPROPHUNT(
 			NewLocationSettings(
 				"TTV Building 2",
