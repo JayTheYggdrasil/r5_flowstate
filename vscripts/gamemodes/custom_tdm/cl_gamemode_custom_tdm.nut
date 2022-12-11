@@ -4,13 +4,6 @@ global function OpenTDMWeaponSelectorUI
 global function ServerCallback_SendScoreboardToClient
 global function ServerCallback_ClearScoreboardOnClient
 global function NotifyRingTimer
-
-	// UISize screenSize   = GetScreenSize()
-	// float resMultiplier = screenSize.height / 1080.0
-	// int width           = 630
-	// int height          = 155
-
-	// HudElement( "IngameTextChat" ).SetSize( width * resMultiplier, height * resMultiplier )
 	
 //Statistics
 global function ServerCallback_OpenStatisticsUI
@@ -216,7 +209,7 @@ void function CoolCameraMovement(entity player, entity cutsceneMover, entity cam
 		
 		if(isSelectedZoneCamera)
 		{
-			camera.SetFOV(110)
+			camera.SetFOV(100)
 			cutsceneMover.NonPhysicsMoveTo(finalpos, 30, 0, 0)
 			cutsceneMover.NonPhysicsRotateTo( VectorToAngles( finalpos - startpos ), 5, 0.0, 6 / 2.0 )
 			WaitForever()

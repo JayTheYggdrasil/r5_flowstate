@@ -76,7 +76,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	// RuiSetColorAlpha( ruitest, "timerColor", SrgbToLinear( <255,233,0> / 255.0 ), 1.0 )
 	
 	ScorebarInitTracking( player, ClGameState_GetRui() )
-	
+
 	if(!isAttacker)
 	{
 		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
@@ -120,7 +120,37 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	{
 		player.p.isAttackerProphunt = true
 		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
+		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+
+		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
 		
+		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
+		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+
+		Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
+		Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
+
+		Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
+
+		UIPos pos   = REPLACEHud_GetPos( HudElement( "ScreenBlur2" ) )
+		UISize size = REPLACEHud_GetSize( HudElement( "ScreenBlur2" ) )
+		
+		HudElement( "ScreenBlur2" ).SetSize( size.width, size.height/3 )
+		
+		HudElement( "ScreenBlur1" ).SetPos( pos.x-39, pos.y-230 )
+		// HudElement( "ScreenBlur2" ).SetPos( pos.x, pos.y-20 )
+		// HudElement( "PropControlsTitle" ).SetPos( pos.x, pos.y-20 )
+		// HudElement( "ProphuntHint0" ).SetPos( pos.x, pos.y-20 )
+		
+	// UISize screenSize   = GetScreenSize()
+	// float resMultiplier = screenSize.height / 1080.0
+	// int width           = 630
+	// int height          = 155
+
+	// HudElement( "IngameTextChat" ).SetSize( width * resMultiplier, height * resMultiplier )
+	
 		// var hudElement = HudElement( "IngameTextChat" )
 		// var height = hudElement.GetHeight()
 		// var screenSize = Hud.GetScreenSize()

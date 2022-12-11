@@ -419,6 +419,14 @@ void function _HandleRespawnPROPHUNT(entity player)
 		player.SetOrigin(<-19459, 2127, 18404>)
 	}
 	
+	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
+	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
+	player.SetPlayerSettingsWithMods( characterSetFile, [] )
+	SetPlayerSettings(player, PROPHUNT_SETTINGS)
+	
+	if(IsValid(player.p.PROPHUNT_LastPropEntity))
+		player.p.PROPHUNT_LastPropEntity.Destroy()
+	
 	player.SetThirdPersonShoulderModeOn()
 	Survival_SetInventoryEnabled( player, false )
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
@@ -805,7 +813,9 @@ void function PROPHUNT_GameLoop()
 		if(!IsValid(player)) continue
 		
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
-		//Inventory_SetPlayerEquipment(player, WHITE_SHIELD, "armor")
+		
+		AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+		//RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
@@ -919,7 +929,7 @@ void function PROPHUNT_GameLoop()
 			RemoveButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
 			//RemoveButtonPressedPlayerInputCallback( player, IN_RELOAD, ClientCommand_MatchSlope )
-			Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
+			//Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			
 			bool clearOnClient = false
 			
@@ -945,6 +955,7 @@ void function PROPHUNT_GameLoop()
 		{
 			if(!IsValid(player)) continue
 			
+			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 			Remote_CallFunction_NonReplay(player, "CreateAndMoveCameraToWinnerProp", MILITIAplayersAlive[0])
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 2, 4)
 		}
@@ -1689,7 +1700,7 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 {
 	if(!IsValid(hunterPlayer) || IsValid(hunterPlayer) && hunterPlayer.GetTeam() != TEAM_IMC) return
 
-	foreach(player in GetPlayerArray())
+	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA))
 	{
 		if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || IsValid(player) && player == hunterPlayer) continue
 		
