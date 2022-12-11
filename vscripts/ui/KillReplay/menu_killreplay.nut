@@ -57,14 +57,14 @@ void function OpenKillReplayHud(asset image, string killedby, int tier, bool isl
 	
 	if(isProphunt) 
 	{
-		Hud_SetText(Hud_GetChild( file.menu, "KillReplayText" ), "APEX PROPHUNT - YOU WILL SPAWN THE NEXT ROUND.")
-		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCard" ), false )
-		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardTopLine" ), false )
-		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardBottomLine" ), false )
+		Hud_SetText(Hud_GetChild( file.menu, "KillReplayText" ), "APEX PROPHUNT - YOU WILL SPAWN THE NEXT ROUND")
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCard" ), true )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardTopLine" ), true )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardBottomLine" ), true )
 		Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayKilledBy" ), false )
-		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerImage" ), false )
-		Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayPlayerName" ), false )
-		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerHealth" ), false )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerImage" ), true )
+		Hud_SetVisible( Hud_GetChild( file.menu, "KillReplayPlayerName" ), true )
+		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerHealth" ), true )
 	}
 }
 
