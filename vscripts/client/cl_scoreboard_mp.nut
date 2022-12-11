@@ -310,7 +310,7 @@ void function ScoreboardFadeOut()
 
 void function ShowScoreboardMP()
 {
-	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "custom_aimtrainer" ) return
+	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "custom_aimtrainer" || GameRules_GetGameMode() == "custom_prophunt" ) return
 		
 	printf("[SB] %s - %s\n", FUNC_NAME(), GameRules_GetGameMode())
 	
@@ -385,7 +385,7 @@ void function ShowScoreboardMP()
 	int maxPlayerDisplaySlots = GetNumPlayersToDisplayAsATeam()
 	bool firstUpdate = true
 
-	for ( ;; )
+	for ( int a = 0; a < 10; a++ )
 	{
 		localPlayer = GetLocalClientPlayer()
 
@@ -692,6 +692,8 @@ void function UpdateScoreboardForGamemode( entity player, var rowRui, var scoreH
 
 void function HideScoreboardMP()
 {
+	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "custom_aimtrainer" || GameRules_GetGameMode() == "custom_prophunt" ) return
+	
 	foreach( void functionref() callbackFunc in file.scoreboardCallbacks_OnHiding )
 		callbackFunc()
 
