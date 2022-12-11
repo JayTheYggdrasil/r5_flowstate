@@ -93,6 +93,8 @@ struct {
 	array<var> fullmap_unitframesRui
 	var        fullmap_gamestateRui
 
+	array< void functionref( var ) > updateFullmapTracking_Callbacks
+	array< void functionref( var ) > onFullmapCreated_Callbacks
 	var fullmap_challengeBoxRui
 
 	array<MapFeature> mapFeatureList
@@ -333,6 +335,8 @@ void function ClMinimap_Init()
 	file.fullmap_gamestateRui = RuiCreate( fullmap_gamestateRuiAsset, clGlobal.topoFullscreenFullMap, FULLMAP_RUI_DRAW_LAYER, 20 )
 	InitHUDRui( file.fullmap_gamestateRui, false )
 	Fullmap_AddRui( file.fullmap_gamestateRui )
+	foreach( func in file.onFullmapCreated_Callbacks )
+		func( file.fullmap_gamestateRui )
 }
 
 
@@ -733,7 +737,7 @@ var function Minimap_AddCustomLayer( asset ruiAsset, int sortKey = MINIMAP_Z_LAY
 void function OnPlayerCreate( entity player )
 {
 	entity viewPlayer = GetLocalViewPlayer()
-	if ( IsValid( viewPlayer ) && viewPlayer.GetTeam() == player.GetTeam() )
+	if ( IsValid( viewPlayer ) && viewPlayer.GetTeam() == player.GetTeam() && GameRules_GetGameMode() != "custom_prophunt" && GameRules_GetGameMode() != "custom_tdm" && GameRules_GetGameMode() != "custom_aimtrainer")
 		UpdateFullmapRuiTracks()
 
 	if ( player != GetLocalClientPlayer() )
@@ -862,7 +866,7 @@ void function UpdatePlayerRuiTracking( entity player )
 	RuiTrackFloat3( file.minimap_you, "playerAngles", viewPlayer, RUI_TRACK_CAMANGLES_FOLLOW )
 	//#if MP_PVEMODE // In r5r, MP_PVEMODE part is not compiled and must be commented out
 		RuiTrackInt( file.minimap_you, "teamMemberIndex", viewPlayer, RUI_TRACK_PLAYER_TEAM_MEMBER_INDEX )
-	//#endif //MP_PVEMODE
+	//#endif                 
 
 	foreach ( var rui in file.minimapOtherRuis )
 	{
@@ -1462,18 +1466,46 @@ bool function Fullmap_IsVisible()
 
 void function UpdateFullmapRuiTracks()
 {
+	if ( IsLobby() )
+		return
+
 	entity viewPlayer = GetLocalViewPlayer()
+	entity clientPlayer = GetLocalClientPlayer()
 	if ( !IsValid( viewPlayer ) )
 		return
 
-	// Update the rui tracks for fullmap unitframes
+	if ( file.fullmap_unitframesRui.len() == 0 )
+	{
+		Warning( FUNC_NAME() + " - fullmap_unitframesRui is empty." )
+		return
+	}
+
+	                                               
+
 	var viewPlayerRui = file.fullmap_unitframesRui[0]
 	thread SetUnitFrameDataFromOwner( viewPlayerRui, viewPlayer, true )
 	UpdateEquipmentSlot( viewPlayer, viewPlayerRui )
 
 	RuiSetInt( viewPlayerRui, "frameSlot", -1 )
 
-	RuiSetBool( viewPlayerRui, "isVisible", !IsFallLTM() )
+                    
+                                                                                                                                                           
+       
+
+	if ( IsValid( clientPlayer ) )
+	{
+		int observerMode = clientPlayer.GetObserverMode()
+		if ( clientPlayer.GetTeam() == TEAM_SPECTATOR && ( observerMode == OBS_MODE_ROAMING || observerMode == OBS_MODE_CHASE ) )
+		{
+			RuiSetBool( viewPlayerRui, "isVisible", false )
+		}
+                 
+		else
+		{
+			RuiSetBool( viewPlayerRui, "isVisible", !IsFallLTM() )
+		}
+      
+	}
 
 	for ( int i = 1; i < file.fullmap_unitframesRui.len(); i++ )
 	{
@@ -1558,6 +1590,9 @@ void function UpdateFullmapRuiTracks()
 	//#if MP_PVEMODE // In r5r, MP_PVEMODE part is not compiled and must be commented out
 		RuiTrackInt( file.fullmap_gamestateRui, "teamMemberIndex", viewPlayer, RUI_TRACK_PLAYER_TEAM_MEMBER_INDEX )
 	//#endif
+
+	foreach( func in file.updateFullmapTracking_Callbacks )
+		func( file.fullmap_gamestateRui )
 }
 
 
@@ -1584,6 +1619,18 @@ void function UpdateEquipmentSlot( entity player, var rui )
 var function GetFullmapGamestateRui()
 {
 	return file.fullmap_gamestateRui
+}
+
+
+void function Fullmap_AddCallback_UpdateTracking( void functionref( var ) func )
+{
+	file.updateFullmapTracking_Callbacks.append( func )
+}
+
+
+void function Fullmap_AddCallback_OnFullmapCreated( void functionref( var ) func )
+{
+	file.onFullmapCreated_Callbacks.append( func )
 }
 
 
