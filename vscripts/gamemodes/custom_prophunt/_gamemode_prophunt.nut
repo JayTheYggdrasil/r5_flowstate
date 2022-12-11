@@ -1189,7 +1189,7 @@ void function PROPHUNT_GameLoop()
 		}
 
 		//wait for timing
-		wait 5
+		wait 7
 
 		// Close the votemenu for each player
 		foreach( player in GetPlayerArray() )

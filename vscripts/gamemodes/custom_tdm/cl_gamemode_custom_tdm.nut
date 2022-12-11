@@ -174,7 +174,6 @@ void function CoolCamera()
 
 void function CoolCameraMovement(entity player, entity cutsceneMover, entity camera, array<LocPair> cutsceneSpawns, bool isSelectedZoneCamera = false)
 {
-	printt("debug camera " + isSelectedZoneCamera)
 	int locationindex = 0
 	
 	vector startpos
