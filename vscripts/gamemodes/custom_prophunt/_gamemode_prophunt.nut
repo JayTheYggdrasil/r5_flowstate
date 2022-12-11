@@ -42,6 +42,14 @@ struct{
 void function _GamemodeProphunt_Init()
 {
 	SetConVarInt("sv_quota_stringCmdsPerSecond", 100)
+	
+	if(GetCurrentPlaylistVarBool("enable_global_chat", true))
+		SetConVarBool("sv_forceChatToTeamOnly", false)
+	else
+		SetConVarBool("sv_forceChatToTeamOnly", true)
+	
+	SurvivalFreefall_Init() //Enables freefall/skydive
+	
 	RegisterSignal("DestroyProp")
 	
 	AddCallback_OnClientConnected( void function(entity player) { 
@@ -1965,7 +1973,7 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 			{
 				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for imc, disable this button for all players that have not voted yet
 				{
-					if(!IsValid(sPlayer)) continue
+					if(!IsValid(sPlayer) || IsValid(sPlayer) && sPlayer == player ) continue
 					
 					if(sPlayer.p.teamasked == -1)
 						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_IMCButton")	
@@ -1984,7 +1992,7 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 			{
 				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for militia, disable this button for all players that have not voted yet
 				{
-					if(!IsValid(sPlayer)) continue
+					if(!IsValid(sPlayer) || IsValid(sPlayer) && sPlayer == player ) continue
 					
 					if(sPlayer.p.teamasked == -1)
 						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_MILITIAButton")		
