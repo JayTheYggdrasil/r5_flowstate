@@ -100,7 +100,7 @@ void function ClGameState_Init()
 {
 	RegisterSignal( "GameStateChanged" )
 	RegisterServerVarChangeCallback( "gameState", ClGameState_Changed )
-	RegisterServerVarChangeCallback( "badRepPresent", UpdateScoreboardBadRepPresentMessage )
+	//RegisterServerVarChangeCallback( "badRepPresent", UpdateScoreboardBadRepPresentMessage )
 	AddOnSpectatorTargetChangedCallback( GameState_SpectatorTargetChanged )
 
 	AddCallback_OnClientScriptInit( ClGameState_AddClient )
@@ -767,7 +767,7 @@ void function ClGameState_Changed()
 			break
 	}
 
-	UpdateIsSonyMP()
+	//UpdateIsSonyMP()
 }
 
 void function GameState_SpectatorTargetChanged( entity player, entity previousTarget, entity currentTarget )
