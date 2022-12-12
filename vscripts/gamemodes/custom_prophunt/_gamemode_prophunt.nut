@@ -68,15 +68,7 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
 	AddClientCommandCallback("EmitWhistle", ClientCommand_PROPHUNT_EmitWhistle)
 	AddClientCommandCallback("AskForTeam", ClientCommand_PROPHUNT_AskForTeam)
-	
-	//Controls
-	// AddClientCommandCallback("ChangeProp", ClientCommand_ChangeProp)
-	//AddClientCommandCallback("MatchSlope", ClientCommand_MatchSlope)	
-	// AddClientCommandCallback("LockAngles", ClientCommand_LockAngles)
-	//AddClientCommandCallback("CreateDecoy", ClientCommand_CreatePropDecoy)
-	//AddClientCommandCallback("FireFlashBang", ClientCommand_EmitFlashBangToNearbyPlayers)
-	//AddClientCommandCallback("Attackers_ForceChangeProp", ClientCommand_ForceChangeProp_Attackers)
-	
+
 	PrecacheCustomMapsProps()
 	
 	foreach(prop in prophuntAssetsWE)
@@ -488,6 +480,30 @@ void function GiveTeamToProphuntPlayer(entity player)
 	//printt("Flowstate DEBUG - Giving team to player.", player, player.GetTeam())
 }
 
+void function StartHuntersAbilityTimer()
+{
+	float endTime = Time() + PROPHUNT_ATTACKERS_ABILITY_COOLDOWN
+	
+	OnThreadEnd(
+	function() : ()
+	{
+		if(GetGameState() == eGameState.Playing)
+		{
+			array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
+			foreach(player in IMCplayers)
+			{
+				if(!IsValid(player)) continue
+				AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+				Remote_CallFunction_NonReplay( player, "EnableHuntersAbility")
+			}
+		}
+	})
+	
+	while( Time() <= endTime && GetGameState() == eGameState.Playing)
+	{
+		WaitFrame()
+	}
+}
 
 void function EmitSoundOnSprintingProp()
 {
@@ -815,7 +831,6 @@ void function PROPHUNT_GameLoop()
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
 		
 		AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
-		//RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
@@ -928,8 +943,7 @@ void function PROPHUNT_GameLoop()
 			RemoveButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 			RemoveButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-			//RemoveButtonPressedPlayerInputCallback( player, IN_RELOAD, ClientCommand_MatchSlope )
-			//Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
+			Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			
 			bool clearOnClient = false
 			
@@ -966,7 +980,8 @@ void function PROPHUNT_GameLoop()
 		{
 			if(!IsValid(player)) continue
 			
-			Message(player, "hunterS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
+			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+			Message(player, "HUNTERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)
 		}
@@ -989,6 +1004,7 @@ void function PROPHUNT_GameLoop()
 		Highlight_ClearFriendlyHighlight( player )
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_RemoveControlsUI")
 	}
+	SetGameState(eGameState.MapVoting)
 	
 	SendScoreboardToClient()
 	
@@ -1008,7 +1024,6 @@ void function PROPHUNT_GameLoop()
 		}
 	}
 	
-	SetGameState(eGameState.MapVoting)
 	UpdatePlayerCounts()
 	FS_PROPHUNT.InProgress = false
 	FS_PROPHUNT.ringBoundary.Destroy()
@@ -1698,7 +1713,7 @@ bool function ClientCommand_VoteForMap_PROPHUNT(entity player, array<string> arg
 }
 void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 {
-	if(!IsValid(hunterPlayer) || IsValid(hunterPlayer) && hunterPlayer.GetTeam() != TEAM_IMC) return
+	if(!IsValid(hunterPlayer) || IsValid(hunterPlayer) && hunterPlayer.GetTeam() != TEAM_IMC || GetGameState() != eGameState.Playing) return
 
 	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA))
 	{
@@ -1739,11 +1754,19 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 			// }		
 		}
 	}
+	
+	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
+	{
+		RemoveButtonPressedPlayerInputCallback( hunterPlayer, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+		Remote_CallFunction_NonReplay( hunterPlayer, "ForceDisableHuntersAbilityHint")
+	}
+
+	thread StartHuntersAbilityTimer()
 }
 
 void function ClientCommand_ChangeProp(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return
 
 	if(player.p.PROPHUNT_AreAnglesLocked)
 	{

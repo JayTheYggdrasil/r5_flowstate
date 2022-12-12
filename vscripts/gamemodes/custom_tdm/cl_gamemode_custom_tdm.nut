@@ -209,7 +209,7 @@ void function CoolCameraMovement(entity player, entity cutsceneMover, entity cam
 		
 		if(isSelectedZoneCamera)
 		{
-			camera.SetFOV(100)
+			camera.SetFOV(90)
 			cutsceneMover.NonPhysicsMoveTo(finalpos, 30, 0, 0)
 			cutsceneMover.NonPhysicsRotateTo( VectorToAngles( finalpos - startpos ), 5, 0.0, 6 / 2.0 )
 			WaitForever()

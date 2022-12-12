@@ -13,7 +13,8 @@ global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 4
 global const int PROPHUNT_WHISTLE_RADIUS = 2000
 global const int PROPHUNT_WHISTLE_TIMER = 15
-global int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 5 //hiding props time too
+global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 5 //hiding props time too
+global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 5
 
 global const array<asset> prophuntAssetsWE =
 [

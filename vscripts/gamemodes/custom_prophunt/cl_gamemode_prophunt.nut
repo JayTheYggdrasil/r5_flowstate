@@ -18,6 +18,8 @@ global function GetWinnerPropCameraEntities
 global function ClientAskedForTeam
 global function PROPHUNT_Disable_MILITIAButton
 global function PROPHUNT_Disable_IMCButton
+global function ForceDisableHuntersAbilityHint
+global function EnableHuntersAbility
 
 struct {
     LocationSettings &selectedLocation
@@ -116,49 +118,64 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
 		
 		player.p.isAttackerProphunt = false
+		var screenSize = Hud.GetScreenSize()
+		
+		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 229*screenSize[1]/990 )		
+		HudElement( "ScreenBlur1" ).SetPos( -35, -35 )
 	} else
 	{
 		player.p.isAttackerProphunt = true
 		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
-		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
-		Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
-
-		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
-		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
 		
-		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
-		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
-
-		Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
-		Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
-
-		Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
-
-		UIPos pos   = REPLACEHud_GetPos( HudElement( "ScreenBlur2" ) )
-		UISize size = REPLACEHud_GetSize( HudElement( "ScreenBlur2" ) )
-		
-		HudElement( "ScreenBlur2" ).SetSize( size.width, size.height/3 )
-		
-		HudElement( "ScreenBlur1" ).SetPos( pos.x-39, pos.y-230 )
-		// HudElement( "ScreenBlur2" ).SetPos( pos.x, pos.y-20 )
-		// HudElement( "PropControlsTitle" ).SetPos( pos.x, pos.y-20 )
-		// HudElement( "ProphuntHint0" ).SetPos( pos.x, pos.y-20 )
-		
-	// UISize screenSize   = GetScreenSize()
-	// float resMultiplier = screenSize.height / 1080.0
-	// int width           = 630
-	// int height          = 155
-
-	// HudElement( "IngameTextChat" ).SetSize( width * resMultiplier, height * resMultiplier )
-	
-		// var hudElement = HudElement( "IngameTextChat" )
-		// var height = hudElement.GetHeight()
-		// var screenSize = Hud.GetScreenSize()
-		// var position = hudElement.GetPos()
-		// HudElement( "IngameTextChat" ).SetPos( position[0], -1 * ( screenSize[1] - ( height + screenSize[1] * 0.10 ) ) )
-		// AddInputHint( "%scriptCommand5%", "Change Props Model" )
+		EnableHuntersAbility()
 	}
 }
+
+void function ForceDisableHuntersAbilityHint()
+{
+	Hud_SetEnabled(HudElement( "ScreenBlur1" ), false)
+	Hud_SetVisible(HudElement( "ScreenBlur1" ), false)
+
+	Hud_SetEnabled(HudElement( "ScreenBlur2" ), false)
+	Hud_SetVisible(HudElement( "ScreenBlur2" ), false)
+	
+	Hud_SetEnabled(HudElement( "PropControlsTitle" ), false)
+	Hud_SetVisible(HudElement( "PropControlsTitle" ), false)
+
+	Hud_SetEnabled(HudElement( "ProphuntHint0" ), false)
+	Hud_SetVisible(HudElement( "ProphuntHint0" ), false)
+	
+	GetLocalClientPlayer().p.isAttackersAbilityEnabled = false
+}
+
+void function EnableHuntersAbility()
+{
+	Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
+	Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+
+	Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
+	Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
+	
+	Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
+	Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+
+	Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
+	Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
+
+	Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
+
+	UIPos pos   = REPLACEHud_GetPos( HudElement( "ScreenBlur2" ) )
+	UISize size = REPLACEHud_GetSize( HudElement( "ScreenBlur2" ) )
+	
+	var position = HudElement( "ScreenBlur2" ).GetPos()
+	var screenSize = Hud.GetScreenSize()
+
+	HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 65*screenSize[1]/990 )		
+	HudElement( "ScreenBlur1" ).SetPos( -39, -301 )
+	
+	GetLocalClientPlayer().p.isAttackersAbilityEnabled = true
+}
+
 void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 {
 	thread function() : (isPropTeam)
@@ -430,7 +447,9 @@ void function ReloadMenuRUI()
 	} else
 	{
 		player.p.isAttackerProphunt = true
-		//AddInputHint( "%scriptCommand5%", "Change Props Model" )
+		
+		if(GetLocalClientPlayer().p.isAttackersAbilityEnabled)
+			EnableHuntersAbility()
 	}
 }
 

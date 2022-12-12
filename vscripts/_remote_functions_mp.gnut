@@ -93,6 +93,8 @@ void function RemoteFunctions_Init_Begin()
 			Remote_RegisterClientFunction("CreateAndMoveCameraToWinnerProp", "entity")
 			Remote_RegisterClientFunction("PROPHUNT_Disable_MILITIAButton")
 			Remote_RegisterClientFunction("PROPHUNT_Disable_IMCButton")
+			Remote_RegisterClientFunction("ForceDisableHuntersAbilityHint")
+			Remote_RegisterClientFunction("EnableHuntersAbility")
 			break
 		case MAP_EDITOR:
 			Remote_RegisterClientFunction("ServerCallback_NextProp", "entity")
