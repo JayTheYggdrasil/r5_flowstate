@@ -7,14 +7,14 @@
 global function GamemodeProphuntShared_Init
 global function RegisterLocationPROPHUNT
 
-global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 4
-global const int PROPHUNT_FLASH_BANG_RADIUS = 500
-global const int PROPHUNT_DECOYS_USAGE_LIMIT = 4
-global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 4
+global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 5
+global const int PROPHUNT_FLASH_BANG_RADIUS = 600
+global const int PROPHUNT_DECOYS_USAGE_LIMIT = 5
+global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 5
 global const int PROPHUNT_WHISTLE_RADIUS = 2000
-global const int PROPHUNT_WHISTLE_TIMER = 15
-global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 5 //hiding props time too
-global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 5
+global const int PROPHUNT_WHISTLE_TIMER = 25
+global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 30 //hiding props time too
+global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 60
 
 global array<asset> prophuntAssets = []
 
