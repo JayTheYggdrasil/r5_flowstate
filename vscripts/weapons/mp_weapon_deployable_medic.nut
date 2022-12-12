@@ -1138,7 +1138,7 @@ void function DeployableMedic_PlayerOnDamage( entity player, var damageInfo )
 	Assert( IsValid( player ), "Player ent got a damage callback but it wasn't vaild." )
 
 	// int damageSourceID = DamageInfo_GetDamageSourceIdentifier( damageInfo )
-	printt("Player damaged ")
+	//printt("Player damaged ")
 	Signal( player, "DeployableMedic_HealAborted" )
 	
 	// switch( damageSourceID )
