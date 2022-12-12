@@ -886,7 +886,7 @@ Scripts:
 	weapons/mp_weapon_softball.nut
 	weapons/mp_weapon_smr.nut
 	weapons/mp_weapon_rocket_launcher.nut
-
+	weapons/sp_weapon_arc_tool.nut
 	
 	//CUSTOM BY COLOMBIA
 	weapons/mp_weapon_portalgun.nut

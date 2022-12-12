@@ -330,6 +330,8 @@ void function CodeCallback_MapSpawn() // original script entry point
 	PrecacheWeapon( $"mp_weapon_rocket_launcher" )
 	PrecacheWeapon( $"mp_weapon_epg" )
 	PrecacheModel( $"mdl/weapons_r5/loot/_master/w_loot_wep_ammo_sniper.rmdl" )
+	PrecacheWeapon( $"melee_combat_katana" )
+	PrecacheWeapon( $"mp_weapon_combat_katana_primary" )
 	
 	//////////////////////////////////////////////
 	//CUSTOM PORTED/SCRIPTED BY CAFEDECOLOMBIAFPS
@@ -384,6 +386,7 @@ void function CodeCallback_MapSpawn() // original script entry point
 	PrecacheWeapon( $"mp_ability_ironmanunibeam" )
 	PrecacheWeapon( $"mp_ability_phase_chamber" )
 	PrecacheWeapon( $"mp_ability_mobile_respawn_beacon" )
+
 
 	switch(GameRules_GetGameMode())
 	{
