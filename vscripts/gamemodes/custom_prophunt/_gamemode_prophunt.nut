@@ -71,7 +71,7 @@ void function _GamemodeProphunt_Init()
 
 	PrecacheCustomMapsProps()
 	
-	foreach(prop in prophuntAssetsWE)
+	foreach(prop in prophuntAssets)
 		PrecacheModel(prop)
 	
 	PrecacheParticleSystem($"P_impact_exp_xo_shield_med_CP")
@@ -192,9 +192,10 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			{
 				player.SetOrigin(<-19459, 2127, 6404>)
 			}
-			else if(GetMapName() == "mp_rr_canyonlands_mu1" || GetMapName() == "mp_rr_canyonlands_mu1_night" || GetMapName() == "mp_rr_canyonlands_64k_x_64k")
+			else if(GetMapName() == "mp_rr_canyonlands_mu1")
 			{
-				player.SetOrigin(<-19459, 2127, 18404>)
+				player.SetOrigin(<-19161.6582, 3742.42432, 3968.03125>)
+				player.SetAngles(<0, 7.94140625, 0>)
 			}
 
 			player.SetThirdPersonShoulderModeOn()
@@ -406,9 +407,10 @@ void function _HandleRespawnPROPHUNT(entity player)
 	{
 		player.SetOrigin(<-19459, 2127, 6404>)
 	}
-	else if(GetMapName() == "mp_rr_canyonlands_mu1" || GetMapName() == "mp_rr_canyonlands_mu1_night" || GetMapName() == "mp_rr_canyonlands_64k_x_64k")
+	else if(GetMapName() == "mp_rr_canyonlands_mu1")
 	{
-		player.SetOrigin(<-19459, 2127, 18404>)
+		player.SetOrigin(<-19161.6582, 3742.42432, 3968.03125>)
+		player.SetAngles(<0, 7.94140625, 0>)
 	}
 	
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
@@ -593,14 +595,14 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 		selectedModel = player.p.PROPHUNT_LastModel
 	else
 	{
-		int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+		int modelindex = RandomIntRangeInclusive(0,(prophuntAssets.len()-1))
 		while(modelindex == player.p.PROPHUNT_LastModelIndex) //remove me
 		{
-			modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+			modelindex = RandomIntRangeInclusive(0,(prophuntAssets.len()-1))
 			WaitFrame()
 		}
 		player.p.PROPHUNT_LastModelIndex = modelindex
-		selectedModel = prophuntAssetsWE[modelindex]
+		selectedModel = prophuntAssets[modelindex]
 		player.p.PROPHUNT_LastModel = selectedModel
 	}
 	
@@ -768,9 +770,9 @@ void function PROPHUNT_GameLoop()
 			EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 			EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
-			int modelindex = RandomIntRangeInclusive(0,(prophuntAssetsWE.len()-1))
+			int modelindex = RandomIntRangeInclusive(0,(prophuntAssets.len()-1))
 			player.p.PROPHUNT_LastModelIndex = modelindex
-			asset selectedModel = prophuntAssetsWE[modelindex]
+			asset selectedModel = prophuntAssets[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
 			
 			player.kv.solid = 0
