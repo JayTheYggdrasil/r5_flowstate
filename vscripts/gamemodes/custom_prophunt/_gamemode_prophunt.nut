@@ -507,7 +507,7 @@ void function StartHuntersAbilityTimer()
 			{
 				if(!IsValid(player)) continue
 				
-				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 10)
+				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 12)
 			}
 		}
 		
