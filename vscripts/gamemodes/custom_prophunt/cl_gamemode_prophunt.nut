@@ -587,9 +587,13 @@ void function PROPHUNT_CustomHint(int index)
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break
 		case 11:
-		Obituary_Print_Localized( "An enemy changed your prop!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
+		Obituary_Print_Localized( "A hunter changed all props form!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
-		break		
+		break
+		case 12:
+		QuickHint("", "Hunters will be able to change your prop in 5 seconds.", true, 4)
+		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
+		break
 	}
 }
 

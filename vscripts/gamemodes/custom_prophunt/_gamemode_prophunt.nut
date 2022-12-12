@@ -489,7 +489,7 @@ void function StartHuntersAbilityTimer()
 	{
 		if(GetGameState() == eGameState.Playing)
 		{
-			array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
+			array<entity> IMCplayers = GetPlayerArrayOfTeam_Alive(TEAM_IMC)
 			foreach(player in IMCplayers)
 			{
 				if(!IsValid(player)) continue
@@ -501,6 +501,16 @@ void function StartHuntersAbilityTimer()
 	
 	while( Time() <= endTime && GetGameState() == eGameState.Playing)
 	{
+		if( Time() == (endTime-5) )
+		{
+			foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA))
+			{
+				if(!IsValid(player)) continue
+				
+				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 10)
+			}
+		}
+		
 		WaitFrame()
 	}
 }
@@ -1757,6 +1767,7 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 	
 	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
 	{
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
 		RemoveButtonPressedPlayerInputCallback( hunterPlayer, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 		Remote_CallFunction_NonReplay( hunterPlayer, "ForceDisableHuntersAbilityHint")
 	}
