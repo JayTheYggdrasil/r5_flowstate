@@ -276,12 +276,18 @@ void function Disable_MILITIAButton()
 {
 	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamPropsButton")), "status", eFriendStatus.OFFLINE )
 	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamPropsButton"), false)
+	
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.ONLINE )
+	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamSeekersButton"), false)
 }
 
 void function Disable_IMCButton()
 {
 	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.OFFLINE )
 	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamSeekersButton"), false)
+	
+	RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamPropsButton")), "status", eFriendStatus.ONLINE )
+	Hud_SetEnabled(Hud_GetChild( file.menu, "TeamPropsButton"), false)
 }
 
 void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bool TimerText, bool MapVoteFrame, bool _FSDM_BottomFrame, bool ObjectiveText, bool MapVoteFrame2, bool VotedForLbl, bool WinnerLbl, bool WinnerFrame, bool Scoreboard)

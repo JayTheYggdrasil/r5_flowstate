@@ -2005,12 +2005,15 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 			
 			if(FS_PROPHUNT.requestsforIMC == FS_PROPHUNT.maxvotesallowedforTeams)
 			{
-				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for imc, disable this button for all players that have not voted yet
+				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for imc, disable this button for all players that have not voted yet and select the other team for them
 				{
 					if(!IsValid(sPlayer) || IsValid(sPlayer) && sPlayer == player ) continue
 					
 					if(sPlayer.p.teamasked == -1)
+					{
+						sPlayer.p.teamasked = 1
 						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_IMCButton")	
+					}
 				}
 			}			
 		break
@@ -2024,12 +2027,15 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 			
 			if(FS_PROPHUNT.requestsforMILITIA == FS_PROPHUNT.maxvotesallowedforTeams)
 			{
-				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for militia, disable this button for all players that have not voted yet
+				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for militia, disable this button for all players that have not voted yet and select the other team for them
 				{
 					if(!IsValid(sPlayer) || IsValid(sPlayer) && sPlayer == player ) continue
 					
 					if(sPlayer.p.teamasked == -1)
-						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_MILITIAButton")		
+					{
+						sPlayer.p.teamasked = 0
+						Remote_CallFunction_NonReplay(sPlayer, "PROPHUNT_Disable_MILITIAButton")	
+					}						
 				}					
 			}			
 		break
