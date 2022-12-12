@@ -496,6 +496,9 @@ void function StartHuntersAbilityTimer()
 			{
 				if(!IsValid(player)) continue
 				AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+				if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+					player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
+				player.GiveOffhandWeapon("mp_weapon_changeprops_fakeultimate", OFFHAND_ULTIMATE)
 				Remote_CallFunction_NonReplay( player, "EnableHuntersAbility")
 			}
 		}
@@ -872,8 +875,10 @@ void function PROPHUNT_GameLoop()
 		}
 		
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
+		player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 		player.GiveWeapon( "mp_weapon_combat_katana_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
+		player.GiveOffhandWeapon("mp_weapon_changeprops_fakeultimate", OFFHAND_ULTIMATE)
 		player.GiveOffhandWeapon( "melee_combat_katana", OFFHAND_MELEE, [] )
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
@@ -982,6 +987,8 @@ void function PROPHUNT_GameLoop()
 			if(!IsValid(player)) continue
 			
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+			if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+					player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
 			Remote_CallFunction_NonReplay(player, "CreateAndMoveCameraToWinnerProp", MILITIAplayersAlive[0])
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 2, 4)
 		}
@@ -993,6 +1000,8 @@ void function PROPHUNT_GameLoop()
 			if(!IsValid(player)) continue
 			
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+			if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+					player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
 			Message(player, "HUNTERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)
@@ -1769,8 +1778,14 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 	
 	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
 	{
+		if(!IsValid(player)) continue
+		
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
 		RemoveButtonPressedPlayerInputCallback( hunterPlayer, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+
+		if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+			player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
+				
 		Remote_CallFunction_NonReplay( hunterPlayer, "ForceDisableHuntersAbilityHint")
 	}
 
