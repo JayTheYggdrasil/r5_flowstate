@@ -31,32 +31,42 @@ void function GamemodeProphuntShared_Init()
 			$"mdl/utilities/power_gen1.rmdl",
 			$"mdl/angel_city/box_small_02.rmdl",
 			$"mdl/colony/antenna_05_colony.rmdl",
-			$"mdl/garbage/trash_bin_single_wtrash_Blue.rmdl",
 			$"mdl/angel_city/box_small_01.rmdl",
-			$"mdl/garbage/dumpster_dirty_open_a_02.rmdl",
 			$"mdl/containers/slumcity_oxygen_tank_red.rmdl",
 			$"mdl/containers/box_shrinkwrapped.rmdl",
 			$"mdl/colony/farmland_fridge_01.rmdl",
-			$"mdl/furniture/chair_beanbag_01.rmdl",
 			$"mdl/colony/farmland_crate_plastic_01_red.rmdl",
 			$"mdl/IMC_base/generator_IMC_01.rmdl",
 			$"mdl/garbage/trash_can_metal_02_b.rmdl",
 			$"mdl/garbage/trash_bin_single_wtrash.rmdl"
-			//nuevos
-			$"mdl/containers/slumcity_oxygen_bag_large_01_b.rmdl",
 			$"mdl/containers/slumcity_oxygen_tank_blue.rmdl",
 			$"mdl/containers/barrel.rmdl",
 			$"mdl/containers/container_medium_tanks_blue.rmdl",
 			$"mdl/containers/underbelly_cargo_container_128_red_02.rmdl",
 			$"mdl/containers/underbelly_cargo_container_128_blue_02.rmdl",
 			$"mdl/containers/pelican_case_large.rmdl",
-			$"mdl/containers/box_med_cardboard_03.rmdl",
-			$"mdl/furniture/couch_suede_brown_01.rmdl",
 			$"mdl/colony/farmland_crate_md_80x64x72_01.rmdl",
-			$"mdl/colony/farmland_crate_md_80x64x72_03.rmdl",
-			$"mdl/industrial/vending_machine_02.rmdl",
-			$"mdl/angel_city/jersey_barrier_large_02.rmdl",
-			$"mdl/angel_city/vending_machine.rmdl"
+			$"mdl/angel_city/vending_machine.rmdl",
+			//nuevos kc
+			$"mdl/rocks/thunderdome_quarry_block_02_orange.rmdl",
+			$"mdl/colony/farmland_crate_plastic_01.rmdl",
+			$"mdl/colony/water_heater_red.rmdl",
+			$"mdl/colony/antenna_01_colony_pole.rmdl",
+			$"mdl/containers/gas_tank.rmdl",
+			$"mdl/containers/crate_orange_plastic.rmdl",
+			$"mdl/containers/lagoon_roof_tanks_01.rmdl",
+			$"mdl/thunderdome/thunderdome_cut_rock_large_01.rmdl",
+			$"mdl/eden/eden_electrical_transformer_01.rmdl",
+			$"mdl/barriers/sandbags_curved_01.rmdl",
+			$"mdl/barriers/guard_rail_01_64.rmdl",
+			$"mdl/barriers/concrete/concrete_barrier_fence.rmdl",
+			$"mdl/barriers/guard_rail_01_256.rmdl",
+			$"mdl/vehicles_r5/land/msc_forklift_imc_v2/veh_land_msc_forklift_imc_v2_static.rmdl",
+			$"mdl/beacon/beacon_server_stand_01.rmdl",
+			$"mdl/nexus/hay_bale_01_round.rmdl",
+			$"mdl/nexus/fir_log_pile_01.rmdl",
+			$"mdl/nexus/hay_bale_01_straps.rmdl"
+			
 			
 		]
 		

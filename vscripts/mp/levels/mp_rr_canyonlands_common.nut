@@ -218,9 +218,9 @@ void function EntitiesDidLoad()
 {
 	if(GetMapName() != "mp_rr_canyonlands_staging" && GameRules_GetGameMode() != "custom_tdm" && GameRules_GetGameMode() != "custom_aimtrainer")
 	{
-		InitLootDrones() //flyers
-		InitLootRollers() //flyers
-		InitLootDronePaths() //flyers
+		//InitLootDrones() //flyers
+		//InitLootRollers() //flyers
+		//InitLootDronePaths() //flyers
 	}
 	thread __EntitiesDidLoad()
 }
@@ -228,10 +228,10 @@ void function EntitiesDidLoad()
 void function __EntitiesDidLoad()
 {
 	if(GetMapName() != "mp_rr_canyonlands_staging" && GameRules_GetGameMode() != SURVIVAL){
-	SpawnEditorProps()
+	//SpawnEditorProps()
 	}
 
-	if( GameRules_GetGameMode() != FREELANCE || GameRules_GetGameMode() != "custom_tdm")
+	if( GameRules_GetGameMode() != FREELANCE || GameRules_GetGameMode() == SURVIVAL )
 	{
 		waitthread FindHoverTankEndNodes()
 		SpawnHoverTanks()

@@ -68,7 +68,7 @@ void function _GamemodeProphunt_Init()
 	AddClientCommandCallback("VoteForMap", ClientCommand_VoteForMap_PROPHUNT)
 	AddClientCommandCallback("EmitWhistle", ClientCommand_PROPHUNT_EmitWhistle)
 	AddClientCommandCallback("AskForTeam", ClientCommand_PROPHUNT_AskForTeam)
-
+	//AddClientCommandCallback("debugProphuntModels", ClientCommand_PROPHUNT_debugProphuntModels)
 	PrecacheCustomMapsProps()
 	
 	foreach(prop in prophuntAssets)
@@ -2068,6 +2068,15 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 			player.p.teamasked = -1
 		break
 	}	
+	
+	return true
+}
+
+bool function ClientCommand_PROPHUNT_debugProphuntModels(entity player, array < string > args) 
+{	
+	player.SetBodyModelOverride( prophuntAssets[int(args[0])] )
+	player.SetArmsModelOverride( prophuntAssets[int(args[0])] )
+	player.p.PROPHUNT_LastPropEntity.SetModel( prophuntAssets[int(args[0])] )
 	
 	return true
 }
