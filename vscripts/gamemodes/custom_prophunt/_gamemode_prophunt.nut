@@ -152,11 +152,8 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 
 	CreatePanelText( player, "Flowstate", "", <-19766, 2111, 6541>, <0, 180, 0>, false, 2 )
 	
-	if(FlowState_ForceCharacter())
-	{
-		PROPHUNT_CharSelect(player)
-	}
-	
+	PROPHUNT_CharSelect(player)
+
 	GivePassive(player, ePassives.PAS_PILOT_BLOOD)
 	UpdatePlayerCounts()
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
@@ -393,11 +390,6 @@ void function _HandleRespawnPROPHUNT(entity player)
 	
 	//printt("Flowstate DEBUG - Tping prophunt player to Lobby.", player)
 
-	if(FlowState_ForceCharacter())
-	{
-		PROPHUNT_CharSelect(player)
-	}
-	
 	if(!IsAlive(player)) 
 	{
 		DecideRespawnPlayer(player, false)
