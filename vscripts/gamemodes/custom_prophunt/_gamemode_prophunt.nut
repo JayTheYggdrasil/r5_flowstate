@@ -425,6 +425,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 	player.kv.fadedist = 999999
 	player.AllowMantle()
+	player.SetMoveSpeedScale(1)
 	TakeAllWeapons(player)
 }
 
@@ -807,6 +808,7 @@ void function PROPHUNT_GameLoop()
 			
 			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", true)
+			player.SetMoveSpeedScale(1.25)
 			wait 0.2
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
@@ -880,6 +882,7 @@ void function PROPHUNT_GameLoop()
 		Highlight_SetFriendlyHighlight( player, "prophunt_teammate" )
 		Highlight_SetEnemyHighlight( player, "survival_enemy_skydiving" )
 		Remote_CallFunction_NonReplay(player, "Minimap_EnableDraw_Internal")
+		player.SetMoveSpeedScale(1)
 	}
 	
 	FS_PROPHUNT.ringBoundary_PreGame.Destroy()
@@ -986,7 +989,7 @@ void function PROPHUNT_GameLoop()
 			Remote_CallFunction_NonReplay(player, "CreateAndMoveCameraToWinnerProp", MILITIAplayersAlive[0])
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 2, 4)
 		}
-	} else {
+	} else if(IMCplayersAlive.len() > 0){
 		TeamWon = TEAM_IMC
 		
 		foreach(player in GetPlayerArray())
