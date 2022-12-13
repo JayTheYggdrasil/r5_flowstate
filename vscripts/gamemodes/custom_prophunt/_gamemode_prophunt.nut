@@ -412,9 +412,8 @@ void function _HandleRespawnPROPHUNT(entity player)
 		player.SetOrigin(<-19161.6582, 3742.42432, 3968.03125>)
 		player.SetAngles(<0, 7.94140625, 0>)
 	}
-	ItemFlavor PersonajeEscogido = GetAllCharacters()[RandomInt(9)]
-	CharacterSelect_AssignCharacter( ToEHI( player ), PersonajeEscogido )	
 	
+	PROPHUNT_CharSelect(player)
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
 	player.SetPlayerSettingsWithMods( characterSetFile, [] )
