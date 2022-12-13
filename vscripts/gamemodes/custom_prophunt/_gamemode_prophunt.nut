@@ -412,6 +412,8 @@ void function _HandleRespawnPROPHUNT(entity player)
 		player.SetOrigin(<-19161.6582, 3742.42432, 3968.03125>)
 		player.SetAngles(<0, 7.94140625, 0>)
 	}
+	ItemFlavor PersonajeEscogido = GetAllCharacters()[RandomInt(9)]
+	CharacterSelect_AssignCharacter( ToEHI( player ), PersonajeEscogido )	
 	
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
@@ -420,7 +422,7 @@ void function _HandleRespawnPROPHUNT(entity player)
 	
 	if(IsValid(player.p.PROPHUNT_LastPropEntity))
 		player.p.PROPHUNT_LastPropEntity.Destroy()
-	
+		
 	player.SetThirdPersonShoulderModeOn()
 	Survival_SetInventoryEnabled( player, false )
 	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
@@ -1936,7 +1938,6 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 				StatusEffect_AddTimed( sPlayer, eStatusEffect.move_slow, 0.50, 3.0, 0.5 )
 			}
 		}
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_DoScreenFlashFX", player, player)
 		EmitSoundOnEntityExceptToPlayer(player, player, "explo_proximityemp_impact_3p")
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
