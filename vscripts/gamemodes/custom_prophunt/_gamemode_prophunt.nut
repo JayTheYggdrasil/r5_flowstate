@@ -953,7 +953,6 @@ void function PROPHUNT_GameLoop()
 			RemoveButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 			RemoveButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-			Message(player, "PROPS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
 			
 			bool clearOnClient = false
 			
@@ -964,6 +963,8 @@ void function PROPHUNT_GameLoop()
 					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", true, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
 				else
 					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", false, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
+				
+				Remote_CallFunction_NonReplay(Winnerplayer, "PROPHUNT_QuickText", 3, 4) //PROPS TEAM WIN
 				i++
 			}
 			
@@ -995,7 +996,7 @@ void function PROPHUNT_GameLoop()
 			RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 			if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
 					player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
-			Message(player, "HUNTERS TEAM WIN", "", 4, "diag_ap_aiNotify_winnerFound")
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_QuickText", 4, 4) //HUNTERS TEAM WIN
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)
 		}

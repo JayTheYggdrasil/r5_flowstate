@@ -297,7 +297,15 @@ void function PROPHUNT_QuickText(int index, int duration)
 			break
 			case 2:
 			msg = "PROP REVEAL"
-			EmitSoundOnEntity(player, "Titan_Legion_Smart_Core_Activated_3P_enemy")
+			//EmitSoundOnEntity(player, "ui_ingame_transitiontokillreplay")
+			break
+			case 3:
+			msg = "PROPS VICTORY"
+			//EmitSoundOnEntity(player, "diag_ap_aiNotify_winnerFound")
+			break
+			case 4:
+			msg = "HUNTERS VICTORY"
+			EmitSoundOnEntity(player, "diag_ap_aiNotify_winnerFound")
 			break
 		}
 		Hud_SetText( HudElement( "MiscTimer"), msg)
@@ -696,6 +704,10 @@ void function CreateAndMoveCameraToWinnerProp(entity winnerProp)
 
 		winnerpropcam.m.NonPhysicsMoveTo( finalorg, 2, 0, 0.3 )
 		winnerpropcam.m.NonPhysicsRotateTo( finalang, 2, 0, 0.3 )
+		
+		wait 1
+		if(IsValid(localplayer))
+			EmitSoundOnEntity(localplayer, "ui_ingame_transitiontokillreplay")
 	}()
 }
 
