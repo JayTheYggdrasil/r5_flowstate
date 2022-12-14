@@ -605,15 +605,23 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 	try { GetWinnerPropCameraEntities()[0].ClearParent(); GetWinnerPropCameraEntities()[0].Destroy(); GetWinnerPropCameraEntities()[1].Destroy() } catch (exceptio2n){ }
 
-    //Todo: each maps victory pos and ang
-    file.victorySequencePosition = file.selectedLocation.victorypos.origin - < 0, 0, 52>
-	file.victorySequenceAngles = file.selectedLocation.victorypos.angles
-
+	if (GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
+	{
+		file.victorySequencePosition = file.selectedLocation.victorypos.origin - < 0, 0, 52>
+		file.victorySequenceAngles = file.selectedLocation.victorypos.angles
+	}
+	else if(GetMapName() == "mp_rr_canyonlands_mu1")
+	{
+		file.victorySequencePosition = <-19443.75, -26319.9316, 9915.63965>	
+		file.victorySequenceAngles = <0, 180, 0>
+	}
+	
 	asset defaultModel                = GetGlobalSettingsAsset( DEFAULT_PILOT_SETTINGS, "bodyModel" )
 	LoadoutEntry loadoutSlotCharacter = Loadout_CharacterClass()
 	vector characterAngles            = < file.victorySequenceAngles.x / 2.0, Clamp(file.victorySequenceAngles.y-60, -180, 180), file.victorySequenceAngles.z >
 
 	VictoryPlatformModelData victoryPlatformModelData = GetVictorySequencePlatformModel()
+
 	entity platformModel
 	entity characterModel
 	int maxPlayersToShow = 3
@@ -695,6 +703,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 					characterSkin = GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) )[GetValidItemFlavorsForLoadoutSlot( data.eHandle, Loadout_CharacterSkin( character ) ).len()-skinindex]
 				
 				vector pos = GetVictorySquadFormationPosition( file.victorySequencePosition, file.victorySequenceAngles, i )
+				printt(pos)
 				entity characterNode = CreateScriptRef( pos, characterAngles )
 				characterNode.SetParent( platformModel, "", true )
 
@@ -759,9 +768,9 @@ void function Show_FSDM_VictorySequence(int skinindex)
 			AnglesToUseCamera = file.victorySequenceAngles
 		
 		VictoryCameraPackage victoryCameraPackage
-		victoryCameraPackage.camera_offset_start = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 100
-		victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *200 + AnglesToUp( AnglesToUseCamera ) * 100
-		if(CoinFlip()) victoryCameraPackage.camera_offset_end = file.victorySequencePosition + AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
+		victoryCameraPackage.camera_offset_start = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 100
+		victoryCameraPackage.camera_offset_end = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *200 + AnglesToUp( AnglesToUseCamera ) * 100
+		if(CoinFlip()) victoryCameraPackage.camera_offset_end = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_focus_offset = <0, 0, 40>
 		//victoryCameraPackage.camera_fov = 20
 	

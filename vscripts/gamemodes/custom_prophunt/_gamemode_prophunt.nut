@@ -85,7 +85,9 @@ void function _GamemodeProphunt_Init()
 
 void function _OnEntitiesDidLoadPROPHUNT()
 {
-	SpawnFlowstateLobbyProps()
+	if(GetMapName() == "mp_rr_desertlands_64k_x_64k")
+		SpawnFlowstateLobbyProps()
+
 	AddSpawnCallback("prop_dynamic", _OnPropDynamicSpawnedPROPHUNT) //it should be after spawn lobby props so they won't be deleted
 }
 

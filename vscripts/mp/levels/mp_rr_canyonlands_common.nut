@@ -78,8 +78,10 @@ struct
 
 void function Canyonlands_MapInit_Common()
 {
-	if(GameRules_GetGameMode() == "custom_aimtrainer" || GameRules_GetGameMode() == "map_editor")
-	return
+	SetVictorySequencePlatformModel( $"mdl/rocks/victory_platform.rmdl", < 0, 0, -10 >, < 0, 0, 0 > )
+	
+	if(GameRules_GetGameMode() != SURVIVAL)
+		return
 
 	#if SERVER
 	RegisterSignal( "NessyDamaged" )
@@ -87,15 +89,9 @@ void function Canyonlands_MapInit_Common()
 	AddCallback_EntitiesDidLoad( EntitiesDidLoad )
 	#endif
 
-	if(GameRules_GetGameMode() == "custom_tdm" )
-		return
-
 	//printt( "Canyonlands_MapInit_Common" )
-
 	PrecacheModel( LEVIATHAN_MODEL )
 	//PrecacheModel( FLYER_SWARM_MODEL )
-
-	SetVictorySequencePlatformModel( $"mdl/rocks/victory_platform.rmdl", < 0, 0, -10 >, < 0, 0, 0 > )
 
 	file.numHoverTanksIntro = GetCurrentPlaylistVarInt( "hovertanks_count_intro", HOVER_TANKS_DEFAULT_COUNT_INTRO )
 	#if SERVER
