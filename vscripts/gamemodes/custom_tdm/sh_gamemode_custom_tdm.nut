@@ -463,73 +463,6 @@ void function Sh_CustomTDM_Init()
                 <0, 0, 3000>,$"rui/flowstatelocations/airbase"
             )
         )		
-		///////////////////////////////////
-		//PROPHUNT LOCATIONS///////////////
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Hillside Outspot",
-                [
-                    NewLocPair(<-19300, 4678, 3230>, <0, -100, 0>),
-                    NewLocPair(<-16763, 4465, 3020>, <1, 18, 0>),
-                    NewLocPair(<-20153, 1127, 3060>, <11, 170, 0>),
-					NewLocPair(<-16787, 3540, 3075>, <0, 86, 0>),
-					NewLocPair(<-19026, 3749, 4460>, <0, 2, 0>)
-                ],
-                <0, 0, 3000>
-            )
-        )
-		
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Skull Town",
-                [
-                    NewLocPair(<-9320, -13528, 3167>, <0, -100, 0>),
-                    NewLocPair(<-7544, -13240, 3161>, <0, -115, 0>),
-                    NewLocPair(<-10250, -18320, 3323>, <0, 100, 0>),
-                    NewLocPair(<-13261, -18100, 3337>, <0, 20, 0>)
-                ],
-                <0, 0, 3000>
-            )
-        )
-		
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Containment",
-                [
-                    NewLocPair(<-7291, 19547, 2978>, <0, -65, 0>),
-                    NewLocPair(<-3906, 19557, 2733>, <0, -123, 0>),
-                    NewLocPair(<-3084, 16315, 2566>, <0, 144, 0>),
-                    NewLocPair(<-6517, 15833, 2911>, <0, 51, 0>)
-                ],
-                <0, 0, 3000>
-            )
-        )
-		
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Gaunlet",
-                [
-                    NewLocPair(<-21271, -15275, 2781>, <0, 90, 0>),
-                    NewLocPair(<-22952, -13304, 2718>, <0, 5, 0>),
-                    NewLocPair(<-22467, -9567, 2949>, <0, -85, 0>),
-                    NewLocPair(<-18494, -10427, 2825>, <0, -155, 0>)
-				],
-                <0, 0, 4000>
-            )
-        )
-		
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Market",
-                [
-                    NewLocPair(<-110, -9977, 2987>, <0, 0, 0>),
-                    NewLocPair(<-1605, -10300, 3053>, <0, -100, 0>),
-                    NewLocPair(<4600, -11450, 2950>, <0, 180, 0>),
-                    NewLocPair(<3150, -11153, 3053>, <0, 100, 0>)
-                ],
-                <0, 0, 3000>
-            )
-        )
 
 	break
 	case "mp_rr_canyonlands_64k_x_64k":
@@ -668,7 +601,7 @@ void function Sh_CustomTDM_Init()
 						NewLocPair(<35757, 3256, 3290>, <0, -90, 0>),
 						NewLocPair(<36422, 3109, 3500>, <0, -165, 0>),
 						NewLocPair(<34965, 1718, 3529>, <0, 45, 0>),
-						NewLocPair(<32654, -1552, 3228>, <0, -90, 0>)
+						NewLocPair(<32654, -1552, 3500>, <0, -90, 0>)
 					],
 					<0, 0, 3000>,$"rui/flowstatelocations/swamps"
 				)
@@ -782,114 +715,9 @@ void function Sh_CustomTDM_Init()
 				// <0, 0, 3000>
 			// )
 		// )
-		
-		///////////////////////////////////
-		//PROPHUNT LOCATIONS///////////////
-		
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Interstellar Relay",
-					// [
-						// NewLocPair(<26420, 31700, 4790>, <0, -90, 0>),
-						// NewLocPair(<29260, 26245, 4210>, <0, 45, 0>),
-						// NewLocPair(<29255, 24360, 4210>, <0, 0, 0>),
-						// NewLocPair(<24445, 28970, 4340>, <0, -90, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Slum Lakes",
-					// [
-						// NewLocPair(<-20060, 23800, 2655>, <0, 110, 0>),
-						// NewLocPair(<-20245, 24475, 2810>, <0, -160, 0>),
-						// NewLocPair(<-25650, 22025, 2270>, <0, 20, 0>),
-						// NewLocPair(<-25550, 21635, 2590>, <0, 20, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Little Town",
-					// [
-						// NewLocPair(<-30190, 12473, 3186>, <0, -90, 0>),
-						// NewLocPair(<-28773, 11228, 3210>, <0, 180, 0>),
-						// NewLocPair(<-29802, 9886, 3217>, <0, 90, 0>),
-						// NewLocPair(<-30895, 10733, 3202>, <0, 0, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Water Treatment",
-					// [
-						// NewLocPair(<5583, -30000, 3070>, <0, 0, 0>),
-						// NewLocPair(<7544, -29035, 3061>, <0, 130, 0>),
-						// NewLocPair(<10091, -30000, 3070>, <0, 180, 0>),
-						// NewLocPair(<8487, -28838, 3061>, <0, -45, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Airbase",
-					// [
-						// NewLocPair(<-24140, -4510, 2583>, <0, 90, 0>),
-						// NewLocPair(<-28675, 612, 2600>, <0, 18, 0>),
-						// NewLocPair(<-24688, 1316, 2583>, <0, 180, 0>),
-						// NewLocPair(<-26492, -5197, 2574>, <0, 50, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Swamps",
-					// [
-						// NewLocPair(<32704,-8576,3520>, <0, 167, 0>),
-						// NewLocPair(<34496,-5888,3008>, <0, 51, 0>),
-						// NewLocPair(<33280,-4544,3072>, <0, -17, 0>),
-						// NewLocPair(<30720,-6080,2944>, <0, -92, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Skull Town",
-					// [
-						// NewLocPair(<-9320, -13528, 3167>, <0, -100, 0>),
-						// NewLocPair(<-7544, -13240, 3161>, <0, -115, 0>),
-						// NewLocPair(<-10250, -18320, 3323>, <0, 100, 0>),
-						// NewLocPair(<-13261, -18100, 3337>, <0, 20, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
-		// RegisterLocationPROPHUNT(
-				// NewLocationSettings(
-					// "Market",
-					// [
-						// NewLocPair(<-110, -9977, 2987>, <0, 0, 0>),
-						// NewLocPair(<-1605, -10300, 3053>, <0, -100, 0>),
-						// NewLocPair(<4600, -11450, 2950>, <0, 180, 0>),
-						// NewLocPair(<3150, -11153, 3053>, <0, 100, 0>)
-					// ],
-					// <0, 0, 3000>
-				// )
-			// )
+	
 		break
-	///////////////////////////////////
-	//END PROPHUNT LOCATIONS///////////////		
-	
-	
+
 		case "mp_rr_desertlands_64k_x_64k_tt":
         Shared_RegisterLocation(
             NewLocationSettings(

@@ -1508,27 +1508,69 @@ void function HandlePlayerTeam(entity player)
 	}	
 }
 
+vector function GetCenterOfCircle( array<LocPair> spawns )
+{
+	vector total
+
+	foreach ( spawnLocation in spawns )
+	{
+		total += spawnLocation.origin
+	}
+
+	total.x /= float( spawns.len() )
+	total.y /= float( spawns.len() )
+	total.z /= float( spawns.len() )
+
+	return total
+}
 
 entity function CreateRing_PreGame(LocationSettings location)
 {
     array<LocPair> spawns = location.spawns
 
-    vector ringCenter
+    vector ringCenter = GetCenterOfCircle(spawns)
 	
     float ringRadius = float(1800 + 100*GetPlayerArray().len())
 	FS_PROPHUNT.allowedRadius = ringRadius
 
 	array<LocPair> prophuntSpawns
-	prophuntSpawns.append(FS_PROPHUNT.selectedLocation.spawns.getrandom()) //initial spawn seed to create a ring around
-	ringCenter = prophuntSpawns[0].origin
-	FS_PROPHUNT.allowedRingCenter = ringCenter
-	
+		
+	//get spawn points inside allowed radius
 	foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
 	{
 		if( Distance( spawn.origin, ringCenter ) <= FS_PROPHUNT.allowedRadius )
 			prophuntSpawns.append(spawn)
 	}
 
+	if(prophuntSpawns.len() == 0) //just in case it doesn't found spawn points inside allowed radius
+	{
+		//get initial seed for ring, the nearest spawn point to the center
+		array<float> prophuntSpawnsDistances
+		foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
+		{
+			prophuntSpawnsDistances.append(Distance( spawn.origin, ringCenter ))
+		}
+		float compare = 99999
+		int j = 0
+		for(int i = 0; i < FS_PROPHUNT.selectedLocation.spawns.len(); i++)
+		{
+			if(prophuntSpawnsDistances[i] < compare)
+			{
+				compare = prophuntSpawnsDistances[i]
+				j = i
+			}
+		}		
+		ringCenter = FS_PROPHUNT.selectedLocation.spawns[j].origin
+
+		//get spawn points inside allowed radius
+		foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
+		{
+			if( Distance( spawn.origin, ringCenter ) <= FS_PROPHUNT.allowedRadius )
+				prophuntSpawns.append(spawn)
+		}
+	}
+	
+	FS_PROPHUNT.allowedRingCenter = ringCenter
 	FS_PROPHUNT.selectedLocation.spawns = prophuntSpawns
 	
 	//We watch the ring fx with this entity in the threads
