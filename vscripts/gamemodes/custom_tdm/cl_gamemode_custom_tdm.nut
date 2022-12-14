@@ -613,7 +613,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 	else if(GetMapName() == "mp_rr_canyonlands_mu1")
 	{
 		file.victorySequencePosition = <-19443.75, -26319.9316, 9915.63965>	
-		file.victorySequenceAngles = <0, 180, 0>
+		file.victorySequenceAngles = <0, 0, 0>
 	}
 	
 	asset defaultModel                = GetGlobalSettingsAsset( DEFAULT_PILOT_SETTINGS, "bodyModel" )
@@ -770,7 +770,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 		VictoryCameraPackage victoryCameraPackage
 		victoryCameraPackage.camera_offset_start = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_offset_end = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *200 + AnglesToUp( AnglesToUseCamera ) * 100
-		if(CoinFlip()) victoryCameraPackage.camera_offset_end = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
+		//if(CoinFlip()) victoryCameraPackage.camera_offset_end = AnglesToForward( AnglesToUseCamera ) * 300 + AnglesToRight( AnglesToUseCamera ) *-200 + AnglesToUp( AnglesToUseCamera ) * 100
 		victoryCameraPackage.camera_focus_offset = <0, 0, 40>
 		//victoryCameraPackage.camera_fov = 20
 	
