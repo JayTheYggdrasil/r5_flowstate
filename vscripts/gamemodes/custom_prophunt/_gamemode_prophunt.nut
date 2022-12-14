@@ -36,7 +36,9 @@ struct{
 	int maxvotesallowedforTeams = -1
 	
 	int requestsforIMC = -1
-	int requestsforMILITIA = -1	
+	int requestsforMILITIA = -1
+	float allowedRadius
+	vector allowedRingCenter
 } FS_PROPHUNT
 
 void function _GamemodeProphunt_Init()
@@ -730,13 +732,12 @@ void function PROPHUNT_GameLoop()
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
 	array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
 
-	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
-
 	FS_PROPHUNT.cantUseChangeProp = false
 	FS_PROPHUNT.InProgress = true
 	//thread EmitSoundOnSprintingProp()
 	
 	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
+	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 	SetGameState( eGameState.Playing )
 	//printt("Flowstate DEBUG - Tping props team.")
 	foreach(player in GetPlayerArray())
@@ -1513,22 +1514,23 @@ entity function CreateRing_PreGame(LocationSettings location)
     array<LocPair> spawns = location.spawns
 
     vector ringCenter
-    foreach( spawn in spawns )
-    {
-        ringCenter += spawn.origin
-    }
+	
+    float ringRadius = float(1800 + 100*GetPlayerArray().len())
+	FS_PROPHUNT.allowedRadius = ringRadius
 
-    ringCenter /= spawns.len()
+	array<LocPair> prophuntSpawns
+	prophuntSpawns.append(FS_PROPHUNT.selectedLocation.spawns.getrandom()) //initial spawn seed to create a ring around
+	ringCenter = prophuntSpawns[0].origin
+	FS_PROPHUNT.allowedRingCenter = ringCenter
+	
+	foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
+	{
+		if( Distance( spawn.origin, ringCenter ) <= FS_PROPHUNT.allowedRadius )
+			prophuntSpawns.append(spawn)
+	}
 
-    float ringRadius = 0
-
-    foreach( LocPair spawn in spawns )
-    {
-        if( Distance( spawn.origin, ringCenter ) > ringRadius )
-            ringRadius = Distance(spawn.origin, ringCenter)
-    }
-
-    ringRadius += GetCurrentPlaylistVarFloat("ring_radius_padding", 800)
+	FS_PROPHUNT.selectedLocation.spawns = prophuntSpawns
+	
 	//We watch the ring fx with this entity in the threads
 	entity circle = CreateEntity( "prop_script" )
 	circle.SetValueForModelKey( $"mdl/fx/ar_survival_radius_1x100.rmdl" )
@@ -1548,26 +1550,9 @@ entity function CreateRing_PreGame(LocationSettings location)
 
 entity function CreateRingBoundary_PropHunt(LocationSettings location)
 {
-    array<LocPair> spawns = location.spawns
+    vector ringCenter = FS_PROPHUNT.allowedRingCenter
+    float ringRadius = FS_PROPHUNT.allowedRadius
 
-    vector ringCenter
-    foreach( spawn in spawns )
-    {
-        ringCenter += spawn.origin
-    }
-
-    ringCenter /= spawns.len()
-
-    float ringRadius = 0
-
-    foreach( LocPair spawn in spawns )
-    {
-        if( Distance( spawn.origin, ringCenter ) > ringRadius )
-            ringRadius = Distance(spawn.origin, ringCenter)
-    }
-
-    ringRadius += GetCurrentPlaylistVarFloat("ring_radius_padding", 800)
-	//We watch the ring fx with this entity in the threads
 	entity circle = CreateEntity( "prop_script" )
 	circle.SetValueForModelKey( $"mdl/fx/ar_survival_radius_1x100.rmdl" )
 	circle.kv.fadedist = -1

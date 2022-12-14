@@ -608,17 +608,6 @@ void function Show_FSDM_VictorySequence(int skinindex)
     //Todo: each maps victory pos and ang
     file.victorySequencePosition = file.selectedLocation.victorypos.origin - < 0, 0, 52>
 	file.victorySequenceAngles = file.selectedLocation.victorypos.angles
-	
-	if (GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
-	{
-		file.victorySequencePosition = file.selectedLocation.victorypos.origin - < 0, 0, 52>
-		file.victorySequenceAngles = file.selectedLocation.victorypos.angles
-	}
-	else if(GetMapName() == "mp_rr_canyonlands_mu1")
-	{
-		file.victorySequencePosition = <697.334961, 42429.082, 13702.6436>
-		file.victorySequenceAngles = <0, 177.049057, 0>
-	}
 
 	asset defaultModel                = GetGlobalSettingsAsset( DEFAULT_PILOT_SETTINGS, "bodyModel" )
 	LoadoutEntry loadoutSlotCharacter = Loadout_CharacterClass()
@@ -631,15 +620,8 @@ void function Show_FSDM_VictorySequence(int skinindex)
 	int maxPropsToShow = 1
 	if ( victoryPlatformModelData.isSet )
 	{
-		if (GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
-		{
-			platformModel = CreateClientSidePropDynamic( file.victorySequencePosition + victoryPlatformModelData.originOffset, victoryPlatformModelData.modelAngles, victoryPlatformModelData.modelAsset )
-		}
-		else if(GetMapName() == "mp_rr_canyonlands_mu1")
-		{
-			platformModel = CreateClientSidePropDynamic( file.victorySequencePosition, file.selectedLocation.victorypos.angles, victoryPlatformModelData.modelAsset )
-		}
-
+		platformModel = CreateClientSidePropDynamic( file.victorySequencePosition + victoryPlatformModelData.originOffset, victoryPlatformModelData.modelAngles, victoryPlatformModelData.modelAsset )
+		
 		cleanupEnts.append( platformModel )
 		int playersOnPodium = 0
 
