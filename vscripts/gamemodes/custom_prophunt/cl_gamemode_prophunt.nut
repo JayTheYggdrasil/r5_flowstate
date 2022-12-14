@@ -227,13 +227,13 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 			{
 				time = PROPHUNT_WHISTLE_TIMER
 				if(isPropTeam)
-					text = "SEEKERS ARRIVING " + time.tostring()
+					text = "HUNTERS ARRIVING " + time.tostring()
 				else
 					text = "PROPS ARE HIDING " + time.tostring()
 			} else
 			{
 				if(isPropTeam)
-					text = "SEEKERS ARRIVING " + time.tostring()
+					text = "HUNTERS ARRIVING " + time.tostring()
 				else
 					text = "PROPS ARE HIDING " + time.tostring()
 			}
@@ -571,7 +571,7 @@ void function PROPHUNT_CustomHint(int index)
 		EmitSoundOnEntity(GetLocalViewPlayer(), "ui_ingame_switchingsides" )	
 		break
 		case 5:
-		QuickHint("", "Seekers arrived!")
+		QuickHint("", "Hunters arrived!")
 		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_PostGame_TitanSlideIn")
 		break
 		case 6:
