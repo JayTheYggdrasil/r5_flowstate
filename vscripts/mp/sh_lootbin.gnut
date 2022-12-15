@@ -179,10 +179,12 @@ void function RefreshLootBin( entity lootBin, string lootGroup, int numLootItems
 	// Check if loot bin is open
 	if ( LootBin_IsOpen( lootBin ) )
 		waitthread LootBin_PlayCloseSequence( lootBin )
-
+	
+	if(GameRules_GetGameMode() == "custom_prophunt") return
+	
 	// New refs
 	file.lootBinsLootInside[ lootBin ] = []
-
+	
 	if(lootBin.GetScriptName() == "smartbin")
 	{
 		AddMultipleLootItemsToLootBin( lootBin, SURVIVAL_GetMultipleWeightedItemsFromGroup( "data_knife_vault", 3 ) )
