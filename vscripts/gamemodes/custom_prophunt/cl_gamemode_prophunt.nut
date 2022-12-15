@@ -122,6 +122,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		
 		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 229*screenSize[1]/990 )		
 		HudElement( "ScreenBlur1" ).SetPos( -35, -35 )
+
 	} else
 	{
 		player.p.isAttackerProphunt = true
@@ -129,6 +130,8 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		
 		EnableHuntersAbility()
 	}
+	
+	RuiSetImage( Hud_GetRui( HudElement( "MiniPromo" ) ), "basicImage", $"rui/flowstatecustom/prophunt_quicktext")
 }
 
 void function ForceDisableHuntersAbilityHint()
@@ -180,12 +183,14 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 {
 	thread function() : (isPropTeam)
 	{
-		Hud_SetEnabled(HudElement( "DarkenBackground" ), true)
-		Hud_SetVisible(HudElement( "DarkenBackground" ), true)
+		Hud_SetEnabled(HudElement( "MiniPromo" ), true)
+		Hud_SetVisible(HudElement( "MiniPromo" ), true)
 			
 		Hud_SetEnabled(HudElement( "MiscTimer" ), true)
 		Hud_SetVisible(HudElement( "MiscTimer" ), true)
-			
+		
+		RuiSetImage( Hud_GetRui( HudElement( "MiniPromo" ) ), "basicImage", $"rui/flowstatecustom/prophunt_quicktext")
+		
 		entity player = GetLocalClientPlayer() 
 		
 		EndSignal(player, "PROPHUNT_ShutdownPropsHidingTimer")
@@ -193,8 +198,8 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 		OnThreadEnd(
 			function() : ( player )
 			{
-				Hud_SetEnabled(HudElement( "DarkenBackground" ), false)
-				Hud_SetVisible(HudElement( "DarkenBackground" ), false)
+				Hud_SetEnabled(HudElement( "MiniPromo" ), false)
+				Hud_SetVisible(HudElement( "MiniPromo" ), false)
 					
 				Hud_SetEnabled(HudElement( "MiscTimer" ), false)
 				Hud_SetVisible(HudElement( "MiscTimer" ), false)
@@ -206,7 +211,7 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 		
 		// if(isPropTeam)
 		// {
-			// var hudElement = HudElement( "DarkenBackground" )
+			// var hudElement = HudElement( "MiniPromo" )
 			// var height = hudElement.GetHeight()
 			// var screenSize = Hud.GetScreenSize()
 			// var position = hudElement.GetPos()
@@ -253,19 +258,21 @@ void function PROPHUNT_QuickText(int index, int duration)
 		
 		EndSignal(player, "OnDeath")
 		
-		Hud_SetEnabled(HudElement( "DarkenBackground" ), true)
-		Hud_SetVisible(HudElement( "DarkenBackground" ), true)
+		Hud_SetEnabled(HudElement( "MiniPromo" ), true)
+		Hud_SetVisible(HudElement( "MiniPromo" ), true)
 			
 		Hud_SetEnabled(HudElement( "MiscTimer" ), true)
 		Hud_SetVisible(HudElement( "MiscTimer" ), true)
+		
+		RuiSetImage( Hud_GetRui( HudElement( "MiniPromo" ) ), "basicImage", $"rui/flowstatecustom/prophunt_quicktext")
 		
 		OnThreadEnd(
 			function() : ( player, index )
 			{
 				if(!IsValid(player)) return
 				
-				Hud_SetEnabled(HudElement( "DarkenBackground" ), false)
-				Hud_SetVisible(HudElement( "DarkenBackground" ), false)
+				Hud_SetEnabled(HudElement( "MiniPromo" ), false)
+				Hud_SetVisible(HudElement( "MiniPromo" ), false)
 					
 				Hud_SetEnabled(HudElement( "MiscTimer" ), false)
 				Hud_SetVisible(HudElement( "MiscTimer" ), false)
