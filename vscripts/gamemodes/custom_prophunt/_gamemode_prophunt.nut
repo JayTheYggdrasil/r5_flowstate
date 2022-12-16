@@ -10,6 +10,7 @@ global function _OnPlayerConnectedPROPHUNT
 global function _OnPlayerDiedPROPHUNT
 global function PROPHUNT_StartGameThread
 global function returnPropBool
+global function SetRealms
 
 struct{
 	float endTime = 0
@@ -39,10 +40,34 @@ struct{
 	int requestsforMILITIA = -1
 	float allowedRadius
 	vector allowedRingCenter
+	vector lobbyLocation
+	vector lobbyAngles
+	
 } FS_PROPHUNT
 
 void function _GamemodeProphunt_Init()
 {
+	switch(GetMapName())
+	{
+		case "mp_rr_desertlands_64k_x_64k":
+		case "mp_rr_desertlands_64k_x_64k_nx":
+			FS_PROPHUNT.lobbyLocation = <-19459, 2127, 6404>
+			FS_PROPHUNT.lobbyAngles = <0, RandomIntRangeInclusive(-180,180), 0>
+		break
+
+		case "mp_rr_canyonlands_mu1":
+			FS_PROPHUNT.lobbyLocation = <3599.2793, 24244.5723, 7255.3667>
+			FS_PROPHUNT.lobbyAngles = <0, -103.838669, 0>
+		break
+		
+		default:
+			entity startEnt = GetEnt( "info_player_start" )
+
+			FS_PROPHUNT.lobbyLocation = startEnt.GetOrigin()
+			FS_PROPHUNT.lobbyAngles = startEnt.GetAngles()
+		break			
+	}
+
 	SetConVarInt("sv_quota_stringCmdsPerSecond", 100)
 	
 	if(GetCurrentPlaylistVarBool("enable_global_chat", true))
@@ -53,6 +78,7 @@ void function _GamemodeProphunt_Init()
 	SurvivalFreefall_Init() //Enables freefall/skydive
 	
 	RegisterSignal("DestroyProp")
+	RegisterSignal("EndLobbyDistanceThread")
 	
 	AddCallback_OnClientConnected( void function(entity player) { 
 		thread _OnPlayerConnectedPROPHUNT(player)
@@ -80,6 +106,7 @@ void function _GamemodeProphunt_Init()
 	PrecacheParticleSystem($"P_plasma_exp_SM")
 	PrecacheModel($"mdl/fx/ar_edge_sphere_512.rmdl")
 	PrecacheParticleSystem($"P_smokescreen_FD")
+	
 	thread PROPHUNT_StartGameThread()	
 }
 
@@ -99,25 +126,6 @@ void function _RegisterLocationPROPHUNT(LocationSettings locationSettings)
 void function _OnPropDynamicSpawnedPROPHUNT(entity prop)
 {
     FS_PROPHUNT.playerSpawnedProps.append(prop)
-}
-
-array<LocationSettings> function shuffleLocationsArray(array<LocationSettings> arr)
-// O(n) Durstenfeld / Knuth shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
-//By michae\l/#1125.
-{
-	int i;
-	int j;
-	int b;
-	LocationSettings tmp;
-
-	for (i = arr.len() - 1; i > 0; i--) {
-		j = RandomIntRangeInclusive(1, i)
-		tmp = arr[b]
-		arr[b] = arr[j]
-		arr[j] = tmp
-	}
-
-	return arr
 }
 
 void function PROPHUNT_StartGameThread()
@@ -189,15 +197,8 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			//player has a team assigned already, we need to fix it before spawn
 			GiveTeamToProphuntPlayer(player)
 
-			if (GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
-			{
-				player.SetOrigin(<-19459, 2127, 6404>)
-			}
-			else if(GetMapName() == "mp_rr_canyonlands_mu1")
-			{
-				player.SetOrigin(<-19161.6582, 3742.42432, 3968.03125>)
-				player.SetAngles(<0, 7.94140625, 0>)
-			}
+			player.SetOrigin(FS_PROPHUNT.lobbyLocation)
+			player.SetAngles(FS_PROPHUNT.lobbyAngles)
 
 			player.SetThirdPersonShoulderModeOn()
 			player.UnforceStand()
@@ -399,15 +400,9 @@ void function _HandleRespawnPROPHUNT(entity player)
 		DecideRespawnPlayer(player, false)
 	}
 	
-	if (GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
-	{
-		player.SetOrigin(<-19459, 2127, 6404>)
-	}
-	else if(GetMapName() == "mp_rr_canyonlands_mu1")
-	{
-		player.SetOrigin(<-19161.6582, 3742.42432, 3968.03125>)
-		player.SetAngles(<0, 7.94140625, 0>)
-	}
+	player.SetOrigin(FS_PROPHUNT.lobbyLocation)
+	player.SetAngles(FS_PROPHUNT.lobbyAngles)
+
 	
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
@@ -517,6 +512,27 @@ void function StartHuntersAbilityTimer()
 	}
 }
 
+void function SetRealms(entity ent,int realmIndex)
+{
+	if(!IsValid(ent)) return
+	if(realmIndex>63)
+	{
+		ent.AddToAllRealms()
+		return
+	}//add to all realms for players in resting mode
+
+	array<int> realms = ent.GetRealms()
+	ent.AddToRealm(realmIndex)
+	realms.removebyvalue(realmIndex)
+	if(realms.len()>0)
+	{
+		foreach (eachRealm in realms )
+		{
+			ent.RemoveFromRealm(eachRealm)
+		}
+	}
+}
+
 void function EmitSoundOnSprintingProp()
 {
 	while(FS_PROPHUNT.InProgress)
@@ -589,7 +605,7 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	
 	if(!forcelockedangles)
 		Signal(player, "DestroyProp")
-
+	
 	asset selectedModel
 	if(giveOldProp)
 		selectedModel = player.p.PROPHUNT_LastModel
@@ -616,6 +632,8 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 		player.p.PROPHUNT_LastModel = selectedModel
 
 		player.p.PROPHUNT_AreAnglesLocked = true
+		
+		player.SetMoveSpeedScale(1.25)
 		return
 	}
 
@@ -631,10 +649,10 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	prop.SetMaxHealth( 100 )
 	prop.SetHealth( player.GetHealth() )
 	prop.SetParent(player)
-	
 	prop.SetPassDamageToParent(true)
-	
 	thread PropWatcher(prop, player) 
+	
+	player.SetMoveSpeedScale(1.25)
 }
 
 void function PROPHUNT_Lobby()
@@ -642,7 +660,7 @@ void function PROPHUNT_Lobby()
 	DestroyPlayerPropsPROPHUNT()
 	SetGameState(eGameState.MapVoting) //!FIXME
 	SetFallTriggersStatus(true)
-	if(GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx" || GetMapName() == "mp_rr_canyonlands_mu1" || GetMapName() == "mp_rr_canyonlands_mu1_night" || GetMapName() == "mp_rr_canyonlands_64k_x_64k")
+	if(GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
 	{
 		thread CreateShipRoomFallTriggers()
 	}
@@ -687,6 +705,9 @@ void function PROPHUNT_Lobby()
 		Survival_SetInventoryEnabled( player, false )
 		player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 		player.SetPlayerNetBool( "pingEnabled", true )
+		
+		thread CheckDistanceWhileInLobby(player)
+		SetRealms(player, 64)
 	}
 	wait 2
 
@@ -732,6 +753,21 @@ void function PROPHUNT_Lobby()
 	wait 5
 }
 
+void function CheckDistanceWhileInLobby(entity player)
+{
+	EndSignal(player, "EndLobbyDistanceThread")
+	
+	while(IsValid(player))
+	{
+		if(Distance(player.GetOrigin(),FS_PROPHUNT.lobbyLocation)>3000)
+		{
+			player.SetOrigin(FS_PROPHUNT.lobbyLocation)
+		}
+		WaitFrame()
+	}	
+}
+
+
 void function PROPHUNT_GameLoop()
 {
 	SetTdmStateToInProgress()
@@ -762,6 +798,8 @@ void function PROPHUNT_GameLoop()
 		player.p.playerDamageDealt = 0.0
 		if(player.GetTeam() == TEAM_MILITIA)
 		{
+			Signal(player, "EndLobbyDistanceThread")
+			SetRealms(player, 1)
 			
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", false)
 
@@ -837,7 +875,16 @@ void function PROPHUNT_GameLoop()
 		if(player.GetTeam() == TEAM_IMC)
 			ScreenFade( player, 0, 0, 0, 255, 4.0, 1, FFADE_OUT | FFADE_PURGE )
 	}
-	wait 4
+	wait 2
+	foreach(player in GetPlayerArray())
+	{
+		if(!IsValid(player)) continue
+		
+		SetRealms(player, 64)
+	}
+	
+	wait 2
+	
 	
 	UpdatePlayerCounts()
 	
@@ -851,6 +898,7 @@ void function PROPHUNT_GameLoop()
 		if(!IsValid(player)) continue
 		
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
+		Signal(player, "EndLobbyDistanceThread")
 		
 		AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
@@ -1543,7 +1591,7 @@ entity function CreateRing_PreGame(LocationSettings location)
 
     vector ringCenter = GetCenterOfCircle(spawns)
 	
-    float ringRadius = float(1800 + 100*GetPlayerArray().len())
+    float ringRadius = float(2000 + 110*GetPlayerArray().len())
 	FS_PROPHUNT.allowedRadius = ringRadius
 
 	array<LocPair> prophuntSpawns
@@ -1598,7 +1646,6 @@ entity function CreateRing_PreGame(LocationSettings location)
 	circle.SetOrigin( ringCenter )
 	circle.SetAngles( <0, 0, 0> )
 	circle.NotSolid()
-
 	DispatchSpawn(circle)
 	return circle
 }
