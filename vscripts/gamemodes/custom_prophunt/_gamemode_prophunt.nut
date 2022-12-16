@@ -1554,22 +1554,6 @@ void function HandlePlayerTeam(entity player)
 	}	
 }
 
-vector function GetCenterOfCircle( array<LocPair> spawns )
-{
-	vector total
-
-	foreach ( spawnLocation in spawns )
-	{
-		total += spawnLocation.origin
-	}
-
-	total.x /= float( spawns.len() )
-	total.y /= float( spawns.len() )
-	total.z /= float( spawns.len() )
-
-	return total
-}
-
 entity function CreateRing_PreGame(LocationSettings location)
 {
     array<LocPair> spawns = location.spawns

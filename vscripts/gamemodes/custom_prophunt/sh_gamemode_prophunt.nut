@@ -6,6 +6,7 @@
 
 global function GamemodeProphuntShared_Init
 global function RegisterLocationPROPHUNT
+global function GetCenterOfCircle
 
 global const int PROPHUNT_CHANGE_PROP_USAGE_LIMIT = 5
 global const int PROPHUNT_FLASH_BANG_RADIUS = 600
@@ -70,19 +71,20 @@ void function GamemodeProphuntShared_Init()
 			
 		]
 		
-		// RegisterLocationPROPHUNT(
-            // NewLocationSettings(
-                // "Hillside Outspot",
-                // [
-                    // NewLocPair(<-19300, 4678, 3230>, <0, -100, 0>),
-                    // NewLocPair(<-16763, 4465, 3020>, <1, 18, 0>),
-                    // NewLocPair(<-20153, 1127, 3060>, <11, 170, 0>),
-					// NewLocPair(<-16787, 3540, 3075>, <0, 86, 0>),
-					// NewLocPair(<-19026, 3749, 4460>, <0, 2, 0>)
-                // ],
-                // <0, 0, 3000>,$"rui/flowstatelocations/hillside"
-            // )
-        // )
+		RegisterLocationPROPHUNT(
+            NewLocationSettings(
+                "Hillside Outspot",
+                [
+                    NewLocPair(<-19300, 4678, 3230>, <0, -100, 0>),
+                    NewLocPair(<-16763, 4465, 3020>, <1, 18, 0>),
+                    NewLocPair(<-20153, 1127, 3060>, <11, 170, 0>),
+					NewLocPair(<-16787, 3540, 3075>, <0, 86, 0>),
+					NewLocPair(<-19026, 3749, 4460>, <0, 2, 0>)
+                ],
+                <0, 0, 3000>,$"rui/flowstatelocations/hillside"
+            )
+        )
+		
 		RegisterLocationPROPHUNT(
             NewLocationSettings(
                 "Skull Town",
@@ -107,19 +109,21 @@ void function GamemodeProphuntShared_Init()
                 <0, 0, 3000>,$"rui/flowstatelocations/containment"
             )
         )
-		// RegisterLocationPROPHUNT(
-            // NewLocationSettings(
-                // "Gaunlet",
-                // [
-                    // NewLocPair(<-21271, -15275, 2781>, <0, 90, 0>),
-                    // NewLocPair(<-22952, -13304, 2718>, <0, 5, 0>),
-                    // NewLocPair(<-22467, -9567, 2949>, <0, -85, 0>),
-                    // NewLocPair(<-18494, -10427, 2825>, <0, -155, 0>),
-					// NewLocPair(<-22590, -7534, 3103>, <0, 0, 0>)
-                // ],
-                // <0, 0, 4000>,$"rui/flowstatelocations/gaunlet"
-            // )
-        // )
+		
+		RegisterLocationPROPHUNT(
+            NewLocationSettings(
+                "Gaunlet",
+                [
+                    NewLocPair(<-21271, -15275, 2781>, <0, 90, 0>),
+                    NewLocPair(<-22952, -13304, 2718>, <0, 5, 0>),
+                    NewLocPair(<-22467, -9567, 2949>, <0, -85, 0>),
+                    NewLocPair(<-18494, -10427, 2825>, <0, -155, 0>),
+					NewLocPair(<-22590, -7534, 3103>, <0, 0, 0>)
+                ],
+                <0, 0, 4000>,$"rui/flowstatelocations/gaunlet"
+            )
+        )
+		
 		RegisterLocationPROPHUNT(
             NewLocationSettings(
                 "Market",
@@ -258,7 +262,7 @@ void function GamemodeProphuntShared_Init()
             NewLocationSettings(
                 "The Farm",
                 [
-                    NewLocPair(<11242, 8591, 4630>, <0, 0, 0>),
+                    NewLocPair(<11242, 8591, 4830>, <0, 0, 0>),
                     NewLocPair(<6657, 12189, 5066>, <0, -90, 0>),
                     NewLocPair(<7540, 8620, 5374>, <0, 89, 0>),
                     NewLocPair(<13599, 7838, 4944>, <0, 150, 0>)
@@ -641,4 +645,20 @@ void function RegisterLocationPROPHUNT(LocationSettings locationSettings)
     Cl_RegisterLocation(locationSettings)
     #endif
 
+}
+
+vector function GetCenterOfCircle( array<LocPair> spawns )
+{
+	vector total
+
+	foreach ( spawnLocation in spawns )
+	{
+		total += spawnLocation.origin
+	}
+
+	total.x /= float( spawns.len() )
+	total.y /= float( spawns.len() )
+	total.z /= float( spawns.len() )
+
+	return total
 }
