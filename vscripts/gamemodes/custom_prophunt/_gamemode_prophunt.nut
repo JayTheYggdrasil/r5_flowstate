@@ -18,8 +18,6 @@ struct{
 	array<LocationSettings> locationSettings
 	array<LocationSettings> locationsShuffled
 	LocationSettings& selectedLocation
-	int nextMapIndex = 0
-	bool mapIndexChanged = true
 	bool cantUseChangeProp = false
 	bool InProgress = false
 	entity ringBoundary
@@ -402,7 +400,6 @@ void function _HandleRespawnPROPHUNT(entity player)
 	
 	player.SetOrigin(FS_PROPHUNT.lobbyLocation)
 	player.SetAngles(FS_PROPHUNT.lobbyAngles)
-
 	
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
@@ -660,23 +657,16 @@ void function PROPHUNT_Lobby()
 	DestroyPlayerPropsPROPHUNT()
 	SetGameState(eGameState.MapVoting) //!FIXME
 	SetFallTriggersStatus(true)
+	
+	if(FS_PROPHUNT.currentRound == 1)
+		FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings.getrandom()
+	
 	if(GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
 	{
 		thread CreateShipRoomFallTriggers()
 	}
+	
 	//printt("Flowstate DEBUG - Fall triggers created.")
-
-	if (!FS_PROPHUNT.mapIndexChanged)
-		{
-			FS_PROPHUNT.nextMapIndex = ( FS_PROPHUNT.nextMapIndex + 1 ) % FS_PROPHUNT.locationSettings.len()
-		}
-
-	if (FlowState_LockPOI()) {
-		FS_PROPHUNT.nextMapIndex = FlowState_LockedPOI()
-	}
-		
-	FS_PROPHUNT.mapIndexChanged = false
-	FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings[ FS_PROPHUNT.mappicked ]
 	//printt("Flowstate DEBUG - Next location selected: ", FS_PROPHUNT.selectedLocation.name)
 		
 	if(FS_PROPHUNT.selectedLocation.name == "Skill trainer By CafeFPS")
@@ -782,7 +772,7 @@ void function PROPHUNT_GameLoop()
 	FS_PROPHUNT.cantUseChangeProp = false
 	FS_PROPHUNT.InProgress = true
 	//thread EmitSoundOnSprintingProp()
-	
+
 	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
 	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 	SetGameState( eGameState.Playing )
@@ -1304,6 +1294,9 @@ void function PROPHUNT_GameLoop()
 			ScreenCoverTransition_Player(player, Time() + 1)
 			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_OpenVotingPhase", false)
 		}
+
+	FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings[ FS_PROPHUNT.mappicked ]
+	
 	wait 2
 	// }
 	
@@ -1753,16 +1746,10 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 	if(player.GetPlayerName() == FlowState_Hoster() || player.GetPlayerName() == FlowState_Admin1() || player.GetPlayerName() == FlowState_Admin2() || player.GetPlayerName() == FlowState_Admin3() || player.GetPlayerName() == FlowState_Admin4()) 
 	{
 		if (args.len()) {
-			int mapIndex = int(args[0])
-			FS_PROPHUNT.nextMapIndex = (((mapIndex >= 0 ) && (mapIndex < FS_PROPHUNT.locationSettings.len())) ? mapIndex : RandomIntRangeInclusive(0, FS_PROPHUNT.locationSettings.len() - 1))
-			FS_PROPHUNT.mapIndexChanged = true
-
 			string now = args[0]
 			if (now == "now")
 			{
 			   SetTdmStateToNextRound()
-			   FS_PROPHUNT.mapIndexChanged = false
-			   // FS_PROPHUNT.InProgress = false
 			}
 			
 			if(args.len() > 1){
@@ -1770,7 +1757,6 @@ bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 				if (now == "now")
 				{
 				   SetTdmStateToNextRound()
-				   // FS_PROPHUNT.InProgress = false
 				}
 			}
 		}
