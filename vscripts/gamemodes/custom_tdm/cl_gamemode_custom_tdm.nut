@@ -177,12 +177,12 @@ void function CoolCameraMovement(entity player, entity cutsceneMover, entity cam
 	
 	if(isSelectedZoneCamera)
 	{
-		LocPair random = cutsceneSpawns.getrandom()
-		startpos = random.origin
+		LocPair far = file.selectedLocation.spawns.getrandom()
+		startpos = far.origin
 		startpos.z+= 2000
-		startangs = random.angles
+		startangs = far.angles
 		
-		finalpos = GetUbicacionMasLejana(random).origin
+		finalpos = GetCenterOfCircle(file.selectedLocation.spawns)
 		//calcular el más lejano
 	}
 	else
