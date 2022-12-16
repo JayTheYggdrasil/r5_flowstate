@@ -369,35 +369,35 @@ void function PROPHUNT_DoScreenFlashFX(entity player, entity propAttacker)
 	int fxHandle = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
 	EffectSetIsWithCockpit( fxHandle, true )
 	
-	int fxHandle2 = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
-	EffectSetIsWithCockpit( fxHandle2, true )
+	// int fxHandle2 = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_shell_shock_FP" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
+	// EffectSetIsWithCockpit( fxHandle2, true )
 
 	int smokes = StartParticleEffectOnEntityWithPos( viewPlayer, PrecacheParticleSystem( $"P_screen_smoke_bangalore_FP"), FX_PATTACH_ABSORIGIN_FOLLOW, -1, viewPlayer.EyePosition(), <0,0,0> )
 	EffectSetIsWithCockpit( smokes, true )
 
-	thread ShellShock_ScreenFXThink(player, fxHandle, fxHandle2, smokes)
+	thread ShellShock_ScreenFXThink(player, fxHandle, smokes)
 	
 	if(player == propAttacker) return
 	
 	Obituary_Print_Localized( "Enemy prop " + propAttacker.GetPlayerName() + " used flashbang!", GetChatTitleColorForPlayer( player ), BURN_COLOR )
 }
 
-void function ShellShock_ScreenFXThink( entity player, int fxHandle, int fxHandle2, int smokes)
+void function ShellShock_ScreenFXThink( entity player, int fxHandle, int smokes) // , int fxHandle2
 {
 	player.EndSignal( "OnDeath" )
 
 	OnThreadEnd(
-		function() : ( fxHandle, fxHandle2, smokes )
+		function() : ( fxHandle, smokes )//fxHandle2, 
 		{
 			if ( !EffectDoesExist( fxHandle ) )
 				return
 
 			EffectStop( fxHandle, false, true )
 			
-			if ( !EffectDoesExist( fxHandle2 ) )
-				return
+			// if ( !EffectDoesExist( fxHandle2 ) )
+				// return
 
-			EffectStop( fxHandle2, false, true )
+			// EffectStop( fxHandle2, false, true )
 			
 			if ( !EffectDoesExist( smokes ) )
 				return
