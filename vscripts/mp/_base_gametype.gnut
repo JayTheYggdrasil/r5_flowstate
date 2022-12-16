@@ -82,8 +82,11 @@ function BaseGametype_Init()
 
 void function BaseGametypeEntitiesDidLoad()
 {
-	OutOfBoundsSetup()
 	TriggerHurtSetup()
+	
+	if(GameRules_GetGameMode() == "custom_prophunt") return
+
+	OutOfBoundsSetup()
 }
 
 function CreateTeamColorControlPoints()
