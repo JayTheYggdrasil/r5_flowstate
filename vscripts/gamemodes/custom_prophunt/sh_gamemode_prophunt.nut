@@ -405,7 +405,7 @@ void function GamemodeProphuntShared_Init()
                         NewLocPair(<-26433, 13360, -3000>, <0, 68, 0>),
                         NewLocPair(<-26463, 13766, -3080>, <0, -95, 0>),
                         NewLocPair(<-28781, 13266, -3080>, <0, 80, 0>),
-                        NewLocPair(<-27535, 10922, -3280>, <0, -94, 0>),
+                        NewLocPair(<-27535, 10922, -3000>, <0, -94, 0>),
                         NewLocPair(<-29879, 9151, -2860>, <0, 0, 0>)
                     ],
                     <0, 0, 2500>,$"rui/flowstatelocations/lavafissure"

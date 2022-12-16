@@ -54,16 +54,16 @@ void function Open_FSDM_VotingPhase()
 		{
 			case "custom_prophunt":
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "APEX PROPHUNT" )
-				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment" )
 			break
 			
 			case "custom_tdm":
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE DM" )
-				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS and collaborators." )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS and collaborators - ©Respawn Entertainment" )
 			break
 			default:
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE SCRIPTS" )
-				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS." )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment." )
 			break
 		}
 	}
