@@ -656,15 +656,9 @@ void function PROPHUNT_Lobby()
 {
 	DestroyPlayerPropsPROPHUNT()
 	SetGameState(eGameState.MapVoting) //!FIXME
-	SetFallTriggersStatus(true)
 	
 	if(FS_PROPHUNT.currentRound == 1)
 		FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings.getrandom()
-	
-	if(GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx")
-	{
-		thread CreateShipRoomFallTriggers()
-	}
 	
 	//printt("Flowstate DEBUG - Fall triggers created.")
 	//printt("Flowstate DEBUG - Next location selected: ", FS_PROPHUNT.selectedLocation.name)
@@ -878,8 +872,6 @@ void function PROPHUNT_GameLoop()
 	
 	UpdatePlayerCounts()
 	
-	SetFallTriggersStatus(false)
-
 	FS_PROPHUNT.cantUseChangeProp = true
 	//printt("Flowstate DEBUG - Tping attackers team.")
 	
