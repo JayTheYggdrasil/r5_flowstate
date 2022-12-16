@@ -70,12 +70,9 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	player.p.PROPHUNT_FlashbangPropUsageLimit = 0
 	player.p.PROPHUNT_AreAnglesLocked = false
 	
-	// var ruitest = CreateFullscreenRui( $"ui/generic_timer.rpak" )
-	// float endtime = Time() + 5
-	// RuiSetString( ruitest, "messageText", "test test" )
-	// RuiSetGameTime( ruitest, "startTime", Time() )
-	// RuiSetGameTime( ruitest, "endTime", endtime )
-	// RuiSetColorAlpha( ruitest, "timerColor", SrgbToLinear( <255,233,0> / 255.0 ), 1.0 )
+	SetConVarFloat("c_thirdpersonshoulderaimdist", 115)
+	SetConVarFloat("c_thirdpersonshoulderheight", 55)
+	SetConVarFloat("c_thirdpersonshoulderoffset", 0)
 	
 	ScorebarInitTracking( player, ClGameState_GetRui() )
 
@@ -670,7 +667,11 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 	
 	entity player = GetLocalClientPlayer()
 	Signal(player, "PROPHUNT_ShutdownWhistleTimer")
-		
+	
+	SetConVarFloat("c_thirdpersonshoulderaimdist", 100)
+	SetConVarFloat("c_thirdpersonshoulderheight", 30)
+	SetConVarFloat("c_thirdpersonshoulderoffset", 20)
+	
 	if(!wasResolutionChanged)
 	{
 		player.p.PROPHUNT_AreAnglesLocked = false
