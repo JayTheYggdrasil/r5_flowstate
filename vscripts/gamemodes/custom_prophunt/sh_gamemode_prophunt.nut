@@ -70,19 +70,19 @@ void function GamemodeProphuntShared_Init()
 			
 		]
 		
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Hillside Outspot",
-                [
-                    NewLocPair(<-19300, 4678, 3230>, <0, -100, 0>),
-                    NewLocPair(<-16763, 4465, 3020>, <1, 18, 0>),
-                    NewLocPair(<-20153, 1127, 3060>, <11, 170, 0>),
-					NewLocPair(<-16787, 3540, 3075>, <0, 86, 0>),
-					NewLocPair(<-19026, 3749, 4460>, <0, 2, 0>)
-                ],
-                <0, 0, 3000>,$"rui/flowstatelocations/hillside"
-            )
-        )
+		// RegisterLocationPROPHUNT(
+            // NewLocationSettings(
+                // "Hillside Outspot",
+                // [
+                    // NewLocPair(<-19300, 4678, 3230>, <0, -100, 0>),
+                    // NewLocPair(<-16763, 4465, 3020>, <1, 18, 0>),
+                    // NewLocPair(<-20153, 1127, 3060>, <11, 170, 0>),
+					// NewLocPair(<-16787, 3540, 3075>, <0, 86, 0>),
+					// NewLocPair(<-19026, 3749, 4460>, <0, 2, 0>)
+                // ],
+                // <0, 0, 3000>,$"rui/flowstatelocations/hillside"
+            // )
+        // )
 		RegisterLocationPROPHUNT(
             NewLocationSettings(
                 "Skull Town",

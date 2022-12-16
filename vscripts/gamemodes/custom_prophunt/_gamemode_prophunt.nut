@@ -271,7 +271,7 @@ void function SetSpectatorAnotherTry(entity player)
 	}
 	
 	entity specTarget = playersON.getrandom()
-	if( IsValid( specTarget ) && ShouldSetObserverTarget( specTarget ))
+	if( IsValid( specTarget ) && IsValid(player) && ShouldSetObserverTarget( specTarget ) && specTarget != player)
 	{
 		player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
 		player.SetObserverTarget( specTarget )
@@ -409,7 +409,6 @@ void function _HandleRespawnPROPHUNT(entity player)
 		player.SetAngles(<0, 7.94140625, 0>)
 	}
 	
-	PROPHUNT_CharSelect(player)
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
 	player.SetPlayerSettingsWithMods( characterSetFile, [] )
@@ -678,6 +677,16 @@ void function PROPHUNT_Lobby()
 		player.p.PROPHUNT_isSpectatorDiedMidRound = false
 		player.UnforceStand()
 		player.UnfreezeControlsOnServer()
+		
+		ItemFlavor PersonajeEscogido = GetAllCharacters()[RandomInt(9)]
+		CharacterSelect_AssignCharacter( ToEHI( player ), PersonajeEscogido )
+		player.SetBodyModelOverride( $"" )
+		player.SetArmsModelOverride( $"" )
+		TakeAllWeapons(player)
+		
+		Survival_SetInventoryEnabled( player, false )
+		player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
+		player.SetPlayerNetBool( "pingEnabled", true )
 	}
 	wait 2
 
@@ -796,7 +805,7 @@ void function PROPHUNT_GameLoop()
 			prop.SetHealth( player.GetHealth() )
 			
 			prop.SetPassDamageToParent(true)
-			
+			Survival_SetInventoryEnabled( player, false )
 			thread PropWatcher(prop, player) //destroys prop on end round and restores player model.
 			
 			player.SetThirdPersonShoulderModeOn()
@@ -881,7 +890,7 @@ void function PROPHUNT_GameLoop()
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 		DeployAndEnableWeapons(player)
-		
+		Survival_SetInventoryEnabled( player, false )
 		Highlight_SetFriendlyHighlight( player, "prophunt_teammate" )
 		Highlight_SetEnemyHighlight( player, "survival_enemy_skydiving" )
 		Remote_CallFunction_NonReplay(player, "Minimap_EnableDraw_Internal")
@@ -1365,6 +1374,8 @@ void function HandlePlayerTeam(entity player)
 	
 	player.Show()
 	player.MakeVisible()
+	PROPHUNT_CharSelect(player)
+	
 	//printt(player, player.GetTeam())
 	//for connected players midround
 	if( player.GetTeam() == 15 && !player.p.PROPHUNT_isSpectatorDiedMidRound)
@@ -1927,7 +1938,7 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		decoy.SetHealth( 100 )
 		decoy.EnableAttackableByAI( 50, 0, AI_AP_FLAG_NONE )
 		SetObjectCanBeMeleed( decoy, true )
-		decoy.SetTimeout( Time()-FS_PROPHUNT.endTime )
+		decoy.SetTimeout( 90 )
 		decoy.SetPlayerOneHits( true )
 		decoy.SetAngles( player.GetAngles() )
 		PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
