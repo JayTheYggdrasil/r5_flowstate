@@ -1161,8 +1161,8 @@ void function PROPHUNT_GameLoop()
 		
 		// wait 7
 
-		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
-		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_HUNTERS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
+		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(PROPHUNT_HUNTERS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
+		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
 		FS_PROPHUNT.requestsforIMC = 0
 		FS_PROPHUNT.requestsforMILITIA = 0
 		
