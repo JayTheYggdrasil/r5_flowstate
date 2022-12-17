@@ -2511,7 +2511,7 @@ void function UICallback_UpdatePlayerInfo( var elem )
 	entity player = GetLocalClientPlayer()
 
 	if ( GetBugReproNum() == 54268 )
-		SURVIVAL_PopulatePlayerInfoRui( player, rui )
+		thread SURVIVAL_PopulatePlayerInfoRui( player, rui )
 	else
 		thread TEMP_UpdatePlayerRui( rui, player )
 }

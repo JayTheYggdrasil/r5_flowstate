@@ -16,9 +16,9 @@ global const int PROPHUNT_WHISTLE_RADIUS = 2000
 global const int PROPHUNT_WHISTLE_TIMER = 25
 global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 60 //hiding props time too
 global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 60
+global const int PROPHUNT_HUNTERS_AMOUNT_ALLOWED = 5
+global const int PROPHUNT_PROPS_AMOUNT_ALLOWED = 30
 
-global const int PROPHUNT_PROPS_AMOUNT_ALLOWED = 5
-global const int PROPHUNT_HUNTERS_AMOUNT_ALLOWED = 30
 
 global array<asset> prophuntAssets = []
 

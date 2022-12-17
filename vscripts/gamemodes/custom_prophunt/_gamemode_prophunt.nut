@@ -693,6 +693,9 @@ void function PROPHUNT_Lobby()
 		
 		thread CheckDistanceWhileInLobby(player)
 		SetRealms(player, 64)
+		
+		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
+		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 	}
 	wait 2
 
