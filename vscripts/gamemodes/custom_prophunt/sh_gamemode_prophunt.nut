@@ -17,6 +17,9 @@ global const int PROPHUNT_WHISTLE_TIMER = 25
 global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 60 //hiding props time too
 global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 60
 
+global const int PROPHUNT_PROPS_AMOUNT_ALLOWED = 5
+global const int PROPHUNT_HUNTERS_AMOUNT_ALLOWED = 30
+
 global array<asset> prophuntAssets = []
 
 void function GamemodeProphuntShared_Init()
@@ -159,7 +162,7 @@ void function GamemodeProphuntShared_Init()
 					NewLocPair(<26036, -17590, 5694>, <0, 90, 0>),
                     NewLocPair(<26670, -16729, 4926>, <0, -180, 0>),
                     NewLocPair(<27784, -16166, 5046>, <0, -180, 0>),
-                    NewLocPair(<27133, -16074, 5414>, <0, -90, 0>),
+                    NewLocPair(<27133, -16074, 5630>, <0, -90, 0>),
                     NewLocPair(<27051, -14200, 5582>, <0, -90, 0>)
                 ],
                 <0, 0, 3000>,$"rui/flowstatelocations/repulsor"

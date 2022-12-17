@@ -24,15 +24,16 @@ struct{
 	entity ringBoundary_PreGame
 	
 	// Voting
-    array<entity> votedPlayers
-    bool votingtime = false
-    bool votestied = false
-    array<int> mapVotes
-    array<int> mapIds
-    int mappicked = 0
+	array<entity> votedPlayers
+	bool votingtime = false
+	bool votestied = false
+	array<int> mapVotes
+	array<int> mapIds
+	int mappicked = 0
 	int currentRound = 1
 	
-	int maxvotesallowedforTeams = -1
+	int maxvotesallowedforTeamIMC = -1
+	int maxvotesallowedforTeamMILITIA = -1
 	
 	int requestsforIMC = -1
 	int requestsforMILITIA = -1
@@ -1160,7 +1161,8 @@ void function PROPHUNT_GameLoop()
 		
 		// wait 7
 
-		FS_PROPHUNT.maxvotesallowedforTeams = int(floor(GetPlayerArray().len()/2))
+		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
+		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_HUNTERS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
 		FS_PROPHUNT.requestsforIMC = 0
 		FS_PROPHUNT.requestsforMILITIA = 0
 		
@@ -1665,11 +1667,11 @@ entity function CreateRingBoundary_PropHunt(LocationSettings location)
 	circle.SetAngles( <0, 0, 0> )
 	circle.NotSolid()
 	circle.DisableHibernation()
-    circle.Minimap_SetObjectScale( min(ringRadius / SURVIVAL_MINIMAP_RING_SCALE, 1) )
-    circle.Minimap_SetAlignUpright( true )
-    circle.Minimap_SetZOrder( 2 )
-    circle.Minimap_SetClampToEdge( true )
-    circle.Minimap_SetCustomState( eMinimapObject_prop_script.OBJECTIVE_AREA )
+	circle.Minimap_SetObjectScale( min(ringRadius / SURVIVAL_MINIMAP_RING_SCALE, 1) )
+	circle.Minimap_SetAlignUpright( true )
+	circle.Minimap_SetZOrder( 2 )
+	circle.Minimap_SetClampToEdge( true )
+	circle.Minimap_SetCustomState( eMinimapObject_prop_script.OBJECTIVE_AREA )
 	SetTargetName( circle, "hotZone" )
 	DispatchSpawn(circle)
 
@@ -2100,13 +2102,13 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 	switch(args[0])
 	{
 		case "0":
-			if(FS_PROPHUNT.requestsforIMC <= FS_PROPHUNT.maxvotesallowedforTeams)
+			if(FS_PROPHUNT.requestsforIMC <= FS_PROPHUNT.maxvotesallowedforTeamIMC)
 			{
 				player.p.teamasked = 0
 				FS_PROPHUNT.requestsforIMC++
 			}
 			
-			if(FS_PROPHUNT.requestsforIMC == FS_PROPHUNT.maxvotesallowedforTeams)
+			if(FS_PROPHUNT.requestsforIMC == FS_PROPHUNT.maxvotesallowedforTeamIMC)
 			{
 				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for imc, disable this button for all players that have not voted yet and select the other team for them
 				{
@@ -2122,13 +2124,13 @@ bool function ClientCommand_PROPHUNT_AskForTeam(entity player, array < string > 
 		break
 		
 		case "1":
-			if(FS_PROPHUNT.requestsforMILITIA <= FS_PROPHUNT.maxvotesallowedforTeams)
+			if(FS_PROPHUNT.requestsforMILITIA <= FS_PROPHUNT.maxvotesallowedforTeamMILITIA)
 			{
 				player.p.teamasked = 1
 				FS_PROPHUNT.requestsforMILITIA++
 			}
 			
-			if(FS_PROPHUNT.requestsforMILITIA == FS_PROPHUNT.maxvotesallowedforTeams)
+			if(FS_PROPHUNT.requestsforMILITIA == FS_PROPHUNT.maxvotesallowedforTeamMILITIA)
 			{
 				foreach(sPlayer in GetPlayerArray()) //no more votes allowed for militia, disable this button for all players that have not voted yet and select the other team for them
 				{
