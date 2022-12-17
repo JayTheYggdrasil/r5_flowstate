@@ -14,6 +14,8 @@ void function OpenKillReplayHud(asset image, string killedby, int tier, bool isl
 {
 	try{
 		RegisterButtonPressedCallback( KEY_ENTER, FocusChat )
+		RegisterButtonPressedCallback( MOUSE_LEFT, SpecNext )
+		RegisterButtonPressedCallback( MOUSE_RIGHT, SpecPrev )
 	}catch(e420){}
 	
     for(int i = 0; i < 5; i++) {
@@ -82,6 +84,8 @@ void function CloseKillReplayHud(bool isProphunt)
 {
 	try{
 		DeregisterButtonPressedCallback( KEY_ENTER, FocusChat )
+		DeregisterButtonPressedCallback( MOUSE_LEFT, SpecNext )
+		DeregisterButtonPressedCallback( MOUSE_RIGHT, SpecPrev )
 	}catch(e420){}
 	Hud_StopMessageMode( Hud_GetChild( file.menu, "KillReplayChatBox") )
 	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "KillReplayChatBox"), "ChatInputLine" ), false)
@@ -104,6 +108,16 @@ void function InitKillReplayHud( var newMenuArg )
     file.basesheildwidth = Hud_GetWidth( Hud_GetChild( file.menu, "PlayerSheild1" ) )
 
 	AddMenuEventHandler( menu, eUIEvent.MENU_NAVIGATE_BACK, On_NavigateBack )
+}
+
+void function SpecNext( var panel )
+{
+	ClientCommand( "spec_next" )
+}
+
+void function SpecPrev( var panel )
+{
+	ClientCommand( "spec_prev" )
 }
 
 void function FocusChat( var panel )
