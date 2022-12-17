@@ -191,7 +191,7 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 
 			player.SetOrigin(FS_PROPHUNT.lobbyLocation)
 			player.SetAngles(FS_PROPHUNT.lobbyAngles)
-			PutEntityInSafeSpot( player, null, null, player.GetOrigin() + <0,0,256>, player.GetOrigin() )
+			//PutEntityInSafeSpot( player, null, null, player.GetOrigin() + <0,0,256>, player.GetOrigin() )
 			
 			player.SetThirdPersonShoulderModeOn()
 			player.UnforceStand()
@@ -783,12 +783,12 @@ void function PROPHUNT_GameLoop()
 			EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 			EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
-			PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
+			//PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
 			int modelindex = RandomIntRangeInclusive(0,(prophuntAssets.len()-1))
 			player.p.PROPHUNT_LastModelIndex = modelindex
 			asset selectedModel = prophuntAssets[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
-			
+			player.kv.solid = 0
 			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
@@ -798,7 +798,7 @@ void function PROPHUNT_GameLoop()
 			prop.kv.solid = 6
 			
 			player.p.PROPHUNT_LastPropEntity = prop
-			//prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			prop.kv.fadedist = 999999
 			prop.AllowMantle()
 			prop.SetDamageNotifications( true )
@@ -864,7 +864,7 @@ void function PROPHUNT_GameLoop()
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
-		PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
+		//PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
 		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.SetThirdPersonShoulderModeOff()
@@ -1801,6 +1801,7 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 			// {
 				player.SetBodyModelOverride( $"" )
 				player.SetArmsModelOverride( $"" )
+				player.kv.solid = 0
 				player.AllowMantle()
 				player.Hide()
 				thread PROPHUNT_GiveAndManageProp(player, false, true)
@@ -1854,7 +1855,7 @@ void function ClientCommand_ChangeProp(entity player)
 		{
 			player.SetBodyModelOverride( $"" )
 			player.SetArmsModelOverride( $"" )
-			player.kv.fadedist = 999999
+			player.kv.solid = 0
 			player.AllowMantle()
 			player.Hide()
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
@@ -1952,7 +1953,7 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		decoy.SetTimeout( 90 )
 		decoy.SetPlayerOneHits( true )
 		decoy.SetAngles( player.GetAngles() )
-		PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
+		//PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 1)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 4)
 	} else
