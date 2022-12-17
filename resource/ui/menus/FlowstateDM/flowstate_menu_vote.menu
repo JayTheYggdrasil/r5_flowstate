@@ -291,7 +291,7 @@
 			rui                     	"ui/lobby_challenge_box.rpak"
 			"wide"						"300"
 			"tall"						"40"
-			"xpos"						"-250"
+			"xpos"						"-255"
 			"ypos"						"-250"
 			"visible"					"1"
 			"scaleImage"				"1"

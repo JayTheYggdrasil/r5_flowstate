@@ -548,30 +548,30 @@ void function GamemodeProphuntShared_Init()
                 )
             )
 
-		RegisterLocationPROPHUNT(
-                NewLocationSettings(
-                    "Refinery",
-                    [
-                        NewLocPair(<22970, 27159, -4612>, <0, 135, 0>),
-                        NewLocPair(<20430, 26481, -4200>, <0, 135, 0>),
-                        NewLocPair(<19142, 30982, -4612>, <0, -45, 0>),
-                        NewLocPair(<18285, 28602, -4200>, <0, -45, 0>),
-                        NewLocPair(<19228, 25592, -4821>, <0, 135, 0>),
-                        NewLocPair(<19495, 29283, -4821>, <0, -45, 0>),
-                        NewLocPair(<18470, 28330, -4370>, <0, 135, 0>),
-                        NewLocPair(<18461, 28405, -4199>, <0, 45, 0>),
-                        NewLocPair(<18284, 28492, -3992>, <0, -45, 0>),
-                        NewLocPair(<19428, 27190, -4140>, <0, -45, 0>),
-                        NewLocPair(<20435, 26254, -3950>, <0, -175, 0>),
-                        NewLocPair(<20222, 26549, -4316>, <0, 135, 0>),
-                        NewLocPair(<19444, 25605, -4602>, <0, 45, 0>),
-                        NewLocPair(<21751, 29980, -4226>, <0, -135, 0>),
-                        NewLocPair(<17570, 26915, -4637>, <0, -90, 0>),
-                        NewLocPair(<16715, 28017, -4650>, <0, -45, 0>)
-                    ],
-                    <0, 0, 6500>,$"rui/flowstatelocations/refinery"
-                )
-            )
+		// RegisterLocationPROPHUNT(
+                // NewLocationSettings(
+                    // "Refinery",
+                    // [
+                        // NewLocPair(<22970, 27159, -4612>, <0, 135, 0>),
+                        // NewLocPair(<20430, 26481, -4200>, <0, 135, 0>),
+                        // NewLocPair(<19142, 30982, -4612>, <0, -45, 0>),
+                        // NewLocPair(<18285, 28602, -4200>, <0, -45, 0>),
+                        // NewLocPair(<19228, 25592, -4821>, <0, 135, 0>),
+                        // NewLocPair(<19495, 29283, -4821>, <0, -45, 0>),
+                        // NewLocPair(<18470, 28330, -4370>, <0, 135, 0>),
+                        // NewLocPair(<18461, 28405, -4199>, <0, 45, 0>),
+                        // NewLocPair(<18284, 28492, -3992>, <0, -45, 0>),
+                        // NewLocPair(<19428, 27190, -4140>, <0, -45, 0>),
+                        // NewLocPair(<20435, 26254, -3950>, <0, -175, 0>),
+                        // NewLocPair(<20222, 26549, -4316>, <0, 135, 0>),
+                        // NewLocPair(<19444, 25605, -4602>, <0, 45, 0>),
+                        // NewLocPair(<21751, 29980, -4226>, <0, -135, 0>),
+                        // NewLocPair(<17570, 26915, -4637>, <0, -90, 0>),
+                        // NewLocPair(<16715, 28017, -4650>, <0, -45, 0>)
+                    // ],
+                    // <0, 0, 6500>,$"rui/flowstatelocations/refinery"
+                // )
+            // )
 			
 		RegisterLocationPROPHUNT(
                 NewLocationSettings(

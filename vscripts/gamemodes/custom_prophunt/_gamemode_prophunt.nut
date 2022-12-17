@@ -2145,8 +2145,8 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 
     array<string> Weapons = [
 		"mp_weapon_wingman optic_cq_hcog_classic highcal_mag_l2",
-		"mp_weapon_r97 optic_cq_threat bullets_mag_l2 stock_tactical_l2 barrel_stabilizer_l1",
-		"mp_weapon_pdw optic_cq_threat highcal_mag_l3 stock_tactical_l3",
+		"mp_weapon_r97 optic_cq_hcog_classic bullets_mag_l2 stock_tactical_l2 barrel_stabilizer_l1",
+		"mp_weapon_pdw optic_cq_hcog_classic highcal_mag_l3 stock_tactical_l3",
 		"mp_weapon_wingman optic_cq_hcog_classic highcal_mag_l3",
 		"mp_weapon_vinson stock_tactical_l2 highcal_mag_l3",
 		"mp_weapon_hemlok optic_cq_hcog_classic stock_tactical_l2 highcal_mag_l2 barrel_stabilizer_l2",
