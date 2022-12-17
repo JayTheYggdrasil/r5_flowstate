@@ -14,7 +14,7 @@ global const int PROPHUNT_DECOYS_USAGE_LIMIT = 5
 global const int PROPHUNT_FLASH_BANG_USAGE_LIMIT = 5
 global const int PROPHUNT_WHISTLE_RADIUS = 2000
 global const int PROPHUNT_WHISTLE_TIMER = 25
-global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 60 //hiding props time too
+global const int PROPHUNT_TELEPORT_ATTACKERS_DELAY = 5 //hiding props time too
 global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 60
 
 global const int PROPHUNT_HUNTERS_AMOUNT_ALLOWED = 5
@@ -534,19 +534,19 @@ void function GamemodeProphuntShared_Init()
                 )
             )
 
-	    // RegisterLocationPROPHUNT(
-                // NewLocationSettings(
-                    // "Dome",
-                    // [
-                        // NewLocPair(<19351, -41456, -2192>, <0, 96, 0>),
-                        // NewLocPair(<22925, -37060, -2169>, <0, -156, 0>),
-                        // NewLocPair(<19772, -34549, -2232>, <0, -137, 0>),
-						// NewLocPair(<17010, -37125, -2129>, <0, 81, 0>),
-						// NewLocPair(<15223, -40222, -1998>, <0, 86, 0>)
-                    // ],
-                    // <0, 0, 2000>,$"rui/flowstatelocations/dome"
-                // )
-            // )
+	    RegisterLocationPROPHUNT(
+                NewLocationSettings(
+                    "Dome",
+                    [
+                        NewLocPair(<19351, -41456, -2192>, <0, 96, 0>),
+                        NewLocPair(<22925, -37060, -2169>, <0, -156, 0>),
+                        NewLocPair(<19772, -34549, -2232>, <0, -137, 0>),
+						NewLocPair(<17010, -37125, -2129>, <0, 81, 0>),
+						NewLocPair(<15223, -40222, -1998>, <0, 86, 0>)
+                    ],
+                    <0, 0, 2000>,$"rui/flowstatelocations/dome"
+                )
+            )
 
 		RegisterLocationPROPHUNT(
                 NewLocationSettings(

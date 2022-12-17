@@ -173,17 +173,12 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
 	player.SetPlayerSettingsWithMods( characterSetFile, [] )
-	SetPlayerSettings(player, PROPHUNT_SETTINGS)
 	DoRespawnPlayer( player, null )
-	Survival_SetInventoryEnabled( player, false )				
-	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
+	Survival_SetInventoryEnabled( player, false )
 	player.SetPlayerNetBool( "pingEnabled", true )
 	player.SetHealth( 100 )
 	Inventory_SetPlayerEquipment(player, "armor_pickup_lv2", "armor")
 	player.SetShieldHealth( 75 )
-	player.kv.solid = 6
-	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-	player.kv.fadedist = 999999
 	player.AllowMantle()
 			
 	switch(GetGameState())
@@ -403,21 +398,16 @@ void function _HandleRespawnPROPHUNT(entity player)
 	ItemFlavor playerCharacter = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
 	asset characterSetFile = CharacterClass_GetSetFile( playerCharacter )
 	player.SetPlayerSettingsWithMods( characterSetFile, [] )
-	SetPlayerSettings(player, PROPHUNT_SETTINGS)
 	
 	if(IsValid(player.p.PROPHUNT_LastPropEntity))
 		player.p.PROPHUNT_LastPropEntity.Destroy()
 		
 	player.SetThirdPersonShoulderModeOn()
 	Survival_SetInventoryEnabled( player, false )
-	player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 	player.SetPlayerNetBool( "pingEnabled", true )
 	Inventory_SetPlayerEquipment(player, "armor_pickup_lv2", "armor")
 	player.SetShieldHealth( 75 )
 	player.SetHealth( 100 )
-	player.kv.solid = 6
-	player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-	player.kv.fadedist = 999999
 	player.AllowMantle()
 	player.SetMoveSpeedScale(1)
 	TakeAllWeapons(player)
@@ -677,7 +667,6 @@ void function PROPHUNT_Lobby()
 		TakeAllWeapons(player)
 		
 		Survival_SetInventoryEnabled( player, false )
-		player.SetPlayerNetInt( "respawnStatus", eRespawnStatus.NONE )
 		player.SetPlayerNetBool( "pingEnabled", true )
 		
 		thread CheckDistanceWhileInLobby(player)
@@ -800,9 +789,6 @@ void function PROPHUNT_GameLoop()
 			asset selectedModel = prophuntAssets[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
 			
-			player.kv.solid = 0
-			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-			
 			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
@@ -812,7 +798,7 @@ void function PROPHUNT_GameLoop()
 			prop.kv.solid = 6
 			
 			player.p.PROPHUNT_LastPropEntity = prop
-			prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
+			//prop.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			prop.kv.fadedist = 999999
 			prop.AllowMantle()
 			prop.SetDamageNotifications( true )
@@ -879,8 +865,6 @@ void function PROPHUNT_GameLoop()
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 		PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
-		player.kv.solid = 6
-		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.SetThirdPersonShoulderModeOff()
@@ -1817,9 +1801,6 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 			// {
 				player.SetBodyModelOverride( $"" )
 				player.SetArmsModelOverride( $"" )
-				player.kv.solid = 0
-				player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
-				player.kv.fadedist = 999999
 				player.AllowMantle()
 				player.Hide()
 				thread PROPHUNT_GiveAndManageProp(player, false, true)
@@ -1873,8 +1854,6 @@ void function ClientCommand_ChangeProp(entity player)
 		{
 			player.SetBodyModelOverride( $"" )
 			player.SetArmsModelOverride( $"" )
-			player.kv.solid = 0
-			player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
