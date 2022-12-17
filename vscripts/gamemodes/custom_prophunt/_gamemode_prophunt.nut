@@ -191,14 +191,13 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 		case eGameState.WaitingForPlayers:
 		case eGameState.MapVoting:
 			if(!IsValid(player)) return
-			
-			//printt("Flowstate DEBUG - Prophunt player connected mapvoting.", player)
-			//player has a team assigned already, we need to fix it before spawn
+
 			GiveTeamToProphuntPlayer(player)
 
 			player.SetOrigin(FS_PROPHUNT.lobbyLocation)
 			player.SetAngles(FS_PROPHUNT.lobbyAngles)
-
+			PutEntityInSafeSpot( player, null, null, player.GetOrigin() + <0,0,256>, player.GetOrigin() )
+			
 			player.SetThirdPersonShoulderModeOn()
 			player.UnforceStand()
 			player.UnfreezeControlsOnServer()
@@ -211,7 +210,6 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			array<entity> playersON = GetPlayerArray_Alive()
 			playersON.fastremovebyvalue( player )
 			
-			printt("Flowstate DEBUG - Prophunt player connected midround, setting spectator.", player)
 			array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
 			player.MakeInvisible()
@@ -796,6 +794,7 @@ void function PROPHUNT_GameLoop()
 			EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 			EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
+			PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*2048 + <0,0,256>, player.GetOrigin() )
 			int modelindex = RandomIntRangeInclusive(0,(prophuntAssets.len()-1))
 			player.p.PROPHUNT_LastModelIndex = modelindex
 			asset selectedModel = prophuntAssets[modelindex]
@@ -879,6 +878,7 @@ void function PROPHUNT_GameLoop()
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
+		PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*2048 + <0,0,256>, player.GetOrigin() )
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		player.kv.fadedist = 999999
@@ -1554,7 +1554,7 @@ entity function CreateRing_PreGame(LocationSettings location)
 
     vector ringCenter = GetCenterOfCircle(spawns)
 	
-    float ringRadius = float(2000 + 110*GetPlayerArray().len())
+    float ringRadius = float(min(2500 + 110*GetPlayerArray().len(), 5000))
 	FS_PROPHUNT.allowedRadius = ringRadius
 
 	array<LocPair> prophuntSpawns
