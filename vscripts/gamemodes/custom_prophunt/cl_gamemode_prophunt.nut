@@ -70,7 +70,7 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	player.p.PROPHUNT_FlashbangPropUsageLimit = 0
 	player.p.PROPHUNT_AreAnglesLocked = false
 	
-	SetConVarFloat("c_thirdpersonshoulderaimdist", 115)
+	SetConVarFloat("c_thirdpersonshoulderaimdist", 120)
 	SetConVarFloat("c_thirdpersonshoulderheight", 55)
 	SetConVarFloat("c_thirdpersonshoulderoffset", 0)
 	

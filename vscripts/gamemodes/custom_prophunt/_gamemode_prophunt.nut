@@ -40,7 +40,7 @@ struct{
 	vector allowedRingCenter
 	vector lobbyLocation
 	vector lobbyAngles
-	
+	bool allowRingDamageForProps = false
 } FS_PROPHUNT
 
 void function _GamemodeProphunt_Init()
@@ -771,6 +771,7 @@ void function PROPHUNT_GameLoop()
 	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 	SetGameState( eGameState.Playing )
 	//printt("Flowstate DEBUG - Tping props team.")
+	FS_PROPHUNT.allowRingDamageForProps = true
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
@@ -851,7 +852,7 @@ void function PROPHUNT_GameLoop()
 	}
 
 	wait PROPHUNT_TELEPORT_ATTACKERS_DELAY-3
-	
+	FS_PROPHUNT.allowRingDamageForProps = false
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
@@ -1616,7 +1617,33 @@ entity function CreateRing_PreGame(LocationSettings location)
 	circle.SetAngles( <0, 0, 0> )
 	circle.NotSolid()
 	DispatchSpawn(circle)
+	
+	//Damage thread for ring, only does damage to props
+	thread RingDamage2(circle, ringRadius)
+
 	return circle
+}
+
+void function RingDamage2( entity circle, float currentRadius)
+{
+	while(!FS_PROPHUNT.allowRingDamageForProps)
+		WaitFrame()
+	
+	const float DAMAGE_CHECK_STEP_TIME = 1.5
+
+	while ( IsValid(circle) && FS_PROPHUNT.allowRingDamageForProps)
+	{
+		foreach ( player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA) )
+		{
+			float playerDist = Distance2D( player.GetOrigin(), circle.GetOrigin() )
+			if ( playerDist > currentRadius )
+			{
+				Remote_CallFunction_Replay( player, "ServerCallback_PlayerTookDamage", 0, 0, 0, 0, DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, eDamageSourceId.deathField, null )
+				player.TakeDamage( int( Deathmatch_GetOOBDamagePercent() / 100 * float( player.GetMaxHealth() ) ), null, null, { scriptType = DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, damageSourceId = eDamageSourceId.deathField } )
+			}
+		}
+		wait DAMAGE_CHECK_STEP_TIME
+	}
 }
 
 entity function CreateRingBoundary_PropHunt(LocationSettings location)
