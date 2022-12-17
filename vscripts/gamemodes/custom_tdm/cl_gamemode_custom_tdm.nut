@@ -179,7 +179,10 @@ void function CoolCameraMovement(entity player, entity cutsceneMover, entity cam
 	{
 		LocPair far = file.selectedLocation.spawns.getrandom()
 		startpos = far.origin
-		startpos.z+= 2000
+		if(file.selectedLocation.name != "Swamps")
+			startpos.z+= 2000
+		else
+			startpos.z+= 1500
 		startangs = far.angles
 		
 		finalpos = GetCenterOfCircle(file.selectedLocation.spawns)

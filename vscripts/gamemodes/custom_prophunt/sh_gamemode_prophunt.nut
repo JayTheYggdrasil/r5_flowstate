@@ -541,8 +541,8 @@ void function GamemodeProphuntShared_Init()
                         NewLocPair(<19351, -41456, -2192>, <0, 96, 0>),
                         NewLocPair(<22925, -37060, -2169>, <0, -156, 0>),
                         NewLocPair(<19772, -34549, -2232>, <0, -137, 0>),
-						NewLocPair(<17010, -37125, -2129>, <0, 81, 0>),
-						NewLocPair(<15223, -40222, -1998>, <0, 86, 0>)
+					    NewLocPair(<17010, -37125, -2129>, <0, 81, 0>),
+					    NewLocPair(<15223, -40222, -1998>, <0, 86, 0>)
                     ],
                     <0, 0, 2000>,$"rui/flowstatelocations/dome"
                 )
