@@ -794,7 +794,7 @@ void function PROPHUNT_GameLoop()
 			EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 			EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 			player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
-			PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*2048 + <0,0,256>, player.GetOrigin() )
+			PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
 			int modelindex = RandomIntRangeInclusive(0,(prophuntAssets.len()-1))
 			player.p.PROPHUNT_LastModelIndex = modelindex
 			asset selectedModel = prophuntAssets[modelindex]
@@ -878,7 +878,7 @@ void function PROPHUNT_GameLoop()
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
-		PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*2048 + <0,0,256>, player.GetOrigin() )
+		PutEntityInSafeSpot( player, null, null, player.GetOrigin() + player.GetForwardVector()*256 + <0,0,256>, player.GetOrigin() )
 		player.kv.solid = 6
 		player.kv.CollisionGroup = TRACE_COLLISION_GROUP_PLAYER
 		player.kv.fadedist = 999999
@@ -1554,7 +1554,7 @@ entity function CreateRing_PreGame(LocationSettings location)
 
     vector ringCenter = GetCenterOfCircle(spawns)
 	
-    float ringRadius = float(min(2500 + 110*GetPlayerArray().len(), 5000))
+    float ringRadius = float(minint(2500 + 110*GetPlayerArray().len(), 5000))
 	FS_PROPHUNT.allowedRadius = ringRadius
 
 	array<LocPair> prophuntSpawns
