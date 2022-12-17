@@ -661,17 +661,8 @@ void function PROPHUNT_Lobby()
 	if(FS_PROPHUNT.currentRound == 1)
 		FS_PROPHUNT.selectedLocation = FS_PROPHUNT.locationSettings.getrandom()
 	
-	//printt("Flowstate DEBUG - Fall triggers created.")
-	//printt("Flowstate DEBUG - Next location selected: ", FS_PROPHUNT.selectedLocation.name)
-		
 	if(FS_PROPHUNT.selectedLocation.name == "Skill trainer By CafeFPS")
-	{
-		DestroyPlayerPropsPROPHUNT()
-		WaitFrame()
-		thread SkillTrainerLoad()
-		wait 1
-		//printt("Flowstate DEBUG - Skill trainer loading.")
-	}
+		SkillTrainerLoad()
 	
 	foreach(player in GetPlayerArray())
 	{
@@ -759,7 +750,6 @@ void function CheckDistanceWhileInLobby(entity player)
 void function PROPHUNT_GameLoop()
 {
 	SetTdmStateToInProgress()
-	//printt("Flowstate DEBUG - tdmState is eTDMState.IN_PROGRESS Starting round.")
 
 	SurvivalCommentary_ResetAllData()
 	FS_PROPHUNT.endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
@@ -774,6 +764,7 @@ void function PROPHUNT_GameLoop()
 	FS_PROPHUNT.ringBoundary_PreGame = CreateRing_PreGame(FS_PROPHUNT.selectedLocation)
 	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 	SetGameState( eGameState.Playing )
+	
 	//printt("Flowstate DEBUG - Tping props team.")
 	FS_PROPHUNT.allowRingDamageForProps = true
 	foreach(player in GetPlayerArray())
@@ -781,7 +772,6 @@ void function PROPHUNT_GameLoop()
 		if(!IsValid(player)) continue
 		
 		//try{TakePassive(player, ePassives.PAS_PILOT_BLOOD)}catch(e420){}
-		//Inventory_SetPlayerEquipment(player, WHITE_SHIELD, "armor") //props dont like shields FX
 		ClearInvincible( player )
 		
 		player.p.playerDamageDealt = 0.0
@@ -840,7 +830,6 @@ void function PROPHUNT_GameLoop()
 			player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 			player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 			player.GiveOffhandWeapon("mp_weapon_flashbang_fakeultimate", OFFHAND_ULTIMATE)
-			//player.GiveOffhandWeapon("mp_ability_phase_walk", OFFHAND_ULTIMATE)
 			player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 			player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 			DeployAndEnableWeapons(player)
@@ -848,7 +837,6 @@ void function PROPHUNT_GameLoop()
 			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", true)
 			player.SetMoveSpeedScale(1.25)
-			wait 0.2
 		} else if(player.GetTeam() == TEAM_IMC)
 		{
 			Remote_CallFunction_NonReplay(player, "PROPHUNT_StartMiscTimer", false) //props are hiding, seekers arriving
@@ -1165,7 +1153,7 @@ void function PROPHUNT_GameLoop()
 		// wait 7
 
 		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(PROPHUNT_HUNTERS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
-		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
+		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, ceil(GetPlayerArray().len()/2)))
 		FS_PROPHUNT.requestsforIMC = 0
 		FS_PROPHUNT.requestsforMILITIA = 0
 		
@@ -1572,7 +1560,7 @@ entity function CreateRing_PreGame(LocationSettings location)
 	array<LocPair> prophuntSpawns
 		
 	//get spawn points inside allowed radius
-	foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
+	foreach(spawn in spawns)
 	{
 		if( Distance( spawn.origin, ringCenter ) <= FS_PROPHUNT.allowedRadius )
 			prophuntSpawns.append(spawn)
@@ -1582,13 +1570,13 @@ entity function CreateRing_PreGame(LocationSettings location)
 	{
 		//get initial seed for ring, the nearest spawn point to the center
 		array<float> prophuntSpawnsDistances
-		foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
+		foreach(spawn in spawns)
 		{
 			prophuntSpawnsDistances.append(Distance( spawn.origin, ringCenter ))
 		}
 		float compare = 99999
 		int j = 0
-		for(int i = 0; i < FS_PROPHUNT.selectedLocation.spawns.len(); i++)
+		for(int i = 0; i < spawns.len(); i++)
 		{
 			if(prophuntSpawnsDistances[i] < compare)
 			{
@@ -1596,10 +1584,10 @@ entity function CreateRing_PreGame(LocationSettings location)
 				j = i
 			}
 		}		
-		ringCenter = FS_PROPHUNT.selectedLocation.spawns[j].origin
+		ringCenter = spawns[j].origin
 
 		//get spawn points inside allowed radius
-		foreach(spawn in FS_PROPHUNT.selectedLocation.spawns)
+		foreach(spawn in spawns)
 		{
 			if( Distance( spawn.origin, ringCenter ) <= FS_PROPHUNT.allowedRadius )
 				prophuntSpawns.append(spawn)
