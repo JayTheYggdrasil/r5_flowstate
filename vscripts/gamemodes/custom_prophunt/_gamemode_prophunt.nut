@@ -1635,6 +1635,8 @@ void function RingDamage2( entity circle, float currentRadius)
 	{
 		foreach ( player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA) )
 		{
+			if(!IsValid(player)) continue
+			
 			float playerDist = Distance2D( player.GetOrigin(), circle.GetOrigin() )
 			if ( playerDist > currentRadius )
 			{
@@ -1705,8 +1707,7 @@ void function AudioThread(entity circle, entity player, float radius)
 	audio.SetAngles( <0, 0, 0> )
 	EmitSoundOnEntity( audio, soundToPlay )
 
-	while(IsValid(circle)){
-		if(!IsValid(player)) continue
+	while(IsValid(circle) && IsValid(player)){
 		vector fwdToPlayer   = Normalize( <player.GetOrigin().x, player.GetOrigin().y, 0> - <circle.GetOrigin().x, circle.GetOrigin().y, 0> )
 		vector circleEdgePos = circle.GetOrigin() + (fwdToPlayer * radius)
 		circleEdgePos.z = player.EyePosition().z
@@ -1729,6 +1730,8 @@ void function RingDamage( entity circle, float currentRadius)
 	{
 		foreach ( player in GetPlayerArray_Alive() )
 		{
+			if(!IsValid(player)) continue
+			
 			if ( player.IsPhaseShifted() )
 				continue
 
