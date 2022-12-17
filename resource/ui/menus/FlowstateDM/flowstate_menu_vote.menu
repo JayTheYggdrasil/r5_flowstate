@@ -58,7 +58,7 @@
 		"SelectTeamFrame"
 		{
 			ControlName				RuiPanel
-			rui                     "ui/tabs_background.rpak"
+			rui                     "ui/basic_border_box.rpak"
 			visible					1
 			drawColor				"0 0 0 50"
 			"wide"						"250"
@@ -288,18 +288,18 @@
 		"_FSDM_BottomFrame"
 		{
 			ControlName					RuiPanel
-			rui                     	"ui/tabs_background.rpak"
+			rui                     	"ui/lobby_challenge_box.rpak"
 			"wide"						"300"
 			"tall"						"40"
-			"xpos"						"0"
-			"ypos"						"0"
+			"xpos"						"-250"
+			"ypos"						"-250"
 			"visible"					"1"
 			"scaleImage"				"1"
 			"fillColor"					"173 3 252 200"
 			"drawColor"					"173 3 252 200"
-			"pin_to_sibling"			"MapVoteFrame"
-			"pin_corner_to_sibling"		"BOTTOM"
-			"pin_to_sibling_corner"		"TOP"
+			"pin_to_sibling"			"DarkenBackground"
+			"pin_corner_to_sibling"		"LEFT"
+			"pin_to_sibling_corner"		"TOP_LEFT"
 		}
 		
 		"ObjectiveText"
