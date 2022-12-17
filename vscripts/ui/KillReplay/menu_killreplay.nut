@@ -55,9 +55,13 @@ void function OpenKillReplayHud(asset image, string killedby, int tier, bool isl
 	Hud_SetAboveBlur( Hud_GetChild( file.menu, "KillReplayChatBox"), true )
 	Hud_SetEnabled( Hud_GetChild( Hud_GetChild( file.menu, "KillReplayChatBox"), "ChatInputLine" ), false)
 	
+	//todo make it show only if there is more than 1 player to spectate
+	Hud_SetText(Hud_GetChild( file.menu, "ControlsText" ), "%attack% Previous Player")
+	Hud_SetText(Hud_GetChild( file.menu, "ControlsText2" ), "%zoom% Next Player")
+	
 	if(isProphunt) 
 	{
-		Hud_SetText(Hud_GetChild( file.menu, "KillReplayText" ), "APEX PROPHUNT - YOU WILL SPAWN THE NEXT ROUND")
+		Hud_SetText(Hud_GetChild( file.menu, "KillReplayText" ), "APEX PROPHUNT - YOU WILL SPAWN THE NEXT ROUND")		
 		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCard" ), true )
 		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardTopLine" ), true )
 		Hud_SetVisible( Hud_GetChild( file.menu, "PlayerCardBottomLine" ), true )
