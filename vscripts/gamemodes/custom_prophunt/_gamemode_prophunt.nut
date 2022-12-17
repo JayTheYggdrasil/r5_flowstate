@@ -868,17 +868,21 @@ void function PROPHUNT_GameLoop()
 		player.kv.fadedist = 999999
 		player.AllowMantle()
 		player.SetThirdPersonShoulderModeOff()
-		string pri = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon1", "~~none~~")
+		
+		player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_0 )
+		PROPHUNT_GiveRandomPrimaryWeapon(player)
+		
+		// string pri = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon1", "~~none~~")
 		string sec = GetCurrentPlaylistVarString("flowstatePROPHUNTweapon2", "~~none~~")
-		if(pri != "")
-		{
-			player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_0 )
-			entity weapon = player.GiveWeapon( pri, WEAPON_INVENTORY_SLOT_PRIMARY_0, [] )
-			array<string> mods = weapon.GetMods()
-			mods.append( "prophunt" )
-			try{weapon.SetMods( mods )} catch(e42069){printt("failed to put prophunt mod.")}
+		// if(pri != "")
+		// {
+			// player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_0 )
+			// entity weapon = player.GiveWeapon( pri, WEAPON_INVENTORY_SLOT_PRIMARY_0, [] )
+			// array<string> mods = weapon.GetMods()
+			// mods.append( "prophunt" )
+			// try{weapon.SetMods( mods )} catch(e42069){printt("failed to put prophunt mod.")}
 			
-		}
+		// }
 		if(sec != "")
 		{
 			player.TakeNormalWeaponByIndexNow( WEAPON_INVENTORY_SLOT_PRIMARY_1 )
@@ -2131,4 +2135,47 @@ bool function ClientCommand_PROPHUNT_debugProphuntModels(entity player, array < 
 	player.p.PROPHUNT_LastPropEntity.SetModel( prophuntAssets[int(args[0])] )
 	
 	return true
+}
+
+void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
+{
+	if(!IsValid(player)) return
+	
+	int slot = WEAPON_INVENTORY_SLOT_PRIMARY_0
+
+    array<string> Weapons = [
+		"mp_weapon_wingman optic_cq_hcog_classic highcal_mag_l2",
+		"mp_weapon_r97 optic_cq_threat bullets_mag_l2 stock_tactical_l2 barrel_stabilizer_l1",
+		"mp_weapon_pdw optic_cq_threat highcal_mag_l3 stock_tactical_l3",
+		"mp_weapon_wingman optic_cq_hcog_classic highcal_mag_l3",
+		"mp_weapon_vinson stock_tactical_l2 highcal_mag_l3",
+		"mp_weapon_hemlok optic_cq_hcog_classic stock_tactical_l2 highcal_mag_l2 barrel_stabilizer_l2",
+		"mp_weapon_lmg barrel_stabilizer_l1 stock_tactical_l3",
+        "mp_weapon_energy_ar energy_mag_l2 stock_tactical_l3",
+        "mp_weapon_alternator_smg bullets_mag_l3 stock_tactical_l3 barrel_stabilizer_l3",
+        "mp_weapon_rspn101 stock_tactical_l2 bullets_mag_l2 barrel_stabilizer_l1",
+		"mp_weapon_r97 optic_cq_holosight bullets_mag_l2 stock_tactical_l3 barrel_stabilizer_l4_flash_hider",
+		"mp_weapon_energy_shotgun shotgun_bolt_l2",
+		"mp_weapon_pdw highcal_mag_l3 stock_tactical_l2",
+		"mp_weapon_mastiff shotgun_bolt_l3",
+		"mp_weapon_autopistol bullets_mag_l2",
+		"mp_weapon_alternator_smg optic_cq_holosight bullets_mag_l3 stock_tactical_l3 barrel_stabilizer_l3",
+		"mp_weapon_energy_ar energy_mag_l1 stock_tactical_l3 hopup_turbocharger",
+		"mp_weapon_vinson stock_tactical_l3 highcal_mag_l3",
+		"mp_weapon_rspn101 stock_tactical_l1 bullets_mag_l3 barrel_stabilizer_l2",
+		"mp_weapon_car optic_cq_holosight stock_tactical_l1 bullets_mag_l3",
+		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3"
+	]
+	
+	array<string> Data = split(Weapons[RandomIntRange( 0, Weapons.len())], " ")
+	string weaponclass = Data[0]
+
+	array<string> Mods
+	foreach(string mod in Data)
+	{
+		if(strip(mod) != "" && strip(mod) != weaponclass)
+		    Mods.append( strip(mod) )
+	}
+	
+	player.GiveWeapon( weaponclass, slot, Mods )
 }
