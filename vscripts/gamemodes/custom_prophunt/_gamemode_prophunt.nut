@@ -671,9 +671,6 @@ void function PROPHUNT_Lobby()
 		
 		thread CheckDistanceWhileInLobby(player)
 		SetRealms(player, 64)
-		
-		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
-		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 	}
 	wait 2
 
@@ -1076,6 +1073,11 @@ void function PROPHUNT_GameLoop()
 		RemoveCinematicFlag( player, CE_FLAG_HIDE_MAIN_HUD | CE_FLAG_EXECUTION )
 		player.SetThirdPersonShoulderModeOff()	
 		player.FreezeControlsOnServer()
+		
+		if(!IsAlive(player)) 
+		{
+			DecideRespawnPlayer(player, false)
+		}
 	}
 	
 	// Only do voting for maps with multi locations
@@ -1956,7 +1958,17 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		SetObjectCanBeMeleed( decoy, true )
 		decoy.SetTimeout( 90 )
 		decoy.SetPlayerOneHits( true )
-		decoy.SetAngles( player.GetAngles() )
+		
+		vector testOrg = player.GetOrigin()
+		vector mins = player.GetPlayerMins()
+		vector maxs = player.GetPlayerMaxs()
+		int collisionGroup = TRACE_COLLISION_GROUP_PLAYER
+		TraceResults result = TraceHull( testOrg, testOrg + < 0, 0, -150 >, mins, maxs, [ player ], TRACE_MASK_PLAYERSOLID | TRACE_MASK_SOLID | TRACE_MASK_SHOT, TRACE_COLLISION_GROUP_PLAYER )
+		vector GoodAngles = AnglesOnSurface(result.surfaceNormal, AnglesToForward(player.EyeAngles()))
+		
+		decoy.SetAngles( Vector(GoodAngles.x, player.GetAngles().y, GoodAngles.z) ) //player.GetAngles().y
+		
+		
 		//PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 1)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 4)
@@ -2157,13 +2169,11 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 		"mp_weapon_r97 optic_cq_holosight bullets_mag_l2 stock_tactical_l3 barrel_stabilizer_l4_flash_hider",
 		"mp_weapon_energy_shotgun shotgun_bolt_l2",
 		"mp_weapon_pdw highcal_mag_l3 stock_tactical_l2",
-		"mp_weapon_mastiff shotgun_bolt_l3",
 		"mp_weapon_autopistol bullets_mag_l2",
 		"mp_weapon_alternator_smg optic_cq_holosight bullets_mag_l3 stock_tactical_l3 barrel_stabilizer_l3",
 		"mp_weapon_energy_ar energy_mag_l1 stock_tactical_l3 hopup_turbocharger",
 		"mp_weapon_vinson stock_tactical_l3 highcal_mag_l3",
 		"mp_weapon_rspn101 stock_tactical_l1 bullets_mag_l3 barrel_stabilizer_l2",
-		"mp_weapon_car optic_cq_holosight stock_tactical_l1 bullets_mag_l3",
 		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3"
 	]
 	
