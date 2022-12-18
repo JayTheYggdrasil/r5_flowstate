@@ -106,18 +106,22 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		Hud_SetVisible(HudElement( "ProphuntHint3" ), true)
 
 		Hud_SetEnabled(HudElement( "ProphuntHint4" ), true)
-		Hud_SetVisible(HudElement( "ProphuntHint4" ), true)	
+		Hud_SetVisible(HudElement( "ProphuntHint4" ), true)
+		
+		Hud_SetEnabled(HudElement( "ProphuntHint5" ), true)
+		Hud_SetVisible(HudElement( "ProphuntHint5" ), true)
 		
 		Hud_SetText( HudElement( "ProphuntHint0"), "%attack% Change Prop x" + ( PROPHUNT_CHANGE_PROP_USAGE_LIMIT - player.p.PROPHUNT_ChangePropUsageLimit ).tostring() )
 		Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Lock Angles")
-		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
-		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
-		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
+		Hud_SetText( HudElement( "ProphuntHint2"), "%reload% Match Surface")
+		Hud_SetText( HudElement( "ProphuntHint3"), "%offhand1% Stim Tactical")
+		Hud_SetText( HudElement( "ProphuntHint4"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
+		Hud_SetText( HudElement( "ProphuntHint5"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
 		
 		player.p.isAttackerProphunt = false
 		var screenSize = Hud.GetScreenSize()
 		
-		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 229*screenSize[1]/990 )		
+		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 275*screenSize[1]/990 )		
 		HudElement( "ScreenBlur1" ).SetPos( -35, -35 )
 
 	} else
@@ -442,7 +446,10 @@ void function ReloadMenuRUI()
 		Hud_SetVisible(HudElement( "ProphuntHint3" ), true)
 
 		Hud_SetEnabled(HudElement( "ProphuntHint4" ), true)
-		Hud_SetVisible(HudElement( "ProphuntHint4" ), true)	
+		Hud_SetVisible(HudElement( "ProphuntHint4" ), true)
+		
+		Hud_SetEnabled(HudElement( "ProphuntHint5" ), true)
+		Hud_SetVisible(HudElement( "ProphuntHint5" ), true)	
 		
 		Hud_SetText( HudElement( "ProphuntHint0"), "%attack% Change Prop x" + ( PROPHUNT_CHANGE_PROP_USAGE_LIMIT - player.p.PROPHUNT_ChangePropUsageLimit ).tostring() )
 		
@@ -451,9 +458,10 @@ void function ReloadMenuRUI()
 		else
 			Hud_SetText( HudElement( "ProphuntHint1"), "%zoom% Lock Angles")
 		
-		Hud_SetText( HudElement( "ProphuntHint2"), "%offhand1% Stim Tactical")
-		Hud_SetText( HudElement( "ProphuntHint3"), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
-		Hud_SetText( HudElement( "ProphuntHint4"), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
+		Hud_SetText( HudElement( "ProphuntHint2" ), "%reload% Match Surface")
+		Hud_SetText( HudElement( "ProphuntHint3" ), "%offhand1% Stim Tactical")
+		Hud_SetText( HudElement( "ProphuntHint4" ), "%melee% Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring() )
+		Hud_SetText( HudElement( "ProphuntHint5" ), "%offhand4% Flash Grenade x" + PROPHUNT_FLASH_BANG_USAGE_LIMIT.tostring())
 		
 		thread UpdateWhistleTimer(true)
 	} else
@@ -524,12 +532,12 @@ void function ChangeInputHintString( int index )
 		case 3:
 			messageText = "Place Decoy x" + ( PROPHUNT_DECOYS_USAGE_LIMIT - player.p.PROPHUNT_DecoysPropUsageLimit ).tostring()
 			hintButton = "%melee%"
-			Hud_SetText( HudElement( "ProphuntHint3"), hintButton + " " + messageText)
+			Hud_SetText( HudElement( "ProphuntHint4"), hintButton + " " + messageText)
 		break
 		case 4:
 			messageText = "Flash Grenade x" + ( PROPHUNT_FLASH_BANG_USAGE_LIMIT - player.p.PROPHUNT_FlashbangPropUsageLimit ).tostring()
 			hintButton = "%offhand4%"
-			Hud_SetText( HudElement( "ProphuntHint4"), hintButton + " " + messageText)
+			Hud_SetText( HudElement( "ProphuntHint5"), hintButton + " " + messageText)
 		break
 		case 1:
 			if(player.p.PROPHUNT_AreAnglesLocked)
@@ -556,11 +564,11 @@ void function PROPHUNT_CustomHint(int index)
 	switch(index)
 	{
 		case 0:
-		QuickHint("", "Angles locked!")
+		QuickHint("", "Angles locked")
 		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_Menu_SelectMode_Close")
 		break
 		case 1:
-		QuickHint("", "Angles unlocked!", true)
+		QuickHint("", "Angles unlocked", true)
 		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_InGame_FD_SliderExit" )
 		break
 		case 2:
@@ -568,7 +576,8 @@ void function PROPHUNT_CustomHint(int index)
 		EmitSoundOnEntity(GetLocalViewPlayer(), "Survival_UI_Ability_NotReady")
 		break
 		case 3:
-		QuickHint("", "Slope matched!")
+		QuickHint("", "Prop angles matched with surface")
+		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break
 		case 4:
 		QuickHint("", "Decoy placed!", true)
@@ -665,6 +674,8 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 	Hud_SetEnabled(HudElement( "ProphuntHint4" ), false)
 	Hud_SetVisible(HudElement( "ProphuntHint4" ), false)
 	
+	Hud_SetEnabled(HudElement( "ProphuntHint5" ), false)
+	Hud_SetVisible(HudElement( "ProphuntHint5" ), false)	
 	entity player = GetLocalClientPlayer()
 	Signal(player, "PROPHUNT_ShutdownWhistleTimer")
 	

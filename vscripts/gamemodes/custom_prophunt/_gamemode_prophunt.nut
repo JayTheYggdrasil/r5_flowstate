@@ -343,7 +343,7 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 				RemoveButtonPressedPlayerInputCallback( victim, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 				RemoveButtonPressedPlayerInputCallback( victim, IN_MELEE, ClientCommand_CreatePropDecoy )
 				RemoveButtonPressedPlayerInputCallback( victim, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-				//RemoveButtonPressedPlayerInputCallback( victim, IN_RELOAD, ClientCommand_MatchSlope )
+				RemoveButtonPressedPlayerInputCallback( victim, IN_RELOAD, ClientCommand_MatchSlope )
 				Remote_CallFunction_NonReplay(victim, "Minimap_DisableDraw_Internal")
 				Remote_CallFunction_NonReplay(victim, "PROPHUNT_RemoveControlsUI")
 			}
@@ -771,7 +771,7 @@ void function PROPHUNT_GameLoop()
 			AddButtonPressedPlayerInputCallback( player, IN_ZOOM_TOGGLE, ClientCommand_LockAngles ) //fix for the weirdos using ads toggle
 			AddButtonPressedPlayerInputCallback( player, IN_MELEE, ClientCommand_CreatePropDecoy )
 			AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_EmitFlashBangToNearbyPlayers )
-			//AddButtonPressedPlayerInputCallback( player, IN_RELOAD, ClientCommand_MatchSlope )
+			AddButtonPressedPlayerInputCallback( player, IN_RELOAD, ClientCommand_MatchSlope )
 			
 			vector lastPosForCoolParticles = player.GetOrigin()
 			vector lastAngForCoolParticles = player.GetAngles()
@@ -1889,36 +1889,22 @@ void function ClientCommand_ChangeProp(entity player)
 
 void function ClientCommand_MatchSlope(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return
 
 	vector testOrg = player.GetOrigin()
 	vector mins = player.GetPlayerMins()
 	vector maxs = player.GetPlayerMaxs()
-	int collisionGroup = TRACE_COLLISION_GROUP_PLAYER
+	TraceResults result = TraceHull( testOrg, testOrg + < 0, 0, -150 >, mins, maxs, [ player ], TRACE_MASK_SOLID, TRACE_COLLISION_GROUP_NONE )
+
+	vector GoodAngles = AnglesOnSurface(result.surfaceNormal, AnglesToForward(player.EyeAngles()))
+	player.p.PROPHUNT_LastPropEntity.SetAbsAngles( GoodAngles ) //SetAbsAngles allows to set angles regardless of parent orientation
 	
-	TraceResults result = TraceHull( testOrg, testOrg + < 0, 0, -150 >, mins, maxs, [ player ], TRACE_MASK_PLAYERSOLID | TRACE_MASK_SOLID | TRACE_MASK_SHOT, TRACE_COLLISION_GROUP_PLAYER )
-		
-	float slope = fabs( result.surfaceNormal.x ) + fabs( result.surfaceNormal.y )
-	if ( slope > 0.6 )
-	{
-		printt("is slope and now what")
-		
-	}
-	
-	// vector GoodAngles = AnglesOnSurface(result.surfaceNormal, -AnglesToRight(player.EyeAngles()))
-	// player.SetAngles( GoodAngles )
-	
-	// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3)
-	
-	// if(!IsValid(player.p.PROPHUNT_LastPropEntity)) return
-	
-	// entity prop = player.p.PROPHUNT_LastPropEntity
-	// prop.SetAngles( GoodAngles )
+	Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3)
 }
 
 void function ClientCommand_LockAngles(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return
 
 	if(!player.p.PROPHUNT_AreAnglesLocked)
 	{
@@ -1946,7 +1932,7 @@ void function ClientCommand_LockAngles(entity player)
 
 void function ClientCommand_CreatePropDecoy(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return
 	
 	player.p.PROPHUNT_DecoysPropUsageLimit = player.p.PROPHUNT_DecoysPropUsageLimit + 1
 	if (player.p.PROPHUNT_DecoysPropUsageLimit <= PROPHUNT_DECOYS_USAGE_LIMIT)
@@ -1966,10 +1952,8 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		TraceResults result = TraceHull( testOrg, testOrg + < 0, 0, -150 >, mins, maxs, [ player ], TRACE_MASK_PLAYERSOLID | TRACE_MASK_SOLID | TRACE_MASK_SHOT, TRACE_COLLISION_GROUP_PLAYER )
 		vector GoodAngles = AnglesOnSurface(result.surfaceNormal, AnglesToForward(player.EyeAngles()))
 		
-		decoy.SetAngles( Vector(GoodAngles.x, player.GetAngles().y, GoodAngles.z) ) //player.GetAngles().y
+		decoy.SetAngles( Vector(GoodAngles.x, player.GetAngles().y, GoodAngles.z) )
 		
-		
-		//PutEntityInSafeSpot( decoy, player, null, player.GetOrigin(), decoy.GetOrigin() )
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 1)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 4)
 	} else
@@ -1980,7 +1964,7 @@ void function ClientCommand_CreatePropDecoy(entity player)
 
 void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 {
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return
 	
 	player.p.PROPHUNT_FlashbangPropUsageLimit = player.p.PROPHUNT_FlashbangPropUsageLimit + 1
 	if (player.p.PROPHUNT_FlashbangPropUsageLimit <= PROPHUNT_FLASH_BANG_USAGE_LIMIT)
@@ -2063,7 +2047,7 @@ void function HandleSmokesEntity(entity player, entity smokes)
 
 bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string > args) 
 {	
-	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA) return false
+	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return false
 	
 	// foreach(sPlayer in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
 	// {
