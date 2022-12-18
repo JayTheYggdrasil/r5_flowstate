@@ -1992,6 +1992,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			}
 		}
 		EmitSoundOnEntityExceptToPlayer(player, player, "explo_proximityemp_impact_3p")
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_DoScreenFlashFX", player, player)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
 		entity trailFXHandle = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_plasma_exp_SM" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
@@ -2180,5 +2181,8 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 		    Mods.append( strip(mod) )
 	}
 	
-	player.GiveWeapon( weaponclass, slot, Mods )
+	entity weapon = player.GiveWeapon( weaponclass, slot, Mods )
+	try{
+	weapon.SetSkin(RandomInt(20))
+	weapon.SetCamo(RandomInt(5))}catch(e420){}
 }

@@ -407,6 +407,9 @@ void function ShellShock_ScreenFXThink( entity player, int fxHandle, int smokes)
 			EffectStop( smokes, false, true )
 		}
 	)
+	if(!player.p.isAttackerProphunt)
+	wait 1
+	else
 	wait 3
 }
 

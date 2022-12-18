@@ -289,7 +289,7 @@
 		{
 			ControlName					RuiPanel
 			rui                     	"ui/lobby_challenge_box.rpak"
-			"wide"						"300"
+			"wide"						"215"
 			"tall"						"40"
 			"xpos"						"-265"
 			"ypos"						"-220"
@@ -305,7 +305,7 @@
 		"ObjectiveText"
 		{
 			"ControlName"				"Label"
-			"xpos"						"0"
+			"xpos"						"30"
 			"ypos"						"0"
 			"auto_wide_tocontents"		"1"
 			"tall"						"40"
