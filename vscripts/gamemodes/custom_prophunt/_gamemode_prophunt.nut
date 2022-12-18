@@ -638,6 +638,9 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 	prop.SetPassDamageToParent(true)
 	thread PropWatcher(prop, player) 
 	
+	float height = prop.GetBoundingMaxs().z - prop.GetBoundingMins().z
+	Remote_CallFunction_NonReplay( player, "PROPHUNT_UpdateThirdPersonCameraPosition", height)
+	
 	player.SetMoveSpeedScale(1.25)
 }
 
@@ -806,7 +809,10 @@ void function PROPHUNT_GameLoop()
 			prop.SetPassDamageToParent(true)
 			Survival_SetInventoryEnabled( player, false )
 			thread PropWatcher(prop, player) //destroys prop on end round and restores player model.
-			
+	
+			float height = prop.GetBoundingMaxs().z - prop.GetBoundingMins().z
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_UpdateThirdPersonCameraPosition", height)
+				
 			player.SetThirdPersonShoulderModeOn()
 			player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 			player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
@@ -2159,6 +2165,9 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 		"mp_weapon_vinson stock_tactical_l3 highcal_mag_l3",
 		"mp_weapon_rspn101 stock_tactical_l1 bullets_mag_l3 barrel_stabilizer_l2",
 		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3"
+		"mp_weapon_smr",
+		"mp_weapon_softball",
+		"mp_weapon_plasmapistol"
 	]
 	
 	array<string> Data = split(Weapons[RandomIntRange( 0, Weapons.len())], " ")

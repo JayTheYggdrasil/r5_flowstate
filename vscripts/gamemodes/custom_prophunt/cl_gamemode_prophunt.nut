@@ -13,6 +13,7 @@ global function PROPHUNT_CustomHint
 global function PROPHUNT_AddUsageToHint
 global function PROPHUNT_StartMiscTimer
 global function PROPHUNT_QuickText
+global function PROPHUNT_UpdateThirdPersonCameraPosition
 global function CreateAndMoveCameraToWinnerProp
 global function GetWinnerPropCameraEntities
 global function ClientAskedForTeam
@@ -775,4 +776,13 @@ void function PROPHUNT_Disable_IMCButton()
 	if(!IsValid(player)) return
 	
 	RunUIScript("Disable_IMCButton")
+}
+
+void function PROPHUNT_UpdateThirdPersonCameraPosition(float height)
+{
+	entity player = GetLocalClientPlayer()
+	
+	SetConVarFloat("c_thirdpersonshoulderaimdist", 100+min(80, height*1))
+	SetConVarFloat("c_thirdpersonshoulderheight", 10+min(80, height*0.5))
+	SetConVarFloat("c_thirdpersonshoulderoffset", 0)
 }
