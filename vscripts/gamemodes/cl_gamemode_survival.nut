@@ -103,6 +103,7 @@ global function Dev_AdjustVictorySequence
 global function GetCompassRui
 global function CircleAnnouncementsEnable
 global function SetDpadMenuHidden
+global function FillChallengesAmogus
 
 global struct NextCircleDisplayCustomData
 {
@@ -4735,4 +4736,40 @@ void function DEV_SendCheatsStateToUI()
 {
 	bool cheatsState = GetConVarBool( "sv_cheats" )	
 	RunUIScript("UpdateCheatsState", cheatsState)
+}
+
+void function FillChallengesAmogus()
+{
+	var challengesbox = Hud_GetRui( HudElement( "ChallengesBox" ) ) //header
+	var footerbox = Hud_GetRui( HudElement( "AllChallengesButton" ) ) //footer
+	
+	//RuiSetGameTime( challengesbox, "expireTime", Time()+999 )
+	RuiSetBool( challengesbox, "eventActive", false ) //enables event timer
+	
+	RuiSetString( challengesbox, "headerText", "test Amogus123" )
+	RuiSetString( challengesbox, "subText", "amogus Amogus" )
+	
+	array<var> lines //each challenge line
+	for ( int rowIdx = 0; rowIdx < 5; rowIdx++ )
+		lines.append( Hud_GetRui( HudElement( "ChallengeButton" + rowIdx ) ) )
+	
+	string suffix = ""
+	
+	foreach(rui in lines)
+	{
+		RuiSetString( rui, "challengeText" + suffix, "Test!! amogus" )
+		RuiSetInt( rui, "challengeProgress" + suffix, RandomIntRange(0,100) )
+		RuiSetInt( rui, "challengeGoal" + suffix, 100 )
+		RuiSetInt( rui, "challengePointsAwarded" + suffix, RandomIntRange(0,30) )
+		
+		RuiSetInt( rui, "bpLevelsAwarded" + suffix, 0 )
+		RuiSetInt( rui, "tierCount" + suffix, 1 )
+		RuiSetInt( rui, "activeTier" + suffix, 1 )
+		
+		RuiSetInt( rui, "tempRewardIconMode" + suffix, 2)
+		RuiSetImage( rui, "rewardIcon" + suffix, $"rui/customemotes/amogusred" )
+		RuiSetFloat3( rui, "rewardIconCol" + suffix, SrgbToLinear( <1.0, 1.0, 1.0> ) )
+	}
+	
+	RuiSetString( footerbox, "buttonText", "I DON'T KNOW WHAT TO DO WITH THIS BOX")
 }

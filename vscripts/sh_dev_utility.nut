@@ -24,6 +24,7 @@ void function ShDevUtility_Init()
 
 	#if SERVER || CLIENT
 		PrecacheModel( $"mdl/Humans/class/medium/pilot_medium_empty.rmdl" ) // for spectator players
+		PrecacheModel( $"mdl/humans/pilots/imc_hero_blisk.rmdl" )
 	#endif
 
 	#if SERVER
@@ -89,6 +90,16 @@ void function DEV_UseRevenantCharacter()
 	player.SetBodyModelOverride($"mdl/humans/class/heavy/pilot_heavy_revenant.rmdl" )
 	player.SetArmsModelOverride($"mdl/Weapons/arms/pov_pilot_heavy_revenant.rmdl" )
 }
+
+void function DEV_UseBliskCharacter()
+{
+	entity player = gp()[0]
+	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
+	
+	player.SetBodyModelOverride($"mdl/humans/pilots/imc_hero_blisk.rmdl" )
+	//player.SetArmsModelOverride($"mdl/humans/pilots/pov_pilot_medium_reaper_m.rmdl" )
+}
+
 void function SetupHeirloom( int heirloomIndex )
 {
 	entity player = gp()[0]
@@ -133,6 +144,11 @@ void function SetupHeirloom( int heirloomIndex )
 		case 6:
 		player.GiveWeapon( "mp_weapon_shadow_squad_hands_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2 )
 		player.GiveOffhandWeapon( "melee_shadowsquad_hands", OFFHAND_MELEE )	
+		break
+		
+		case 7:
+		player.GiveWeapon( "mp_weapon_combat_katana_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2 )
+		player.GiveOffhandWeapon( "melee_combat_katana", OFFHAND_MELEE )	
 		break
 	}
 

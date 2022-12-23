@@ -137,7 +137,7 @@ void function InitWeaponScripts()
 	//	#endif
 	
 	MpWeaponDoubletake_Init()
-	//MpWeaponGrenadeGravity_Init()
+	MpWeaponGrenadeGravity_Init()
 	MpSpaceElevatorAbility_Init()
 	MpAbilityShifter_Init()
 	MpWeaponDefender_Init()

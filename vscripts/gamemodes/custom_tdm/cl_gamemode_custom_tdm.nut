@@ -95,7 +95,7 @@ void function CoolCamera()
 	
 	if (GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx" || GetMapName() == "mp_rr_desertlands_64k_x_64k_tt")
 	{
-		cutsceneSpawns.append(NewCameraPair(<10915.0039, 6811.3418, -3539.73657>,<0, -100.5355, 0>))) 
+		cutsceneSpawns.append(NewCameraPair(<10915.0039, 6811.3418, -3539.73657>,<0, -100.5355, 0>))
 		cutsceneSpawns.append(NewCameraPair(<9586.79199, 24404.5898, -2019.6366>, <0, -52.6216431, 0>)) 
 		cutsceneSpawns.append(NewCameraPair(<-29335.9199, 11470.1729, -2374.77954>,<0, -2.17369795, 0>))
 		cutsceneSpawns.append(NewCameraPair(<16346.3076, -34468.9492, -1109.32153>, <0, -44.3879509, 0>))

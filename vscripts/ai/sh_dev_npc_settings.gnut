@@ -7,6 +7,9 @@ global function SetupSurvivalIncapShieldBot
 global function SetupAbilities
 global function SetupWeapons
 global function SetupEditor
+global function SetupR2Weapons
+global function SetupNPCDevMenu
+
 
 void function SetupChangeSurvivalCharacterClass()
 {
@@ -27,11 +30,11 @@ void function SetupChangeSurvivalCharacterClass()
 			} )
 		}
 		
-		//DEV Loba
 		SetupDevCommand( "DEV: R2 Pilot", "script DEV_UsePilotCharacter()" )
 		SetupDevCommand( "DEV: Loba", "script DEV_UseLobaCharacter()" )		
 		SetupDevCommand( "DEV: Revenant", "script DEV_UseRevenantCharacter()" )
 		SetupDevCommand( "DEV: Rampart", "script DEV_UseRampartCharacter()" )	
+		SetupDevCommand( "DEV: Blisk", "script DEV_UseBliskCharacter()" )	
 	#endif
 }
 
@@ -54,6 +57,44 @@ void function SetupOverrideSpawnSurvivalCharacter()
 		}
 	#endif
 }
+
+void function SetupNPCDevMenu()
+{
+	#if UI
+	//Enemy NPCs
+	SetupDevCommand( "Enemy NPC: Stalker", "script DEV_SpawnStalkerAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Spectre", "script DEV_SpawnSpectreAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Reaper", "script DEV_SpawnSuperSpectreAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Dummie", "script DEV_SpawnDummyAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Plasma Drone", "script DEV_SpawnPlasmaDroneAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Rocket Drone", "script DEV_SpawnRocketDroneAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Legend", "script DEV_SpawnLegendAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Prowler", "script DEV_SpawnProwlerAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Marvin", "script DEV_SpawnMarvinAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Pilot", "script DEV_SpawnPilotAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Spider", "script DEV_SpawnSpiderAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Infected", "script DEV_SpawnInfectedSoldierAtCrosshair()" )
+	SetupDevCommand( "Enemy NPC: Tick", "script DEV_SpawnExplosiveTickAtCrosshair()" )
+	SetupDevCommand( "", "script" )
+	SetupDevCommand( "", "script" )
+	
+	//Friendly NPCs
+	SetupDevCommand( "Friendly NPC: Stalker", "script DEV_SpawnStalkerAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Spectre", "script DEV_SpawnSpectreAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Reaper",  "script DEV_SpawnSuperSpectreAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Dummie",  "script DEV_SpawnDummyAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Plasma Drone", "script DEV_SpawnPlasmaDroneAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Rocket Drone", "script DEV_SpawnRocketDroneAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Legend", "script DEV_SpawnLegendAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Prowler", "script DEV_SpawnProwlerAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Marvin", "script DEV_SpawnMarvinAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Pilot", "script DEV_SpawnPilotAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Spider", "script DEV_SpawnSpiderAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Infected", "script DEV_SpawnInfectedSoldierAtCrosshair(gp()[0].GetTeam())" )
+	SetupDevCommand( "Friendly NPC: Tick", "script DEV_SpawnExplosiveTickAtCrosshair(gp()[0].GetTeam())" )
+	#endif
+}
+
 
 void function SetupWeapons()
 {
@@ -100,11 +141,6 @@ void function SetupWeapons()
 	SetupDevCommand( "Grenade: Frag", "give mp_weapon_frag_grenade" )
 	SetupDevCommand( "Grenade: Thermite", "give mp_weapon_thermite_grenade" )
 
-	// Explosives/Launchers
-	SetupDevCommand( "Anti-Titan: Softball", "give mp_weapon_softball" )
-	SetupDevCommand( "Anti-Titan: Archer", "give mp_weapon_rocket_launcher" )
-	SetupDevCommand( "Anti-Titan: Sidewinder SMR", "give mp_weapon_smr" )
-	SetupDevCommand( "Anti-Titan: EPG", "give mp_weapon_epg" )
 	// Dev
 	SetupDevCommand( "Dev: Smart Pistol", "give mp_weapon_smart_pistol" )
 	SetupDevCommand( "Dev: Car SMG", "give mp_weapon_car" )
@@ -114,6 +150,38 @@ void function SetupWeapons()
 	SetupDevCommand( "Dev: Throwing Knife", "give mp_weapon_throwingknife" )
 	SetupDevCommand( "Dev: Sheila", "give mp_weapon_mobile_hmg" )
 	SetupDevCommand( "Dev: Energy Sword", "give mp_weapon_energysword" )
+	#endif
+}
+void function SetupR2Weapons()
+{
+	#if UI
+	// Rifles
+	SetupDevCommand( "R1 - Rifle: R-101", "give mp_weapon_rspn101_og" )
+
+	// SMGs
+	SetupDevCommand( "R2 - SMG: Car SMG", "give mp_weapon_car" )
+
+	// LMGs
+
+	// Snipers
+
+	// Shotguns
+
+	// Pistols
+	SetupDevCommand( "R2 - Pistol: Wingman Elite", "give mp_weapon_wingman_n" )
+	SetupDevCommand( "R2 - Pistol: Smart Pistol", "give mp_weapon_smart_pistol" )
+	
+	// Explosives/Launchers
+	SetupDevCommand( "R2 - Anti-Titan: Softball", "give mp_weapon_softball" )
+	SetupDevCommand( "R2 - Anti-Titan: Archer", "give mp_weapon_rocket_launcher" )
+	SetupDevCommand( "R2 - Anti-Titan: Sidewinder SMR", "give mp_weapon_smr" )
+	SetupDevCommand( "R2 - Anti-Titan: EPG", "give mp_weapon_epg" )
+	
+	// Grenades
+
+	// Dev
+	SetupDevCommand( "Dev: Arc Tool", "give sp_weapon_arc_tool" )
+	SetupDevCommand( "Dev: Flight Core", "give mp_titanweapon_flightcore_rockets" )
 	#endif
 }
 
@@ -180,7 +248,6 @@ void function SetupAbilities()
 	SetupDevCommand( "Dev: Gravity Lift", "give mp_ability_space_elevator_tac" )
 	SetupDevCommand( "Dev: Phase Rewind", "give mp_ability_phase_rewind" )	
 	SetupDevCommand( "Dev: Burglar's Best Friend", "give mp_ability_translocation" )
-	SetupDevCommand( "Dev: Flight Core", "give mp_titanweapon_flightcore_rockets" )
 	SetupDevCommand( "Dev: Arthur's Revenge", "give mp_ability_birds" )
 	SetupDevCommand( "Dev: Satchel", "give mp_weapon_satchel" )
 	#endif

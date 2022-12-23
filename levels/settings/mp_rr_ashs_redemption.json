@@ -1,7 +1,9 @@
 {
     "rpak":
     [
-		"mp_rr_canyonlands_mu1"
+		"mp_rr_canyonlands_mu1",
+		"ui_flowstate",
+		"common_flowstate"
     ],
     "stbsp": "mp_rr_canyonlands_staging"
 }

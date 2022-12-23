@@ -1,6 +1,5 @@
 #base "_base_smg.txt"
 #base "_base_mags_heavy.txt"
-
 WeaponData
 {
 	// General
@@ -8,19 +7,31 @@ WeaponData
 	"shortprintname"   								"#WPN_CAR_SHORT"
 	"description" 									"#WPN_CAR_DESC"
 	"longdesc"										"#WPN_CAR_LONGDESC"
+
 	"weapon_type_flags"								"WPT_PRIMARY"
-	"ammo_pool_type"								"bullet"
+	"ammo_pool_type"								"highcal"
+
+	//This secondary ammo pool type is for UI purposes to load into lootData.
+	//We cannot detect the modded ammo_pool_type directly on init without applying the mod so this is a workaround
+	//and must be authored and updated along with the modded value
+	//"secondary_ammo_pool_type"                      "bullet"
+
 	"menu_icon"										"rui/weapon_icons/r5/weapon_car"
 	"hud_icon"										"rui/weapon_icons/r5/weapon_car"
-	"fire_mode"   									"automatic"
+
 	"weaponClass" 									"human"
 	"body_type"										"medium"
+	"pickup_hold_prompt"  							"Hold [USE] [WEAPONNAME]"
+	"pickup_press_prompt" 							"[USE] [WEAPONNAME]"
 	"minimap_reveal_distance"						"32000"
 	"leveled_pickup"								"1"
-	"chroma_color"									"1 .9 .5"
+
+	"chroma_color"									"1 .9 .5" //to do
+
 	"damage_flags"									"DF_BULLET | DF_DISMEMBERMENT"
 	"damage_headshot_scale"							"1.5"
 	"damage_leg_scale"                              "0.8"
+
 	"critical_hit"									"1"
 	"critical_hit_damage_scale"						"2"
 
@@ -31,15 +42,13 @@ WeaponData
 	"stat_range"  									"40"
 	"stat_accuracy"   								"90"
 	"stat_rof"		        						"38"
-	
+
 	// Models
-	"viewmodel"   									"mdl/weapons/r97/ptpov_r97.rmdl"
-	"playermodel" 									"mdl/weapons/r97/w_r97.rmdl"
-	"holstermodel"									"mdl/weapons/r97/w_r97.rmdl"
-	"holster_offset"								"2 0 0"
+	"viewmodel"   									"mdl/weapons/car101/ptpov_car101.rmdl"
+	"playermodel" 									"mdl/weapons/car101/w_car101.rmdl"
 	"holster_type"									"rifle"
-	
-	// Bolt info
+
+    // Bolt info
     "bolt_hitsize"									"0.0"
     //"bolt_hitsize_grow1_time"						"0.005"
     //"bolt_hitsize_grow1_size"						"0.2"
@@ -49,15 +58,20 @@ WeaponData
     //"bolt_hitsize_growfinal_size"					"0.1"
 
     "projectile_drag_coefficient"                   "0.0025"
+
 	"bolt_gravity_enabled"							"1"
 	"projectile_gravity_scale"						"1.15"
 	"bolt_zero_distance"                            "1378.0"  // 35m
+
     "bolt_bounce_frac"								"0.000"
     "projectile_damages_owner"						"0"
     "projectile_ricochet_max_count"					"0"
+
     "pass_through_depth"							"0"
     "pass_through_damage_preserved_scale"			"1"
+
     "projectile_launch_speed"						"18500"
+
 	"sound_dryfire"									"assault_rifle_dryfire"
 	"sound_pickup"									"wpn_pickup_SMG_1P"
 	"sound_trigger_pull"							"Weapon_Hemlok_Trigger"
@@ -70,19 +84,18 @@ WeaponData
 	"fx_shell_eject_attach"							"shell"
 
     // FX - Muzzle Flash
-	"fx_muzzle_flash_view"							""
-	"fx_muzzle_flash_world"							""
-	"fx_muzzle_flash_attach"						""
+	"fx_muzzle_flash_view"							"wpn_muzzleflash_smg_FP"
+	"fx_muzzle_flash_world"							"wpn_muzzleflash_smg"
+	"fx_muzzle_flash_attach"						"muzzle_flash"
 
-	// Audio
-	"looping_sounds"								"0"
+	"looping_sounds"								"1"
 
-    "fire_sound_1_player_1p"						"Weapon_Car_FirstShot_1P"
-    "fire_sound_1_player_3p"						"Weapon_Car_SecondShot_NPC"
+    "fire_sound_1_player_1p"						""
+    "fire_sound_1_player_3p"						""
     "fire_sound_1_npc"								"Weapon_Car_SecondShot_NPC"
 
-	"fire_sound_2_player_1p" 						""
-	"fire_sound_2_player_3p" 						"Weapon_Car_SecondShot_NPC"
+	"fire_sound_2_player_1p" 						"Weapon_Car_SecondShot_1P"
+	"fire_sound_2_player_3p" 						""
 
     "burst_or_looping_fire_sound_start_1p"			"Weapon_Car_FirstShot_1P"
     "burst_or_looping_fire_sound_middle_1p"			"Weapon_Car_Loop_1P"
@@ -95,22 +108,31 @@ WeaponData
     "burst_or_looping_fire_sound_start_npc"			""
     "burst_or_looping_fire_sound_middle_npc"		"Weapon_Car_Loop_3P_NPC_A"
     "burst_or_looping_fire_sound_end_npc"			"Weapon_Car_LoopEnd_NPC"
+
 	"low_ammo_sound_name_1"							"car_LowAmmo_Shot1"
     "low_ammo_fraction" 							"0.3"
 
+	// Network
+	//"net_optimize"		                            "1"
+
 	// Damage - When Used by Players
 	"damage_type" 									"bullet"
+
 	"red_crosshair_range" 							"0"
+
+    "ammo_min_to_fire"								"1"
+
     "ammo_clip_size"                                "20"
-	"ammo_min_to_fire"								"1"
-    "ammo_default_total"							"300"
-    "ammo_stockpile_max"							"300"
+
+    "ammo_default_total"							"30"
+    "ammo_stockpile_max"							"30"
     "ammo_no_remove_from_stockpile"					"1"
-	"low_ammo_fraction" 					"0.3"
-    //"uses_ammo_pool"								"0"
+    "uses_ammo_pool"								"0"
+
     "damage_near_distance"							"800"
     "damage_far_distance" 							"1500"
     "damage_very_far_distance"						"3500"
+
     "damage_near_value"   					        "13"
     "damage_far_value"						        "13"
     "damage_very_far_value"					        "13"
@@ -119,6 +141,7 @@ WeaponData
     "damage_very_far_value_titanarmor" 		        "13"
 
     // View Drift
+
     "viewdrift_ads_stand_scale_pitch" 				"0.7"
     "viewdrift_ads_stand_scale_yaw"   				"0.75"
     "viewdrift_ads_crouch_scale_pitch"  			"0.55"
@@ -133,15 +156,19 @@ WeaponData
 	"proficiency_average_spreadscale" 				"3.5"
 	"proficiency_good_spreadscale"					"3.0"
 	"proficiency_very_good_spreadscale"   			"2.0"
+
 	"npc_min_engage_range"							"0"
 	"npc_max_engage_range"							"1100"
 	"npc_min_engage_range_heavy_armor"				"500"
 	"npc_max_engage_range_heavy_armor"				"2000"
+
 	"npc_min_burst"   								"2"
 	"npc_max_burst"   								"5"
 	"npc_rest_time_between_bursts_min"				"0.5"
 	"npc_rest_time_between_bursts_max"				"0.7"
+
 	"viewmodel_offset_ads"							"0 0.25 0.0"
+
 	"dof_zoom_nearDepthStart"						"1.0"
 	"dof_zoom_nearDepthEnd"							"3.0"
 	"dof_nearDepthStart"							"0.0"
@@ -150,9 +177,11 @@ WeaponData
 	// Behavior
     "fire_rate"                                     "15.5"
 	"fire_mode"   									"automatic"
+
 	"zoom_time_in"									"0.2"
 	"zoom_time_out"   								"0.2"
 	"zoom_fov"										"60"
+
 	"reload_time" 									"1.7"
 	"reload_time_late1"								"0.82"
 	"reloadempty_time"								"2.13"
@@ -162,7 +191,9 @@ WeaponData
 	"holster_time"									"0.3"
 	"raise_time"  									"0.3"
 	"lower_time"  									"0.25"
+
 	"deployfirst_time"								"1.1"
+
 	"vortex_refire_behavior"  						"bullet"
 	"allow_empty_fire"								"0"
 	"reload_enabled"  								"1"
@@ -175,6 +206,7 @@ WeaponData
 	"ads_move_speed_scale"							"0.85"
 	"aimassist_adspull_zoomStart"					"0.05"
 	"aimassist_adspull_zoomEnd"						"1.0"
+
 	"raise_from_sprint_time"						"0"
 	"sprint_fractional_anims"						"0"
 
@@ -185,33 +217,42 @@ WeaponData
 	// View Kick
     "viewkick_spring"                               "car"
     "viewkick_spring_hot"                           "car_hot"
+
 	"viewkick_pattern"                              "car_smg"
+
     "viewkick_spring_heatpershot"                   "1.0"
     "viewkick_spring_cooldown_holdtime"             "0.08"
     "viewkick_spring_cooldown_fadetime"             "0.05"
+
     "viewmodel_spring_jolt"                          "autofire_viewmodel_jolt"
     "viewmodel_jolt_scale"                           "1.0"
     "viewmodel_jolt_backwardPerShot"                 "-0.225"
     "viewmodel_jolt_roll"                            "0 2.75 0.0"
     "viewmodel_jolt_side"                            "0 0.05 0"
+
+
 	"viewkick_pitch_base" 							"1.0"
     "viewkick_pitch_random"   						"1.0"
     "viewkick_pitch_softScale"						"3.525"
     "viewkick_pitch_hardScale"						"0.39"
+
     "viewkick_yaw_base"   							"1.0"
     "viewkick_yaw_random" 							"1.0"
     "viewkick_yaw_random_innerexclude"				"0.05"   //0
     "viewkick_yaw_softScale"  						"1.525"  //.65
     "viewkick_yaw_hardScale"  						"0.37"
+
     "viewkick_roll_base"  							"0.8"
     "viewkick_roll_randomMin" 						"-0.2"
     "viewkick_roll_randomMax" 						"0.2"
     "viewkick_roll_softScale" 						"0.7"
     "viewkick_roll_hardScale" 						"0.30"
+
     "viewkick_hipfire_weaponFraction" 				"0.25"
     "viewkick_hipfire_weaponFraction_vmScale" 		"0.7"
     "viewkick_ads_weaponFraction" 					"0.1"
     "viewkick_ads_weaponFraction_vmScale" 			"1.0"
+
 	"viewkick_scale_firstshot_hipfire"				"1.0"
 	"viewkick_scale_min_hipfire"  					"1.0"
 	"viewkick_scale_max_hipfire"  					"1.0"
@@ -225,7 +266,9 @@ WeaponData
 	"viewkick_scale_yaw_valueLerpEnd" 				"50"
     "viewkick_scale_valueDecayDelay"  				"0.11"
     "viewkick_scale_valueDecayRate"   				"50"
+
 	"viewkick_air_scale_ads"						"2.0"
+
 	"viewmodel_shake_forward"						"0.2"
 	"viewmodel_shake_up"							"0.0"
 	"viewmodel_shake_right"							"0.0"
@@ -262,89 +305,63 @@ WeaponData
 
 
 	// Bodygroups:
-	"clip_bodygroup"						"clip"
-	"clip_bodygroup_index_shown"			"0"
-	"clip_bodygroup_index_hidden"			"1"
-	"clip_bodygroup_show_for_milestone_0"	"1"
-	"clip_bodygroup_show_for_milestone_1"	"0"
-	"clip_bodygroup_show_for_milestone_2"	"1"
-	"clip_bodygroup_show_for_milestone_3"	"1"
+	"bodygroup1_name"	"car101_sight_on"
+	"bodygroup1_set"	"1"
+	"bodygroup2_name"	"sight_acgs"
+	"bodygroup2_set"	"0"
+	"bodygroup3_name"	"sight_cro"
+	"bodygroup3_set"	"0"
+	"bodygroup4_name"	"sight_holo"
+	"bodygroup4_set"	"0"
+	"bodygroup5_name"	"proscreen"
+	"bodygroup5_set"	"0"
+
+    "clip_bodygroup"						"car101_magazine"
+    "clip_bodygroup_index_shown"			"0"
+    "clip_bodygroup_index_hidden"			"1"
+    "clip_bodygroup_show_for_milestone_0"	"1"
+    "clip_bodygroup_show_for_milestone_1"	"0"
+    "clip_bodygroup_show_for_milestone_2"	"1"
+    "clip_bodygroup_show_for_milestone_3"	"1"
+
+	//"anim_alt_idleAttack" "2"
+
+	//"viewmodel_ads_rui_bottomleft_attachment"	"RUI_BL_CROSSHAIR_CAR101"
+	"viewmodel_ads_centerpoint_attachment"      "sight_on"
 
 	Mods
 	{
 		survival_finite_ammo
         {
-            "ammo_default_total"					"0"
-            "ammo_stockpile_max"					"36"
-            "ammo_no_remove_from_stockpile"			"0"
-            "low_ammo_fraction" 					"0.3"
-	   		"uses_ammo_pool"						"1"
+            "ammo_default_total"			"0"
+            "ammo_stockpile_max"			"20"
+            "ammo_no_remove_from_stockpile"	"0"
+
+            "low_ammo_fraction" 			"0.3"
+
+			"ammo_no_remove_from_stockpile"	"0"
+			"uses_ammo_pool"				"1"
         }
 
-		optic_cq_hcog_classic
+		pro_screen
 		{
-			"bodygroup2_set" 						"0"
-			"ui2_enable" 							"0"
+			"ui8_enable"		"1"
+			"bodygroup5_set"	"1"
 		}
-		optic_cq_hcog_bruiser
-		{
-			"bodygroup2_set" 						"0"
-			"ui2_enable" 							"0"
-		}
-		optic_cq_holosight
-		{
-			"bodygroup2_set" 						"0"
-			"ui2_enable" 							"0"
-		}
-		optic_cq_holosight_variable
-		{
-			"bodygroup2_set" 						"0"
-			"ui2_enable" 							"0"
-		}
-		optic_cq_threat
-		{
-			"bodygroup2_set" 						"0"
-			"ui2_enable" 							"0"
-		}
-
-		bullets_mag_l1
+		
+		highcal_mag_l1
 		{
 			"ammo_clip_size"   							"22"
 		}
-		bullets_mag_l2
+		
+		highcal_mag_l2
 		{
 			"ammo_clip_size"   							"24"
 		}
-		bullets_mag_l3
+		
+		highcal_mag_l3
 		{
 			"ammo_clip_size"   							"27"
-		}
-		barrel_stabilizer_l1 //flowstate things
-		{
-		    "fx_muzzle_flash_attach"	        "muzzle_flash_suppressor_small"
-			"fx_muzzle_flash_view"		        ""
-			"fx_muzzle_flash_world"		        ""
-		}
-
-		barrel_stabilizer_l2
-		{
-		    "fx_muzzle_flash_attach"	        "muzzle_flash_suppressor_small"
-			"fx_muzzle_flash_view"		        ""
-			"fx_muzzle_flash_world"		        ""
-		}
-
-		barrel_stabilizer_l3
-		{
-		    "fx_muzzle_flash_attach"	        "muzzle_flash_suppressor_small"
-			"fx_muzzle_flash_view"		        ""
-			"fx_muzzle_flash_world"		        ""
-		}
-
-		barrel_stabilizer_l4_flash_hider
-		{
-		    "fx_muzzle_flash_attach"	        "muzzle_flash_suppressor_small"
-			"fx_muzzle_flash_view"		        ""
-			"fx_muzzle_flash_world"		        ""
 		}
 	}
 
@@ -352,8 +369,8 @@ WeaponData
 	"ui1_draw_cloaked"	"1"
 	UiData1
 	{
-		"ui"							"ui/r97_reticle"
-		"mesh"							"models/weapons/attachments/r97_rui_upper"
+		"ui"							"ui/alternator_reticle"
+		"mesh"							"models/weapons/attachments/car_smg_rui_upper"
 		Args
 		{
 			vis							player_zoomfrac
@@ -366,13 +383,25 @@ WeaponData
 	UiData2
 	{
 		"ui"							"ui/r97_ammo_counter"
-		"mesh"							"models/weapons/attachments/r97_rui_lower"
+		"mesh"							"models/weapons/attachments/car_smg_rui_lower"
 		Args
 		{
 			vis							player_zoomfrac
 			ammo						weapon_ammo
 			clipSize					weapon_clipSize
 			clipCount					weapon_ammoClipCount
+		}
+	}
+
+	"ui8_enable"		"0"
+	UiData8
+	{
+		"ui"							"ui/pro_screen_panel"
+		"mesh"							"models/weapons/attachments/pro_screen_rui_upper"
+		Args
+		{
+			proValue					proscreen_int0
+			proOwnedByPlayer			proscreen_owner_is_player
 		}
 	}
 
@@ -399,7 +428,8 @@ WeaponData
 			"base_spread"				"0.0"
 			Args
 			{
-				//isFiring				weapon_is_firing
+				isFiring				weapon_is_firing
+				//playerFov             player_fov
 			}
 		}
 	}

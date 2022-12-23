@@ -158,6 +158,6 @@ void function OnWeaponActivate_weapon_lstar( entity weapon )
 void function OnProjectileCollision_lkeeper( entity projectile, vector pos, vector normal, entity hitEnt, int hitbox, bool isCritical )
 {
 	#if SERVER
-	if(IsValid(projectile)) projectile.SetAbsAngles(<RandomFloatRange(-90,90),RandomFloatRange(-90,90),RandomFloatRange(-90,90)>)
+	if(IsValid(projectile)) projectile.SetAbsAngles(<RandomFloatRange(-180,180),RandomFloatRange(-180,180),RandomFloatRange(-180,180)>)
 	#endif
 }
