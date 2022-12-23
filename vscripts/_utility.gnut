@@ -3768,7 +3768,11 @@ void function SetPlayerAnimViewEntity( entity player, entity model )
 
 void function RandomizeHead( entity model ) //Randomize head across all available heads
 {
-	var headIndex = model.FindBodyGroup( "head" )
+	var headIndex
+	if ( model.GetModelName() == "mdl/robots/spectre/imc_spectre.rmdl" )
+		return//headIndex = model.FindBodyGroup( "removableHead" )
+	else
+		headIndex = model.FindBodyGroup( "head" )
 	if ( headIndex == -1 )
 	{
 		//printt( "HeadIndex == -1, returning" )
