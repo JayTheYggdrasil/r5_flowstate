@@ -13,6 +13,7 @@ global function CreateElitePilotAssassin
 global function CreateFragDrone
 global function CreateFragDroneCan
 global function CreateGenericDrone
+global function CreatePlasmaDrone
 global function CreateGunship
 global function CreateHenchTitan
 global function CreateMarvin
@@ -243,12 +244,16 @@ entity function CreateNPCTitan( string settings, int team, vector origin, vector
 
 entity function CreateSpectre( int team, vector origin, vector angles )
 {
-	return CreateNPC( "npc_spectre", team, origin, angles )
+	entity npc = CreateNPC( "npc_spectre", team, origin, angles )
+	SetSpawnOption_AISettings( npc, "npc_spectre" )
+	return npc
 }
 
 entity function CreateStalker( int team, vector origin, vector angles )
 {
-	return CreateNPC( "npc_stalker", team, origin, angles )
+	entity npc = CreateNPC( "npc_stalker", team, origin, angles )
+	SetSpawnOption_AISettings( npc, "npc_stalker" )
+	return npc
 }
 
 entity function CreateZombieStalker( int team, vector origin, vector angles )
@@ -267,7 +272,9 @@ entity function CreateZombieStalkerMossy( int team, vector origin, vector angles
 
 entity function CreateSuperSpectre( int team, vector origin, vector angles )
 {
-	return CreateNPC( "npc_super_spectre", team, origin, angles )
+	entity npc = CreateNPC( "npc_super_spectre", team, origin, angles )
+	SetSpawnOption_AISettings( npc, "npc_super_spectre" )
+	return npc
 }
 
 entity function CreateGunship( int team, vector origin, vector angles )
@@ -378,6 +385,13 @@ entity function CreateGenericDrone( int team, vector origin, vector angles )
 {
 	entity npc = CreateNPC( "npc_drone", team, origin, angles )
 	SetSpawnOption_AISettings( npc, "npc_drone" )
+	return npc
+}
+
+entity function CreatePlasmaDrone( int team, vector origin, vector angles )
+{
+	entity npc = CreateNPC( "npc_drone", team, origin, angles )
+	SetSpawnOption_AISettings( npc, "npc_drone_plasma" )
 	return npc
 }
 

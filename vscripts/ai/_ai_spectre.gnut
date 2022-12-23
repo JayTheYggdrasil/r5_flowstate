@@ -29,9 +29,9 @@ void function SpectreOnDeath( entity npc, var damageInfo )
 	DamageInfo_AddCustomDamageType( damageInfo, DF_KILLSHOT )
 //	EmitSoundOnEntityExceptToPlayer( npc, attacker, "SuicideSpectre.BulletImpact_HeadShot_3P_vs_3P" )
 
-	var bodyGroupIndex = npc.FindBodyGroup( "removableHead" )
-	int stateIndex = 1  // 0 = show, 1 = hide
-	npc.SetBodygroup( bodyGroupIndex, stateIndex )
+	//var bodyGroupIndex = npc.FindBodyGroup( "removableHead" )
+	//int stateIndex = 1  // 0 = show, 1 = hide
+	//npc.SetBodygroup( bodyGroupIndex, stateIndex )
 
 	DamageInfo_SetDamage( damageInfo, npc.GetMaxHealth() )
 

@@ -294,7 +294,8 @@ void function SetupDefaultDevCommandsMP()
 			SetupDevMenu( "Change Character", SetDevMenu_SurvivalCharacter )
 		
 		SetupDevMenu( "Abilities", SetDevMenu_Abilities )
-		SetupDevMenu( "Weapons", SetDevMenu_Weapons )
+		SetupDevMenu( "Apex Weapons", SetDevMenu_Weapons )
+		SetupDevMenu( "Titanfall Weapons", SetDevMenu_r2_Weapons )
 		//SetupDevMenu( "MDLSpawner", SetDevMenu_ModelSpawner )
 		
 		if ( IsSurvivalMenuEnabled() )
@@ -389,6 +390,7 @@ void function SetupDefaultDevCommandsMP()
 		SetupDevCommand( "Toggle Third Person Mode", "ToggleThirdPerson" )
 
 		SetupDevMenu( "Prototypes", SetDevMenu_Prototypes )
+		SetupDevMenu( "Spawn a NPC at Crosshair", SetDevMenu_npc )
 
 		// This adds CAPTURE MODE every time you load a level.
 		// Capture mode doesn't work, so I am commenting this out.
@@ -436,6 +438,10 @@ void function SetDevMenu_Abilities( var _ )
 void function SetDevMenu_Weapons( var _ )
 {
 	thread ChangeToThisMenu( SetupWeapons )
+}
+void function SetDevMenu_r2_Weapons( var _ )
+{
+	thread ChangeToThisMenu( SetupR2Weapons )
 }
 void function SetDevMenu_TDMPrimaryWeapons( var _ )
 {
@@ -733,6 +739,7 @@ void function SetupCustomHeirlooms()
 	SetupDevCommand("Melee: Loba's Wolf", "script thread SetupHeirloom(3)" )
 	SetupDevCommand("Melee: Boxing Ring Gloves", "script thread SetupHeirloom(5)" )	
 	SetupDevCommand("Melee: Equip Shadow Hands", "script thread SetupHeirloom(6)" )
+	SetupDevCommand( "Combat Katana", "script thread SetupHeirloom(7)" )
 	SetupDevCommand("Melee: Unequip", "script thread UnEquipMelee()" )
 }
 
@@ -893,6 +900,10 @@ void function SetupPrototypesDevMenu()
 	SetupDevCommand( "Toggle Akimbo With Current Weapon", "script DEV_ToggleAkimboWeapon(gp()[0])" )
 	SetupDevCommand( "Toggle Akimbo With Holstered Weapon", "script DEV_ToggleAkimboWeaponAlt(gp()[0])" )
 	// SetupDevCommand( "Change to Shadow Squad", "script Dev_ShadowFormEnable( GP() )" )
+}
+void function SetDevMenu_npc( var _ )
+{
+	thread ChangeToThisMenu( SetupNPCDevMenu )
 }
 
 
