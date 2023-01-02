@@ -863,7 +863,8 @@ void function PROPHUNT_GameLoop()
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
 		Signal(player, "EndLobbyDistanceThread")
 		
-		AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+		thread GiveDelayedAbilityToHuntersOnRoundStart(player)
+
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
 		player.SetOrigin(prophuntSpawns[RandomIntRangeInclusive(0,prophuntSpawns.len()-1)].origin)
@@ -899,7 +900,6 @@ void function PROPHUNT_GameLoop()
 		player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 		player.GiveWeapon( "mp_weapon_combat_katana_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
-		player.GiveOffhandWeapon("mp_weapon_changeprops_fakeultimate", OFFHAND_ULTIMATE)
 		player.GiveOffhandWeapon( "melee_combat_katana", OFFHAND_MELEE, [] )
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
@@ -1309,6 +1309,18 @@ void function PROPHUNT_GameLoop()
 			
 		HandlePlayerTeam(player)
 	}
+}
+
+void function GiveDelayedAbilityToHuntersOnRoundStart(entity player)
+{
+	wait 30
+	
+	if( !IsValid(player) || IsValid(player) && IsAlive(player) ) return
+	
+	AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+	if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+		player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
+	player.GiveOffhandWeapon("mp_weapon_changeprops_fakeultimate", OFFHAND_ULTIMATE)	
 }
 
 // purpose: display the UI for randomization of tied maps at the end of voting
@@ -1807,35 +1819,18 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 		
 		if(player.p.PROPHUNT_AreAnglesLocked)
 		{
-			// int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
-			// player.p.PROPHUNT_ChangePropUsageLimit = newscore
-			// if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
-			// {
-				player.SetBodyModelOverride( $"" )
-				player.SetArmsModelOverride( $"" )
-				player.kv.solid = 0
-				player.AllowMantle()
-				player.Hide()
-				thread PROPHUNT_GiveAndManageProp(player, false, true)
-				// Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
-				// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
-			// } else 
-			// {
-				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
-			// }		
+			player.SetBodyModelOverride( $"" )
+			player.SetArmsModelOverride( $"" )
+			player.kv.solid = 0
+			player.AllowMantle()
+			player.Hide()
+			thread PROPHUNT_GiveAndManageProp(player, false, true)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
+	
 		} else if(!player.p.PROPHUNT_AreAnglesLocked)
 		{
-			// int newscore = player.p.PROPHUNT_ChangePropUsageLimit + 1
-			// player.p.PROPHUNT_ChangePropUsageLimit = newscore
-			// if (player.p.PROPHUNT_ChangePropUsageLimit <= PROPHUNT_CHANGE_PROP_USAGE_LIMIT)
-			// {
-				thread PROPHUNT_GiveAndManageProp(player)
-				// Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
-				// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
-			// } else 
-			// {
-				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
-			// }		
+			thread PROPHUNT_GiveAndManageProp(player)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)	
 		}
 	}
 	
