@@ -1844,12 +1844,12 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 		if(!IsValid(player)) continue
 		
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
-		RemoveButtonPressedPlayerInputCallback( hunterPlayer, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+		RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 
 		if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
 			player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
-				
-		Remote_CallFunction_NonReplay( hunterPlayer, "ForceDisableHuntersAbilityHint")
+
+		Remote_CallFunction_NonReplay( player, "ForceDisableHuntersAbilityHint")
 	}
 
 	thread StartHuntersAbilityTimer()
