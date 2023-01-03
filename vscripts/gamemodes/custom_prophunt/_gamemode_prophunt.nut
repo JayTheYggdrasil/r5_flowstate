@@ -20,6 +20,7 @@ struct{
 	LocationSettings& selectedLocation
 	bool cantUseChangeProp = false
 	bool InProgress = false
+	float roundstarttime
 	entity ringBoundary
 	entity ringBoundary_PreGame
 	
@@ -739,7 +740,6 @@ void function PROPHUNT_GameLoop()
 	SetTdmStateToInProgress()
 
 	SurvivalCommentary_ResetAllData()
-	FS_PROPHUNT.endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
 	
 	array<entity> IMCplayers = GetPlayerArrayOfTeam(TEAM_IMC)
 	array<entity> MILITIAplayers = GetPlayerArrayOfTeam(TEAM_MILITIA)
@@ -752,6 +752,8 @@ void function PROPHUNT_GameLoop()
 	array<LocPair> prophuntSpawns = FS_PROPHUNT.selectedLocation.spawns
 	SetGameState( eGameState.Playing )
 	
+	FS_PROPHUNT.roundstarttime = Time() + 4 + PROPHUNT_TELEPORT_ATTACKERS_DELAY - 3
+
 	//printt("Flowstate DEBUG - Tping props team.")
 	FS_PROPHUNT.allowRingDamageForProps = true
 	foreach(player in GetPlayerArray())
@@ -767,7 +769,7 @@ void function PROPHUNT_GameLoop()
 			Signal(player, "EndLobbyDistanceThread")
 			SetRealms(player, 1)
 			
-			Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", false)
+			Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", false, FS_PROPHUNT.roundstarttime)
 
 			AddButtonPressedPlayerInputCallback( player, IN_ATTACK, ClientCommand_ChangeProp )
 			AddButtonPressedPlayerInputCallback( player, IN_ZOOM, ClientCommand_LockAngles )
@@ -850,7 +852,8 @@ void function PROPHUNT_GameLoop()
 	
 	wait 2
 	
-	
+	FS_PROPHUNT.endTime = Time() + GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 )
+
 	UpdatePlayerCounts()
 	
 	FS_PROPHUNT.cantUseChangeProp = true
@@ -860,7 +863,7 @@ void function PROPHUNT_GameLoop()
 	{
 		if(!IsValid(player)) continue
 		
-		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true)
+		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true, FS_PROPHUNT.roundstarttime)
 		Signal(player, "EndLobbyDistanceThread")
 		
 		thread GiveDelayedAbilityToHuntersOnRoundStart(player)
@@ -921,20 +924,16 @@ void function PROPHUNT_GameLoop()
 		if (player.GetTeam() == TEAM_MILITIA)
 		{
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 5)
-		}
-		// else if (player.GetTeam() == TEAM_IMC)
-		// {
-			// array<entity> MILITIAplayersAlive = GetPlayerArrayOfTeam_Alive(TEAM_MILITIA)
-			// //Message(player, "ATTENTION", "Kill the props. Props alive: " + MILITIAplayersAlive.len(), 20)
-		// }			
+		}		
 	}
 	
 	// SetGlobalNetInt( "currentDeathFieldStage", 0 )
 	// SetGlobalNetTime( "nextCircleStartTime", FS_PROPHUNT.endTime )
 	// SetGlobalNetTime( "circleCloseTime", FS_PROPHUNT.endTime + 8 )
 		
-	if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
-		thread CheckForPlayersPlaying()
+	// if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
+		// thread CheckForPlayersPlaying()
+
 	
 	int TeamWon
 	while( Time() <= FS_PROPHUNT.endTime )
@@ -1113,8 +1112,7 @@ void function PROPHUNT_GameLoop()
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_ChampionScreenHandle", true, TeamWon, 0)
 		Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.WinnerScreen, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
 	}
-		
-		
+
 		thread function() : ()
 		{
 			for( int i = 0; i < NUMBER_OF_MAP_SLOTS_FSDM; ++i )
@@ -1747,7 +1745,6 @@ void function RingDamage( entity circle, float currentRadius)
 	}
 }
 
-
 bool function ClientCommand_NextRoundPROPHUNT(entity player, array<string> args)
 {
 	if(player.GetPlayerName() == FlowState_Hoster() || player.GetPlayerName() == FlowState_Admin1() || player.GetPlayerName() == FlowState_Admin2() || player.GetPlayerName() == FlowState_Admin3() || player.GetPlayerName() == FlowState_Admin4()) 
@@ -2050,20 +2047,7 @@ void function HandleSmokesEntity(entity player, entity smokes)
 bool function ClientCommand_PROPHUNT_EmitWhistle(entity player, array < string > args) 
 {	
 	if(!IsValid(player) || IsValid(player) && player.GetTeam() != TEAM_MILITIA || GetGameState() != eGameState.Playing) return false
-	
-	// foreach(sPlayer in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
-	// {
-		// if(!IsValid(sPlayer)) continue
 
-		// float playerDist = Distance2D( player.GetOrigin(), sPlayer.GetOrigin() )
-		// if ( playerDist <= PROPHUNT_WHISTLE_RADIUS )
-		// {
-			// EmitSoundOnEntityOnlyToPlayer( player, sPlayer, "Wattson_Tactical_M_3p" )			
-		// }
-	// }
-	// EmitSoundOnEntityOnlyToPlayer( player, player, "Wattson_Tactical_M_1p" )
-	
-	//EmitSoundOnEntity( player, "explo_mgl_impact_3p" )
 	EmitSoundAtPosition( TEAM_UNASSIGNED, player.GetOrigin(), "explo_mgl_impact_3p" )
 	return true
 }

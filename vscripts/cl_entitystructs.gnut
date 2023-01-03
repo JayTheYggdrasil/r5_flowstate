@@ -181,6 +181,7 @@ global struct ClientPlayerStruct
 	int PROPHUNT_FlashbangPropUsageLimit
 	int lastWhistleTimer = 0
 	bool isAttackersAbilityEnabled = false
+	bool isRoundTimerEnabled = false
 }
 
 

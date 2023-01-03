@@ -14,6 +14,7 @@ global function PROPHUNT_AddUsageToHint
 global function PROPHUNT_StartMiscTimer
 global function PROPHUNT_QuickText
 global function PROPHUNT_UpdateThirdPersonCameraPosition
+
 global function CreateAndMoveCameraToWinnerProp
 global function GetWinnerPropCameraEntities
 global function ClientAskedForTeam
@@ -35,6 +36,12 @@ struct {
 } file
 
 struct {
+    int gamestarttime
+    int endingtime
+    int seconds
+} clientgametimer
+
+struct {
     entity e
     entity m
 } winnerpropcam
@@ -53,7 +60,7 @@ void function ClGamemodeProphunt_Init()
 	
 	RegisterSignal("ChallengeStartRemoveCameras")
 	RegisterSignal("ChangeCameraToSelectedLocation")
-	RegisterSignal("PROPHUNT_ShutdownWhistleTimer")
+	RegisterSignal("PROPHUNT_ShutdownWhistleAndRoundTimer")
 	RegisterSignal("PROPHUNT_ShutdownPropsHidingTimer")
 	PrecacheParticleSystem($"P_shell_shock_FP")
 	PrecacheParticleSystem($"P_screen_smoke_bangalore_FP")
@@ -61,7 +68,7 @@ void function ClGamemodeProphunt_Init()
 	//AddCallback_EntitiesDidLoad( NotifyRingTimer )
 }
 
-void function PROPHUNT_EnableControlsUI(bool isAttacker)
+void function PROPHUNT_EnableControlsUI(bool isAttacker, float starttime)
 {
 	entity player = GetLocalClientPlayer()
 	SetDpadMenuHidden()
@@ -76,7 +83,10 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 	SetConVarFloat("c_thirdpersonshoulderoffset", 0)
 	
 	ScorebarInitTracking( player, ClGameState_GetRui() )
-
+	
+	clientgametimer.gamestarttime = starttime.tointeger()
+	clientgametimer.endingtime = clientgametimer.gamestarttime + int(GetCurrentPlaylistVarFloat("flowstatePROPHUNTLimitTime", 300 ))
+		
 	if(!isAttacker)
 	{
 		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
@@ -87,6 +97,9 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		
 		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
 		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+		
+		Hud_SetEnabled(HudElement( "RoundTimer" ), true)
+		Hud_SetVisible(HudElement( "RoundTimer" ), true)		
 		
 		Hud_SetEnabled(HudElement( "WhistleTimer" ), true)
 		Hud_SetVisible(HudElement( "WhistleTimer" ), true)
@@ -124,16 +137,36 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker)
 		
 		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 275*screenSize[1]/990 )		
 		HudElement( "ScreenBlur1" ).SetPos( -35, -35 )
-
+		Hud_SetText( HudElement( "RoundTimer"), "WAITING FOR HUNTERS")
+		GetLocalClientPlayer().p.isRoundTimerEnabled = false
 	} else
 	{
 		player.p.isAttackerProphunt = true
 		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
 		
 		EnableHuntersAbility()
+    
+		GetLocalClientPlayer().p.isRoundTimerEnabled = true
+		thread Thread_PROPHUNT_Timer()
 	}
 	
 	RuiSetImage( Hud_GetRui( HudElement( "MiniPromo" ) ), "basicImage", $"rui/flowstatecustom/prophunt_quicktext")
+}
+
+void function Thread_PROPHUNT_Timer()
+{
+	entity player = GetLocalClientPlayer()
+	EndSignal(player, "PROPHUNT_ShutdownWhistleAndRoundTimer")
+
+	while (true)
+	{
+        int elapsedtime = clientgametimer.endingtime - Time().tointeger()
+
+		DisplayTime dt = SecondsToDHMS( elapsedtime )
+		Hud_SetText( HudElement( "RoundTimer"), "ROUND ENDS IN " + format( "%.2d:%.2d", dt.minutes, dt.seconds ))
+		
+		wait 1
+	}
 }
 
 void function ForceDisableHuntersAbilityHint()
@@ -146,6 +179,9 @@ void function ForceDisableHuntersAbilityHint()
 	
 	Hud_SetEnabled(HudElement( "PropControlsTitle" ), false)
 	Hud_SetVisible(HudElement( "PropControlsTitle" ), false)
+
+	Hud_SetEnabled(HudElement( "RoundTimer" ), false)
+	Hud_SetVisible(HudElement( "RoundTimer" ), false)
 
 	Hud_SetEnabled(HudElement( "ProphuntHint0" ), false)
 	Hud_SetVisible(HudElement( "ProphuntHint0" ), false)
@@ -163,6 +199,9 @@ void function EnableHuntersAbility()
 	
 	Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
 	Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+
+	Hud_SetEnabled(HudElement( "RoundTimer" ), true)
+	Hud_SetVisible(HudElement( "RoundTimer" ), true)
 
 	Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
 	Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
@@ -327,7 +366,7 @@ void function UpdateWhistleTimer(bool fromChangedResolution = false)
 {
 	entity player = GetLocalClientPlayer() 
 	
-	EndSignal(player, "PROPHUNT_ShutdownWhistleTimer")
+	EndSignal(player, "PROPHUNT_ShutdownWhistleAndRoundTimer")
 	int time
 	
 	if(fromChangedResolution)
@@ -431,6 +470,9 @@ void function ReloadMenuRUI()
 		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
 		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
 		
+		Hud_SetEnabled(HudElement( "RoundTimer" ), true)
+		Hud_SetVisible(HudElement( "RoundTimer" ), true)
+		
 		Hud_SetEnabled(HudElement( "WhistleTimer" ), true)
 		Hud_SetVisible(HudElement( "WhistleTimer" ), true)
 
@@ -475,6 +517,9 @@ void function ReloadMenuRUI()
 		if(GetLocalClientPlayer().p.isAttackersAbilityEnabled)
 			EnableHuntersAbility()
 	}
+	
+	if(GetLocalClientPlayer().p.isRoundTimerEnabled)
+		thread Thread_PROPHUNT_Timer()
 }
 
 void function AddInputHint( string buttonText, string hintText)
@@ -590,6 +635,9 @@ void function PROPHUNT_CustomHint(int index)
 		case 5:
 		QuickHint("", "Hunters arrived!")
 		EmitSoundOnEntity(GetLocalViewPlayer(), "UI_PostGame_TitanSlideIn")
+		
+		GetLocalClientPlayer().p.isRoundTimerEnabled = true
+		thread Thread_PROPHUNT_Timer()
 		break
 		case 6:
 		QuickHint("", "Flashbang used!", true)
@@ -657,6 +705,9 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 	Hud_SetEnabled(HudElement( "PropControlsTitle" ), false)
 	Hud_SetVisible(HudElement( "PropControlsTitle" ), false)
 	
+	Hud_SetEnabled(HudElement( "RoundTimer" ), false)
+	Hud_SetVisible(HudElement( "RoundTimer" ), false)
+		
 	Hud_SetEnabled(HudElement( "WhistleTimer" ), false)
 	Hud_SetVisible(HudElement( "WhistleTimer" ), false)
 		
@@ -681,7 +732,13 @@ void function RemoveAllHints(bool wasResolutionChanged = false)
 	Hud_SetEnabled(HudElement( "ProphuntHint5" ), false)
 	Hud_SetVisible(HudElement( "ProphuntHint5" ), false)	
 	entity player = GetLocalClientPlayer()
-	Signal(player, "PROPHUNT_ShutdownWhistleTimer")
+	Signal(player, "PROPHUNT_ShutdownWhistleAndRoundTimer")
+	
+	
+	if(!GetLocalClientPlayer().p.isRoundTimerEnabled)
+		Hud_SetText( HudElement( "RoundTimer"), "WAITING FOR HUNTERS")
+	else
+		Hud_SetText( HudElement( "RoundTimer"), "ROUND ENDS IN 00:00")
 	
 	SetConVarFloat("c_thirdpersonshoulderaimdist", 100)
 	SetConVarFloat("c_thirdpersonshoulderheight", 30)
