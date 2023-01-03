@@ -491,7 +491,7 @@ void function StartHuntersAbilityTimer()
 			{
 				if(!IsValid(player)) continue
 				
-				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 12)
+				Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 12, 0)
 			}
 		}
 		
@@ -689,7 +689,7 @@ void function PROPHUNT_Lobby()
 				{
 					if(!IsValid(player)) continue
 		
-					// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 8)
+					// Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 8, 0)
 				}
 				wait 5
 				// break
@@ -700,7 +700,7 @@ void function PROPHUNT_Lobby()
 				{
 					if(!IsValid(player)) continue
 		
-					Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 9)
+					Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 9, 0)
 				}
 				wait 5			
 			}
@@ -715,7 +715,7 @@ void function PROPHUNT_Lobby()
 	{
 		if(!IsValid(player)) continue
 		
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 10)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 10, 0)
 	}
 	wait 5
 }
@@ -858,6 +858,8 @@ void function PROPHUNT_GameLoop()
 	
 	FS_PROPHUNT.cantUseChangeProp = true
 	//printt("Flowstate DEBUG - Tping attackers team.")
+		
+	thread GiveDelayedAbilityToHuntersOnRoundStart()
 	
 	foreach(player in IMCplayers)
 	{
@@ -865,8 +867,6 @@ void function PROPHUNT_GameLoop()
 		
 		Remote_CallFunction_NonReplay(player, "PROPHUNT_EnableControlsUI", true, FS_PROPHUNT.roundstarttime)
 		Signal(player, "EndLobbyDistanceThread")
-		
-		thread GiveDelayedAbilityToHuntersOnRoundStart(player)
 
 		EmitSoundOnEntityOnlyToPlayer( player, player, "PhaseGate_Enter_1p" )
 		EmitSoundOnEntityExceptToPlayer( player, player, "PhaseGate_Enter_3p" )
@@ -923,7 +923,7 @@ void function PROPHUNT_GameLoop()
 		
 		if (player.GetTeam() == TEAM_MILITIA)
 		{
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 5)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 5, 0)
 		}		
 	}
 	
@@ -1309,16 +1309,30 @@ void function PROPHUNT_GameLoop()
 	}
 }
 
-void function GiveDelayedAbilityToHuntersOnRoundStart(entity player)
+void function GiveDelayedAbilityToHuntersOnRoundStart()
 {
-	wait 30
+	wait 25
 	
-	if( !IsValid(player) || IsValid(player) && IsAlive(player) ) return
-	
-	AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
-	if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
-		player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
-	player.GiveOffhandWeapon("mp_weapon_changeprops_fakeultimate", OFFHAND_ULTIMATE)	
+	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA))
+	{
+		if(!IsValid(player)) continue
+		
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 12, 0)
+	}
+
+	wait 5
+
+	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
+	{
+		if(!IsValid(player)) continue
+			
+		AddButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
+		if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
+			player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
+		player.GiveOffhandWeapon("mp_weapon_changeprops_fakeultimate", OFFHAND_ULTIMATE)
+		
+		Remote_CallFunction_NonReplay( player, "EnableHuntersAbility")
+	}
 }
 
 // purpose: display the UI for randomization of tied maps at the end of voting
@@ -1822,12 +1836,12 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 			player.AllowMantle()
 			player.Hide()
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11, hunterPlayer.GetEncodedEHandle())
 	
 		} else if(!player.p.PROPHUNT_AreAnglesLocked)
 		{
 			thread PROPHUNT_GiveAndManageProp(player)
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)	
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11, hunterPlayer.GetEncodedEHandle())	
 		}
 	}
 	
@@ -1835,7 +1849,7 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 	{
 		if(!IsValid(player)) continue
 		
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 11, hunterPlayer.GetEncodedEHandle())
 		RemoveButtonPressedPlayerInputCallback( player, IN_OFFHAND4, ClientCommand_hunters_ForceChangeProp )
 
 		if(IsValid(player.GetOffhandWeapon( OFFHAND_ULTIMATE )))
@@ -1864,10 +1878,10 @@ void function ClientCommand_ChangeProp(entity player)
 			player.Hide()
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7, 0)
 		} else 
 		{
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2, 0)
 		}		
 	} else if(!player.p.PROPHUNT_AreAnglesLocked)
 	{
@@ -1877,10 +1891,10 @@ void function ClientCommand_ChangeProp(entity player)
 		{
 			thread PROPHUNT_GiveAndManageProp(player)
 			Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 0)
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 7, 0)
 		} else 
 		{
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
+			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2, 0)
 		}		
 	}
 }
@@ -1897,7 +1911,7 @@ void function ClientCommand_MatchSlope(entity player)
 	vector GoodAngles = AnglesOnSurface(result.surfaceNormal, AnglesToForward(player.EyeAngles()))
 	player.p.PROPHUNT_LastPropEntity.SetAbsAngles( GoodAngles ) //SetAbsAngles allows to set angles regardless of parent orientation
 	
-	Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3)
+	Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 3, 0)
 }
 
 void function ClientCommand_LockAngles(entity player)
@@ -1910,7 +1924,7 @@ void function ClientCommand_LockAngles(entity player)
 		player.SetArmsModelOverride( player.p.PROPHUNT_LastModel )
 
 		player.p.PROPHUNT_AreAnglesLocked = true
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 0)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 0, 0)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 3)
 		//Angles are locked!!
 	} else if(player.p.PROPHUNT_AreAnglesLocked)
@@ -1922,7 +1936,7 @@ void function ClientCommand_LockAngles(entity player)
 
 		thread PROPHUNT_GiveAndManageProp(player, true)
 		player.p.PROPHUNT_AreAnglesLocked = false
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 1)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 1, 0)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 3)
 		//Angles are unlocked!!
 	}
@@ -1953,10 +1967,10 @@ void function ClientCommand_CreatePropDecoy(entity player)
 		decoy.SetAngles( Vector(GoodAngles.x, player.GetAngles().y, GoodAngles.z) )
 		
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 1)
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 4)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 4, 0)
 	} else
 	{
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2, 0)
 	}
 }
 
@@ -1986,7 +2000,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 		EmitSoundOnEntityExceptToPlayer(player, player, "explo_proximityemp_impact_3p")
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_DoScreenFlashFX", player, player)
 		Remote_CallFunction_NonReplay( player, "PROPHUNT_AddUsageToHint", 2)
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 6, 0)
 		entity trailFXHandle = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_plasma_exp_SM" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
 		entity trailFXHandle2 = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_impact_exp_xo_shield_med_CP" ), player.GetOrigin(), <RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180), RandomIntRangeInclusive(-180,180)>)
 		
@@ -2008,7 +2022,7 @@ void function ClientCommand_EmitFlashBangToNearbyPlayers(entity player)
 			player.TakeOffhandWeapon( OFFHAND_ULTIMATE )
 	} else 
 	{
-		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2)
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 2, 0)
 	}
 }
 

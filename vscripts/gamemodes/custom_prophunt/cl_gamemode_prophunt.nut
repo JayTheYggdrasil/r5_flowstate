@@ -138,14 +138,40 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker, float starttime)
 		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 275*screenSize[1]/990 )		
 		HudElement( "ScreenBlur1" ).SetPos( -35, -35 )
 		Hud_SetText( HudElement( "RoundTimer"), "WAITING FOR HUNTERS")
+		Hud_SetText( HudElement( "PropControlsTitle"), "PROP CONTROLS")
 		GetLocalClientPlayer().p.isRoundTimerEnabled = false
 	} else
 	{
+		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+
+		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
+		
+		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
+		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+
+		Hud_SetEnabled(HudElement( "RoundTimer" ), true)
+		Hud_SetVisible(HudElement( "RoundTimer" ), true)
+
+		Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
+		Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
+
+		UIPos pos   = REPLACEHud_GetPos( HudElement( "ScreenBlur2" ) )
+		UISize size = REPLACEHud_GetSize( HudElement( "ScreenBlur2" ) )
+		
+		var position = HudElement( "ScreenBlur2" ).GetPos()
+		var screenSize = Hud.GetScreenSize()
+
+		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 65*screenSize[1]/990 )		
+		HudElement( "ScreenBlur1" ).SetPos( -39, -301 )
+	
 		player.p.isAttackerProphunt = true
+		thread Thread_PROPHUNT_HuntersAbilityTimer(true)
+		Hud_SetText( HudElement( "PropControlsTitle"), "HUNTER CONTROLS")
 		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
 		
-		EnableHuntersAbility()
-    
+		GetLocalClientPlayer().p.isAttackersAbilityEnabled = false		
 		GetLocalClientPlayer().p.isRoundTimerEnabled = true
 		thread Thread_PROPHUNT_Timer()
 	}
@@ -169,53 +195,41 @@ void function Thread_PROPHUNT_Timer()
 	}
 }
 
+void function Thread_PROPHUNT_HuntersAbilityTimer(bool isroundstart = false)
+{
+	entity player = GetLocalClientPlayer()
+	EndSignal(player, "PROPHUNT_ShutdownWhistleAndRoundTimer")
+	
+	OnThreadEnd(
+		function() : ( player )
+		{
+			Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
+		}
+	)
+	int time
+	if(isroundstart)
+		time = PROPHUNT_ATTACKERS_ABILITY_COOLDOWN/2
+	else
+		time = PROPHUNT_ATTACKERS_ABILITY_COOLDOWN
+	while (true)
+	{
+		if(time == 0)
+			break
+		Hud_SetText( HudElement( "ProphuntHint0"), "  %offhand4% Available In " + time + "s" )
+		wait 1
+		time --
+	}
+}
+
 void function ForceDisableHuntersAbilityHint()
 {
-	Hud_SetEnabled(HudElement( "ScreenBlur1" ), false)
-	Hud_SetVisible(HudElement( "ScreenBlur1" ), false)
-
-	Hud_SetEnabled(HudElement( "ScreenBlur2" ), false)
-	Hud_SetVisible(HudElement( "ScreenBlur2" ), false)
-	
-	Hud_SetEnabled(HudElement( "PropControlsTitle" ), false)
-	Hud_SetVisible(HudElement( "PropControlsTitle" ), false)
-
-	Hud_SetEnabled(HudElement( "RoundTimer" ), false)
-	Hud_SetVisible(HudElement( "RoundTimer" ), false)
-
-	Hud_SetEnabled(HudElement( "ProphuntHint0" ), false)
-	Hud_SetVisible(HudElement( "ProphuntHint0" ), false)
-	
+	thread Thread_PROPHUNT_HuntersAbilityTimer(false)
 	GetLocalClientPlayer().p.isAttackersAbilityEnabled = false
 }
 
 void function EnableHuntersAbility()
-{
-	Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
-	Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
-
-	Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
-	Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
-	
-	Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
-	Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
-
-	Hud_SetEnabled(HudElement( "RoundTimer" ), true)
-	Hud_SetVisible(HudElement( "RoundTimer" ), true)
-
-	Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
-	Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
-
+{	
 	Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
-
-	UIPos pos   = REPLACEHud_GetPos( HudElement( "ScreenBlur2" ) )
-	UISize size = REPLACEHud_GetSize( HudElement( "ScreenBlur2" ) )
-	
-	var position = HudElement( "ScreenBlur2" ).GetPos()
-	var screenSize = Hud.GetScreenSize()
-
-	HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 65*screenSize[1]/990 )		
-	HudElement( "ScreenBlur1" ).SetPos( -39, -301 )
 	
 	GetLocalClientPlayer().p.isAttackersAbilityEnabled = true
 }
@@ -249,24 +263,13 @@ void function PROPHUNT_StartMiscTimer(bool isPropTeam)
 		
 		int time = PROPHUNT_TELEPORT_ATTACKERS_DELAY
 		string text
-		
-		// if(isPropTeam)
-		// {
-			// var hudElement = HudElement( "ProphuntMessagesBox" )
-			// var height = hudElement.GetHeight()
-			// var screenSize = Hud.GetScreenSize()
-			// var position = hudElement.GetPos()
-			// hudElement.SetPos( position[0], -1 * ( screenSize[1] - ( height + screenSize[1] * 0.10 ) ) )
-			
-		// }
-		// else
-			// printt("restore position fixme")
-		
-		while(IsValid(player))
+
+		while(true)
 		{
 			if(time == 0)
 			{
 				text = "TELEPORTING NOW"
+				Hud_SetText( HudElement( "MiscTimer"), text)
 				wait 1
 				break
 			}else if(time == -1)
@@ -606,7 +609,7 @@ void function ChangeInputHintString( int index )
 	}
 }
 
-void function PROPHUNT_CustomHint(int index)
+void function PROPHUNT_CustomHint(int index, int eHandle)
 {
 	if(!IsValid(GetLocalViewPlayer())) return
 
@@ -660,7 +663,7 @@ void function PROPHUNT_CustomHint(int index)
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break
 		case 11:
-		Obituary_Print_Localized( "A hunter changed all props form!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
+		Obituary_Print_Localized( "Hunter " EHI_GetName(eHandle) + " changed all props form!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break
 		case 12:
