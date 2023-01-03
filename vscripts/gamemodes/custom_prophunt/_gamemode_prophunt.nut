@@ -1049,7 +1049,7 @@ void function PROPHUNT_GameLoop()
 	}
 	SetGameState(eGameState.MapVoting)
 	
-	SendScoreboardToClient()
+	thread SendScoreboardToClient()
 	
 	wait 5
 	foreach(player in GetPlayerArray())

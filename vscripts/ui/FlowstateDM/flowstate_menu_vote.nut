@@ -59,7 +59,7 @@ void function Open_FSDM_VotingPhase()
 			
 			case "custom_tdm":
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE DM" )
-				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS and collaborators - ©Respawn Entertainment" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "©Respawn Entertainment" )
 			break
 			default:
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE SCRIPTS" )

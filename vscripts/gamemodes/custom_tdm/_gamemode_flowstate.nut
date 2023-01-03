@@ -2933,7 +2933,7 @@ void function SendScoreboardToClient()
 		if(!IsValid(sPlayer)) continue
 		
 		Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_ClearScoreboardOnClient")
-		WaitFrame()
+		
 		foreach(player in GetPlayerArray())
 		{
 			if(!IsValid(player)) continue
@@ -2946,9 +2946,7 @@ void function SendScoreboardToClient()
 			p.damage = int(player.p.playerDamageDealt)
 			p.lastLatency = int(player.GetLatency()* 1000)
 			
-			
 			Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_SendScoreboardToClient", p.eHandle, p.score, p.deaths, p.kd, p.damage, p.lastLatency)
-			WaitFrame()
 		}
 	}
 }
