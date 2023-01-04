@@ -227,7 +227,9 @@ void function Set_FSDM_ProphuntScoreboardScreen()
 		{	
 			Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), file.FSPROPHUNT_PropsScoreboard[i].name )
 			Hud_SetText( Hud_GetChild( file.prophuntMenu, "TimesSurvived" + i ), file.FSPROPHUNT_PropsScoreboard[i].timessurvived.tostring() )
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), file.FSPROPHUNT_PropsScoreboard[i].survivaltime.tostring() )
+			
+			DisplayTime dt = SecondsToDHMS( file.FSPROPHUNT_PropsScoreboard[i].survivaltime )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), format( "%.2d:%.2d", dt.minutes, dt.seconds ) )
 		}
 	}()
 }
