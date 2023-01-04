@@ -108,7 +108,7 @@
 		//////////////////
 		//PROPS SCOREBOARD
 		//////////////////
-		
+
 		"PropsScoreboardBG"
 		{
 			"classname"				"ScoreboardPropsUI"
@@ -126,6 +126,41 @@
 			"pin_to_sibling"		"DarkenBackground"
 			"pin_corner_to_sibling"	"BOTTOM"
 			"pin_to_sibling_corner"	"BOTTOM"
+		}
+		
+		"PropsScoreboardTitleBox"
+		{
+			ControlName					RuiPanel
+			rui                     	"ui/lobby_challenge_box.rpak"
+			"wide"						"215"
+			"tall"						"40"
+			"xpos"						"-25"
+			"ypos"						"50"
+			"visible"					"1"
+			"scaleImage"				"1"
+			"fillColor"					"173 3 252 200"
+			"drawColor"					"173 3 252 200"
+			"pin_to_sibling"			"PropsScoreboardBG"
+			"pin_corner_to_sibling"		"TOP"
+			"pin_to_sibling_corner"		"TOP"
+		}
+		
+		"PropsScoreboardTitle"
+		{
+			"ControlName"				"Label"
+			"xpos"						"30"
+			"ypos"						"0"
+			"auto_wide_tocontents"		"1"
+			"tall"						"40"
+			"visible"					"1"
+			"fontHeight"				"30"
+			"labelText"					"PROPS SCOREBOARD"
+			"font"						"DefaultBold_41"
+			"allcaps"					"1"
+			"fgcolor_override"			"255 255 255 255"
+			"pin_to_sibling"			"PropsScoreboardTitleBox"
+			"pin_corner_to_sibling"		"CENTER"
+			"pin_to_sibling_corner"		"CENTER"
 		}
 		
 		"PropsBG"
@@ -1086,6 +1121,40 @@
 			"pin_to_sibling_corner"	"BOTTOM"
 		}
 		
+		"HuntersScoreboardTitleBox"
+		{
+			ControlName					RuiPanel
+			rui                     	"ui/lobby_challenge_box.rpak"
+			"wide"						"215"
+			"tall"						"40"
+			"xpos"						"-25"
+			"ypos"						"50"
+			"visible"					"1"
+			"scaleImage"				"1"
+			"fillColor"					"173 3 252 200"
+			"drawColor"					"173 3 252 200"
+			"pin_to_sibling"			"HuntersScoreboardBG"
+			"pin_corner_to_sibling"		"TOP"
+			"pin_to_sibling_corner"		"TOP"
+		}
+		
+		"HuntersScoreboardTitle"
+		{
+			"ControlName"				"Label"
+			"xpos"						"30"
+			"ypos"						"0"
+			"auto_wide_tocontents"		"1"
+			"tall"						"40"
+			"visible"					"1"
+			"fontHeight"				"30"
+			"labelText"					"HUNTERS SCOREBOARD"
+			"font"						"DefaultBold_41"
+			"allcaps"					"1"
+			"fgcolor_override"			"255 255 255 255"
+			"pin_to_sibling"			"HuntersScoreboardTitleBox"
+			"pin_corner_to_sibling"		"CENTER"
+			"pin_to_sibling_corner"		"CENTER"
+		}		
 		"HuntersBG"
 		{
 			"classname"				"ScoreboardHuntersUI"
@@ -1222,7 +1291,7 @@
 			"xpos"					"0"
 			"ypos"					"0"
 			"tall"					"2"
-			"wide" 					"530"
+			"wide" 					"380"
 			"fillColor"				"84 84 84 200"
 			"drawColor"				"84 84 84 200"
 			"wrap"					"1"
@@ -1241,7 +1310,7 @@
 			"xpos"					"0"
 			"ypos"					"0"
 			"tall"					"2"
-			"wide" 					"530"
+			"wide" 					"380"
 			"fillColor"				"84 84 84 200"
 			"drawColor"				"84 84 84 200"
 			"wrap"					"1"

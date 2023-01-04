@@ -367,7 +367,7 @@
 			"auto_wide_tocontents"		"1"
 			"tall"						"40"
 			"visible"					"1"
-			"fontHeight"				"50"
+			"fontHeight"				"53"
 			"labelText"					"Next Location: "
 			"font"						"DefaultBold_41"
 			"allcaps"					"1"

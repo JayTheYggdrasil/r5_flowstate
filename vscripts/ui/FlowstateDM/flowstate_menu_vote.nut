@@ -356,9 +356,7 @@ void function Init_FSDM_VoteMenu( var newMenuArg )
 	
 	RuiSetInt( Hud_GetRui( Hud_GetChild( menu, "TeamSeekersButton")), "status", eFriendStatus.ONLINE_AWAY )
 	RuiSetInt( Hud_GetRui( Hud_GetChild( menu, "TeamPropsButton")), "status", eFriendStatus.ONLINE_AWAY )
-	
-	//RuiSetImage( Hud_GetRui( Hud_GetChild( menu, "SelectTeamFrame" ) ), "basicImage", $"rui/flowstatecustom/prophunt_quicktext")
-	
+
 	//Hide all dm scoreboard buttons
 	array<var> serverbuttons = GetElementsByClassname( file.menu, "ScoreboardUIButton" )
 	foreach ( var elem in serverbuttons )
