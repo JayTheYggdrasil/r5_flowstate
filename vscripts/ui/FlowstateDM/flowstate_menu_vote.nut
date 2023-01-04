@@ -145,15 +145,15 @@ void function ClearScoreboardOnUI()
 
 void function ClearProphuntScoreboardOnUI()
 {
-	file.FSDM_Scoreboard.clear()
+	// file.FSDM_Scoreboard.clear()
 	
 	for( int i=0; i < 10; i++ )
 	{	
-		Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), "" )
-		Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), "" )
-		Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), "" )		
-		Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), "" )
-		Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), "" )
+		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), "" )
+		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), "" )
+		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), "" )		
+		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), "" )
+		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), "" )
 	}
 }
 
@@ -207,20 +207,20 @@ void function Set_FSDM_ProphuntScoreboardScreen()
 	{
 		SetVoteHudElems(false, true, false, false, false, false, false, false, false, false, false, true)
 
-		while(file.FSDM_Scoreboard.len() == 0) //defensive fix
-			WaitFrame()
+		// while(file.FSDM_Scoreboard.len() == 0) //defensive fix
+			// WaitFrame()
 		
-		file.FSDM_Scoreboard.sort(ComparePlayerInfo)
+		// file.FSDM_Scoreboard.sort(ComparePlayerInfo)
 		
-		for( int i=0; i < file.FSDM_Scoreboard.len() && i < 10; i++ )
-		{	
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), file.FSDM_Scoreboard[i].name )
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), file.FSDM_Scoreboard[i].score.tostring() )
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), file.FSDM_Scoreboard[i].deaths.tostring() )		
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), file.FSDM_Scoreboard[i].kd.tostring() )
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), file.FSDM_Scoreboard[i].damage.tostring() )
-			// Hud_SetText( Hud_GetChild( file.menu, "Latency" + i ), file.FSDM_Scoreboard[i].lastLatency.tostring() )
-		}
+		// for( int i=0; i < file.FSDM_Scoreboard.len() && i < 10; i++ )
+		// {	
+			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), file.FSDM_Scoreboard[i].name )
+			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), file.FSDM_Scoreboard[i].score.tostring() )
+			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), file.FSDM_Scoreboard[i].deaths.tostring() )		
+			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), file.FSDM_Scoreboard[i].kd.tostring() )
+			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), file.FSDM_Scoreboard[i].damage.tostring() )
+			// // Hud_SetText( Hud_GetChild( file.menu, "Latency" + i ), file.FSDM_Scoreboard[i].lastLatency.tostring() )
+		// }
 	}()
 }
 
@@ -325,8 +325,16 @@ void function Init_FSDM_ProphuntScoreboardMenu( var newMenuArg )
 	AddMenuEventHandler( menu, eUIEvent.MENU_NAVIGATE_BACK, On_FSDM__NavigateBack )
 	
 	//Hide all scoreboard buttons
-	array<var> serverbuttons = GetElementsByClassname( file.prophuntMenu, "ScoreboardUIButton" )
+	array<var> serverbuttons = GetElementsByClassname( file.prophuntMenu, "ScoreboardPropsUIButton" )
+
 	foreach ( var elem in serverbuttons )
+	{
+		Hud_SetVisible(elem, false)
+	}
+
+	array<var> serverbuttons2 = GetElementsByClassname( file.prophuntMenu, "ScoreboardHuntersUIButton" )
+
+	foreach ( var elem in serverbuttons2 )
 	{
 		Hud_SetVisible(elem, false)
 	}	
@@ -430,7 +438,7 @@ void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bo
 			AdvanceMenu( file.menu )
 		}
 		
-		array<var> ScoreboardUI = GetElementsByClassname( file.prophuntMenu, "ScoreboardUI" )
+		array<var> ScoreboardUI = GetElementsByClassname( file.prophuntMenu, "ScoreboardPropsUI" )
 		foreach ( var elem in ScoreboardUI )
 		{
 			Hud_SetVisible(elem, Scoreboard)
