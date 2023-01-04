@@ -62,6 +62,7 @@ void function ClGamemodeProphunt_Init()
 	RegisterSignal("ChangeCameraToSelectedLocation")
 	RegisterSignal("PROPHUNT_ShutdownWhistleAndRoundTimer")
 	RegisterSignal("PROPHUNT_ShutdownPropsHidingTimer")
+	RegisterSignal("PROPHUNT_ShutdownHuntersAbilityTimer")
 	PrecacheParticleSystem($"P_shell_shock_FP")
 	PrecacheParticleSystem($"P_screen_smoke_bangalore_FP")
 	AddClientCallback_OnResolutionChanged( ReloadMenuRUI )
@@ -167,9 +168,11 @@ void function PROPHUNT_EnableControlsUI(bool isAttacker, float starttime)
 		HudElement( "ScreenBlur1" ).SetPos( -39, -301 )
 	
 		player.p.isAttackerProphunt = true
-		thread Thread_PROPHUNT_HuntersAbilityTimer(true)
+		
 		Hud_SetText( HudElement( "PropControlsTitle"), "HUNTER CONTROLS")
 		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
+		Signal(player, "PROPHUNT_ShutdownWhistleAndRoundTimer")
+		thread Thread_PROPHUNT_HuntersAbilityTimer(true)
 		
 		GetLocalClientPlayer().p.isAttackersAbilityEnabled = false		
 		GetLocalClientPlayer().p.isRoundTimerEnabled = true
@@ -195,10 +198,10 @@ void function Thread_PROPHUNT_Timer()
 	}
 }
 
-void function Thread_PROPHUNT_HuntersAbilityTimer(bool isroundstart = false)
+void function Thread_PROPHUNT_HuntersAbilityTimer(bool isroundstart = false, bool wasresolutionchanged = false)
 {
 	entity player = GetLocalClientPlayer()
-	EndSignal(player, "PROPHUNT_ShutdownWhistleAndRoundTimer")
+	EndSignal(player, "PROPHUNT_ShutdownHuntersAbilityTimer")
 	
 	OnThreadEnd(
 		function() : ( player )
@@ -206,18 +209,22 @@ void function Thread_PROPHUNT_HuntersAbilityTimer(bool isroundstart = false)
 			Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
 		}
 	)
-	int time
-	if(isroundstart)
-		time = PROPHUNT_ATTACKERS_ABILITY_COOLDOWN/2
-	else
-		time = PROPHUNT_ATTACKERS_ABILITY_COOLDOWN
+
+	if(!wasresolutionchanged)
+	{
+		if(isroundstart)
+			player.p.savedAbilityTimer = PROPHUNT_ATTACKERS_ABILITY_COOLDOWN/2
+		else
+			player.p.savedAbilityTimer = PROPHUNT_ATTACKERS_ABILITY_COOLDOWN
+	}
+	
 	while (true)
 	{
-		if(time == 0)
+		if(player.p.savedAbilityTimer == 0)
 			break
-		Hud_SetText( HudElement( "ProphuntHint0"), "  %offhand4% Available In " + time + "s" )
+		Hud_SetText( HudElement( "ProphuntHint0"), "  %offhand4% Available In " + player.p.savedAbilityTimer + "s" )
 		wait 1
-		time --
+		player.p.savedAbilityTimer --
 	}
 }
 
@@ -228,9 +235,10 @@ void function ForceDisableHuntersAbilityHint()
 }
 
 void function EnableHuntersAbility()
-{	
+{
+	Signal(GetLocalClientPlayer(), "PROPHUNT_ShutdownHuntersAbilityTimer")
 	Hud_SetText( HudElement( "ProphuntHint0"), "%offhand4% Change All Props" )
-	
+	GetLocalClientPlayer().p.savedAbilityTimer = 0
 	GetLocalClientPlayer().p.isAttackersAbilityEnabled = true
 }
 
@@ -517,8 +525,34 @@ void function ReloadMenuRUI()
 	{
 		player.p.isAttackerProphunt = true
 		
-		if(GetLocalClientPlayer().p.isAttackersAbilityEnabled)
-			EnableHuntersAbility()
+		Hud_SetEnabled(HudElement( "ScreenBlur1" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur1" ), true)
+
+		Hud_SetEnabled(HudElement( "ScreenBlur2" ), true)
+		Hud_SetVisible(HudElement( "ScreenBlur2" ), true)
+		
+		Hud_SetEnabled(HudElement( "PropControlsTitle" ), true)
+		Hud_SetVisible(HudElement( "PropControlsTitle" ), true)
+
+		Hud_SetEnabled(HudElement( "RoundTimer" ), true)
+		Hud_SetVisible(HudElement( "RoundTimer" ), true)
+
+		Hud_SetEnabled(HudElement( "ProphuntHint0" ), true)
+		Hud_SetVisible(HudElement( "ProphuntHint0" ), true)
+
+		UIPos pos   = REPLACEHud_GetPos( HudElement( "ScreenBlur2" ) )
+		UISize size = REPLACEHud_GetSize( HudElement( "ScreenBlur2" ) )
+		
+		var position = HudElement( "ScreenBlur2" ).GetPos()
+		var screenSize = Hud.GetScreenSize()
+
+		HudElement( "ScreenBlur2" ).SetSize( 238*screenSize[0]/1760, 65*screenSize[1]/990 )		
+		HudElement( "ScreenBlur1" ).SetPos( -39, -301 )
+		Signal(player, "PROPHUNT_ShutdownPropsHidingTimer")
+		thread Thread_PROPHUNT_HuntersAbilityTimer(true, true)
+		Hud_SetText( HudElement( "PropControlsTitle"), "HUNTER CONTROLS")
+		
+		thread Thread_PROPHUNT_Timer()
 	}
 	
 	if(GetLocalClientPlayer().p.isRoundTimerEnabled)
@@ -663,7 +697,7 @@ void function PROPHUNT_CustomHint(int index, int eHandle)
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break
 		case 11:
-		Obituary_Print_Localized( "Hunter " EHI_GetName(eHandle) + " changed all props form!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
+		Obituary_Print_Localized( "Hunter " + EHI_GetName(eHandle) + " changed all props form!", GetChatTitleColorForPlayer( GetLocalViewPlayer() ), BURN_COLOR )
 		EmitSoundOnEntity(GetLocalViewPlayer(), "vdu_on")
 		break
 		case 12:

@@ -1311,7 +1311,7 @@ void function PROPHUNT_GameLoop()
 
 void function GiveDelayedAbilityToHuntersOnRoundStart()
 {
-	wait 25
+	wait (PROPHUNT_ATTACKERS_ABILITY_COOLDOWN/2 - 5)
 	
 	foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_MILITIA))
 	{

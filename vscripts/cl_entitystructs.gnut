@@ -182,6 +182,7 @@ global struct ClientPlayerStruct
 	int lastWhistleTimer = 0
 	bool isAttackersAbilityEnabled = false
 	bool isRoundTimerEnabled = false
+	int savedAbilityTimer = 0
 }
 
 
