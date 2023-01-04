@@ -16,6 +16,8 @@ global function UpdateVotedFor_FSDM
 global function UpdateVotedLocation_FSDM
 global function UpdateVotedLocation_FSDMTied
 global function SendScoreboardToUI
+global function SendPropsScoreboardToUI
+global function SendHuntersScoreboardToUI
 global function ClearScoreboardOnUI
 global function ClearProphuntScoreboardOnUI
 global function Disable_MILITIAButton
@@ -32,11 +34,26 @@ global struct PlayerInfo
 	int lastLatency
 }
 
+global struct ProphuntPlayerInfo_PROPS
+{
+	string name
+	int timessurvived
+	int survivaltime
+}
+
+global struct ProphuntPlayerInfo_HUNTERS
+{
+	string name
+	int propskilled
+}
+
 struct
 {
 	var menu
 	var prophuntMenu
-	array<PlayerInfo> FSDM_Scoreboard
+	array<PlayerInfo> FSDM_Scoreboard	
+	array<ProphuntPlayerInfo_PROPS> FSPROPHUNT_PropsScoreboard
+	array<ProphuntPlayerInfo_HUNTERS> FSPROPHUNT_HuntersScoreboard
 } file
 
 //Opens vote menu
@@ -78,9 +95,6 @@ void function Open_FSDM_VotingPhase()
 void function Set_FSDM_TeamWonScreen(string teamwon)
 {
 	SetVoteHudElems(false, true, false, false, false, false, false, false, false, false, false, false)
-
-	// Hud_SetText( Hud_GetChild( file.menu, "WinnerLbl" ), teamwon)
-
 }
 
 void function SendScoreboardToUI(string name, int score, int deaths, float kd, int damage, int latency)
@@ -94,6 +108,25 @@ void function SendScoreboardToUI(string name, int score, int deaths, float kd, i
 	p.lastLatency = latency
 	
 	file.FSDM_Scoreboard.append(p)
+}
+
+void function SendPropsScoreboardToUI(string name, int timessurvived, int survivaltime)
+{
+	ProphuntPlayerInfo_PROPS p
+	p.name = name
+	p.timessurvived = timessurvived
+	p.survivaltime = survivaltime
+
+	file.FSPROPHUNT_PropsScoreboard.append(p)
+}
+
+void function SendHuntersScoreboardToUI(string name, int propskilled)
+{
+	ProphuntPlayerInfo_HUNTERS p
+	p.name = name
+	p.propskilled = propskilled
+	
+	file.FSPROPHUNT_HuntersScoreboard.append(p)
 }
 
 void function ClearScoreboardOnUI()
@@ -131,6 +164,19 @@ int function ComparePlayerInfo(PlayerInfo a, PlayerInfo b)
 	return 0;
 }
 
+int function CompareProphuntPropsInfo(ProphuntPlayerInfo_PROPS a, ProphuntPlayerInfo_PROPS b)
+{
+	if(a.timessurvived < b.timessurvived) return 1;
+	else if(a.timessurvived > b.timessurvived) return -1;
+	return 0;
+}
+
+int function CompareProphuntHuntersInfo(ProphuntPlayerInfo_HUNTERS a, ProphuntPlayerInfo_HUNTERS b)
+{
+	if(a.propskilled < b.propskilled) return 1;
+	else if(a.propskilled > b.propskilled) return -1;
+	return 0;
+}
 //Sets and updates the team won screen
 void function Set_FSDM_ScoreboardScreen()
 {

@@ -337,6 +337,16 @@ void function ServerCallback_SendScoreboardToClient(int eHandle, int score, int 
 	RunUIScript( "SendScoreboardToUI", EHI_GetName(eHandle), score, deaths, kd, damage, latency)
 }
 
+void function ServerCallback_SendProphuntPropsScoreboardToClient(int eHandle, int score, int survivaltime)
+{
+	RunUIScript( "SendPropsScoreboardToUI", EHI_GetName(eHandle), score, survivaltime)
+}
+
+void function ServerCallback_SendProphuntHuntersScoreboardToClient(int eHandle, int propskilled)
+{
+	RunUIScript( "SendHuntersScoreboardToUI", EHI_GetName(eHandle), propskilled)
+}
+
 void function ServerCallback_ClearScoreboardOnClient()
 {
 	if(GameRules_GetGameMode() == "custom_prophunt")
