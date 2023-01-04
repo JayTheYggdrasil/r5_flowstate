@@ -229,7 +229,11 @@ void function Set_FSDM_ProphuntScoreboardScreen()
 			Hud_SetText( Hud_GetChild( file.prophuntMenu, "TimesSurvived" + i ), file.FSPROPHUNT_PropsScoreboard[i].timessurvived.tostring() )
 			
 			DisplayTime dt = SecondsToDHMS( file.FSPROPHUNT_PropsScoreboard[i].survivaltime )
-			Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), format( "%.2d:%.2d", dt.minutes, dt.seconds ) )
+			
+			if(file.FSPROPHUNT_PropsScoreboard[i].survivaltime > 3540)
+				Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), format( "%d:%.2d:%.2d", dt.hours, dt.minutes, dt.seconds ) )
+			else
+				Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), format( "%.2d:%.2d", dt.minutes, dt.seconds ) )
 		}
 	}()
 }
