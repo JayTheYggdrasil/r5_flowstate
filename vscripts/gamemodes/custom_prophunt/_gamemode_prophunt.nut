@@ -11,6 +11,7 @@ global function _OnPlayerDiedPROPHUNT
 global function PROPHUNT_StartGameThread
 global function returnPropBool
 global function SetRealms
+global function PROPHUNT_GiveAndManageProp
 
 struct{
 	float endTime = 0
@@ -227,11 +228,13 @@ void function _OnPlayerConnectedPROPHUNT(entity player)
 			entity specTarget = playersON.getrandom()
 			if( IsValid( specTarget ) && ShouldSetObserverTarget( specTarget ))
 			{
+				try{
 				player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
 				player.SetObserverTarget( specTarget )
 				player.SetSpecReplayDelay( 2 )
 				player.StartObserverMode( OBS_MODE_IN_EYE )
 				Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
+				}catch(e420){}
 			} else
 			{
 				thread SetSpectatorAnotherTry(player)
@@ -265,16 +268,18 @@ void function SetSpectatorAnotherTry(entity player)
 	}
 	
 	entity specTarget = playersON.getrandom()
-	if( IsValid( specTarget ) && IsValid(player) && ShouldSetObserverTarget( specTarget ) && specTarget != player)
-	{
-		player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
-		player.SetObserverTarget( specTarget )
-		player.SetSpecReplayDelay( 2 )
-		player.StartObserverMode( OBS_MODE_IN_EYE )
-		Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
-	} else {
-		Message(player, "FS PROPHUNT", "You will spawn next round")
-	}
+	try{
+		if( IsValid( specTarget ) && IsValid(player) && ShouldSetObserverTarget( specTarget ) && specTarget != player)
+		{
+			player.SetPlayerNetInt( "spectatorTargetCount", GetPlayerArray_Alive().len() )
+			player.SetObserverTarget( specTarget )
+			player.SetSpecReplayDelay( 2 )
+			player.StartObserverMode( OBS_MODE_IN_EYE )
+			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Activate")
+		} else {
+			Message(player, "FS PROPHUNT", "You will spawn next round")
+		}
+	}catch(e420){}
 }
 
 void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageInfo)
@@ -312,23 +317,24 @@ void function _OnPlayerDiedPROPHUNT(entity victim, entity attacker, var damageIn
 
 				array<entity> playersON = GetPlayerArray_Alive()
 				playersON.fastremovebyvalue( victim )
-		
-				if(victim != attacker)
-				{
-					victim.SetObserverTarget( attacker )
-					victim.SetSpecReplayDelay( 2 + DEATHCAM_TIME_SHORT)
-					victim.StartObserverMode( OBS_MODE_IN_EYE )
-					victim.p.isSpectating = true
-					Remote_CallFunction_NonReplay(victim, "ServerCallback_KillReplayHud_Activate")
-				} else if (GetPlayerArray_Alive().len() > 0)
-				{
-					victim.SetObserverTarget( playersON[0] )
-					victim.SetSpecReplayDelay( 2 + DEATHCAM_TIME_SHORT)
-					victim.StartObserverMode( OBS_MODE_IN_EYE )
-					victim.p.isSpectating = true
-					Remote_CallFunction_NonReplay(victim, "ServerCallback_KillReplayHud_Activate")
-				}
-			
+				
+				try{
+					if(victim != attacker && ShouldSetObserverTarget( attacker ))
+					{
+						victim.SetObserverTarget( attacker )
+						victim.SetSpecReplayDelay( 2 + DEATHCAM_TIME_SHORT)
+						victim.StartObserverMode( OBS_MODE_IN_EYE )
+						victim.p.isSpectating = true
+						Remote_CallFunction_NonReplay(victim, "ServerCallback_KillReplayHud_Activate")
+					} else if (GetPlayerArray_Alive().len() > 0)
+					{
+						victim.SetObserverTarget( playersON[0] )
+						victim.SetSpecReplayDelay( 2 + DEATHCAM_TIME_SHORT)
+						victim.StartObserverMode( OBS_MODE_IN_EYE )
+						victim.p.isSpectating = true
+						Remote_CallFunction_NonReplay(victim, "ServerCallback_KillReplayHud_Activate")
+					}
+				}catch(e420){}
 				int invscore = victim.GetPlayerGameStat( PGS_DEATHS )
 				invscore++
 				victim.SetPlayerGameStat( PGS_DEATHS, invscore)
@@ -656,7 +662,7 @@ void function PROPHUNT_GiveAndManageProp(entity player, bool giveOldProp = false
 
 void function PROPHUNT_Lobby()
 {
-	DestroyPlayerPropsPROPHUNT()
+	//DestroyPlayerPropsPROPHUNT()
 	SetGameState(eGameState.MapVoting) //!FIXME
 	
 	if(FS_PROPHUNT.currentRound == 1)
@@ -799,7 +805,7 @@ void function PROPHUNT_GameLoop()
 			player.p.PROPHUNT_LastModelIndex = modelindex
 			asset selectedModel = prophuntAssets[modelindex]
 			player.p.PROPHUNT_LastModel = selectedModel
-			player.kv.solid = 0
+			player.SetModelScale(0.01)
 			player.kv.fadedist = 999999
 			player.AllowMantle()
 			player.Hide()
@@ -1063,16 +1069,17 @@ void function PROPHUNT_GameLoop()
 	foreach(player in GetPlayerArray())
 	{
 		if(!IsValid(player)) continue
-		
-		if(player.p.isSpectating)
-		{
-			player.p.isSpectating = false
-			player.SetPlayerNetInt( "spectatorTargetCount", 0 )
-			player.SetSpecReplayDelay( 0 )
-			player.SetObserverTarget( null )
-			player.StopObserverMode()
-			Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Deactivate")
-		}
+		try{
+			if(player.p.isSpectating)
+			{
+				player.p.isSpectating = false
+				player.SetPlayerNetInt( "spectatorTargetCount", 0 )
+				player.SetSpecReplayDelay( 0 )
+				player.SetObserverTarget( null )
+				player.StopObserverMode()
+				Remote_CallFunction_NonReplay(player, "ServerCallback_KillReplayHud_Deactivate")
+			}
+		}catch(e420){}
 	}
 	
 	UpdatePlayerCounts()
@@ -1862,7 +1869,7 @@ void function ClientCommand_hunters_ForceChangeProp(entity hunterPlayer)
 		{
 			player.SetBodyModelOverride( $"" )
 			player.SetArmsModelOverride( $"" )
-			player.kv.solid = 0
+			player.SetModelScale(0.01)
 			player.AllowMantle()
 			player.Hide()
 			thread PROPHUNT_GiveAndManageProp(player, false, true)
@@ -1903,7 +1910,7 @@ void function ClientCommand_ChangeProp(entity player)
 		{
 			player.SetBodyModelOverride( $"" )
 			player.SetArmsModelOverride( $"" )
-			player.kv.solid = 0
+			player.SetModelScale(0.01)
 			player.AllowMantle()
 			player.Hide()
 			thread PROPHUNT_GiveAndManageProp(player, false, true)

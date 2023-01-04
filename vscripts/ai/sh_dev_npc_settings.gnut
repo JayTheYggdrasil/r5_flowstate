@@ -35,6 +35,8 @@ void function SetupChangeSurvivalCharacterClass()
 		SetupDevCommand( "DEV: Revenant", "script DEV_UseRevenantCharacter()" )
 		SetupDevCommand( "DEV: Rampart", "script DEV_UseRampartCharacter()" )	
 		SetupDevCommand( "DEV: Blisk", "script DEV_UseBliskCharacter()" )	
+		SetupDevCommand( "DEV: Master Chief", "script DEV_UseMasterChiefCharacter()" )
+		SetupDevCommand( "DEV: 2B", "script DEV_Use2BCharacter()" )
 	#endif
 }
 

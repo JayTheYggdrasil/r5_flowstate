@@ -82,6 +82,24 @@ void function DEV_UseRampartCharacter()
 	player.SetArmsModelOverride($"mdl/Weapons/arms/pov_pilot_medium_rampart.rmdl" )
 }
 
+void function DEV_UseMasterChiefCharacter()
+{
+	entity player = gp()[0]
+	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
+	
+	player.SetBodyModelOverride($"mdl/Humans/pilots/w_master_chief.rmdl" )
+	player.SetArmsModelOverride($"mdl/Humans/pilots/ptpov_master_chief.rmdl" )	
+}
+
+void function DEV_Use2BCharacter()
+{
+	entity player = gp()[0]
+	CharacterSelect_AssignCharacter( ToEHI( player ), GetAllCharacters()[5] )
+	
+	player.SetBodyModelOverride( $"mdl/Humans/pilots/w_2b.rmdl" )
+	// player.SetArmsModelOverride($"mdl/Humans/pilots/ptpov_master_chief.rmdl" )	
+}
+
 void function DEV_UseRevenantCharacter()
 {
 	entity player = gp()[0]

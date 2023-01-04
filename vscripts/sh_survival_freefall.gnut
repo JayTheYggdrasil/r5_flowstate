@@ -280,6 +280,17 @@ void function ForcedSkydiveTriggerThink_EnterCallback( entity trigger, entity pl
 	if ( Time() - player.p.last3dashtime < 1.1 )
 		return
 	
+	if(GameRules_GetGameMode() == "custom_prophunt" && player.GetTeam() == TEAM_MILITIA && player.p.PROPHUNT_AreAnglesLocked)
+	{
+		Signal(player, "DestroyProp")
+
+		player.SetBodyModelOverride( $"" )
+		player.SetArmsModelOverride( $"" )
+
+		PROPHUNT_GiveAndManageProp(player, true)
+		player.p.PROPHUNT_AreAnglesLocked = false
+	}
+	
 	thread PlayerSkydiveFromCurrentPosition( player )
 }
 
@@ -545,7 +556,7 @@ void function PlayerSkyDive( entity player, vector driverViewVector, array<entit
 		EffectSetControlPointVector( enemyFX, 1, smokeColor * ENEMY_SMOKE_COLOR_MULT )
 		jumpJetFX.append( enemyFX )
 		
-		if(GetCurrentPlaylistVarBool( "rgb_skydive", false ))
+		if(GetCurrentPlaylistVarBool( "rgb_skydive", true ))
 			thread RGB_Skydive(friendlyFX)
 	}
 
@@ -673,7 +684,7 @@ void function SkyDiveMovement( entity player, SkydivePlayerData skydiveData, vec
 	vector smokeColor = GetSkydiveSmokeColorForTeam( player.GetTeam() )
 	entity smokeTrailFX = StartParticleEffectOnEntityWithPos_ReturnEntity( player, GetParticleSystemIndex( SKYDIVE_SMOKE_COLOR_FX ), FX_PATTACH_ABSORIGIN_FOLLOW, smokeAttachID, <0,0,0>, VectorToAngles( <0,0,-1> ) )
 	EffectSetControlPointVector( smokeTrailFX, 1, smokeColor )
-	if(GetCurrentPlaylistVarBool( "rgb_skydive", false ))
+	if(GetCurrentPlaylistVarBool( "rgb_skydive", true ))
 		thread RGB_Skydive(smokeTrailFX)
 	smokeFX.append( smokeTrailFX )
 

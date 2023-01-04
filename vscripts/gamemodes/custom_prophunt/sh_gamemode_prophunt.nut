@@ -20,11 +20,25 @@ global const int PROPHUNT_ATTACKERS_ABILITY_COOLDOWN = 60
 global const int PROPHUNT_HUNTERS_AMOUNT_ALLOWED = 5
 global const int PROPHUNT_PROPS_AMOUNT_ALLOWED = 30
 
+global struct ProphuntPlayerInfo_PROPS
+{
+	string name
+	int timessurvived
+	int survivaltime
+}
+
+global struct ProphuntPlayerInfo_HUNTERS
+{
+	string name
+	int propskilled
+}
 
 global array<asset> prophuntAssets = []
 
 void function GamemodeProphuntShared_Init()
-{
+{	
+	SurvivalFreefall_Init() //Enables freefall/skydive
+	
     switch(GetMapName())
     {
 	    case "mp_rr_canyonlands_mu1":
@@ -522,7 +536,7 @@ void function GamemodeProphuntShared_Init()
 
 		RegisterLocationPROPHUNT(
                 NewLocationSettings(
-                    "Little Town 2",
+                    "Armag Town",
                     [
                         NewLocPair(<-27219, -24393, -4497>, <0, 87, 0>),
                         NewLocPair(<-26483, -28042, -4209>, <0, 122, 0>),
