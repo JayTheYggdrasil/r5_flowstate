@@ -538,6 +538,15 @@ void function EmitSoundOnSprintingProp()
 	}
 }
 
+void function CountAliveTimeOnProp(entity prop)
+{
+	while(FS_PROPHUNT.InProgress && IsValid(prop) && IsAlive(prop))
+	{
+		prop.p.PROPHUNT_SurvivalTime++
+		wait 1
+	}
+}
+
 void function CheckForPlayersPlaying()
 {
 	while(FS_PROPHUNT.InProgress)
@@ -913,18 +922,16 @@ void function PROPHUNT_GameLoop()
 		Remote_CallFunction_NonReplay(player, "Minimap_EnableDraw_Internal")
 		player.SetMoveSpeedScale(1)
 	}
-	
+
 	FS_PROPHUNT.ringBoundary_PreGame.Destroy()
 	FS_PROPHUNT.ringBoundary = CreateRingBoundary_PropHunt(FS_PROPHUNT.selectedLocation)
 	
-	foreach(player in GetPlayerArray())
+	foreach(player in GetPlayerArrayOfTeam(TEAM_MILITIA))
 	{
 		if(!IsValid(player)) continue
-		
-		if (player.GetTeam() == TEAM_MILITIA)
-		{
-			Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 5, 0)
-		}		
+
+		Remote_CallFunction_NonReplay( player, "PROPHUNT_CustomHint", 5, 0)
+		thread CountAliveTimeOnProp(player)	
 	}
 	
 	// SetGlobalNetInt( "currentDeathFieldStage", 0 )
@@ -993,6 +1000,7 @@ void function PROPHUNT_GameLoop()
 					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", false, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
 				
 				Remote_CallFunction_NonReplay(Winnerplayer, "PROPHUNT_QuickText", 3, 4) //PROPS TEAM WIN
+				Winnerplayer.p.PROPHUNT_TimesSurvivedAsProp++
 				i++
 			}
 			
@@ -1028,7 +1036,7 @@ void function PROPHUNT_GameLoop()
 			player.SetThirdPersonShoulderModeOn()	
 			HolsterAndDisableWeapons(player)
 		}
-		
+
 		champion = IMCplayersAlive[0]
 	}
 	
@@ -1049,7 +1057,7 @@ void function PROPHUNT_GameLoop()
 	}
 	SetGameState(eGameState.MapVoting)
 	
-	thread SendScoreboardToClient()
+	thread SendProphuntScoreboardToClient()
 	
 	wait 5
 	foreach(player in GetPlayerArray())
@@ -1335,6 +1343,28 @@ void function GiveDelayedAbilityToHuntersOnRoundStart()
 	}
 }
 
+void function SendProphuntScoreboardToClient()
+{
+	foreach(entity sPlayer in GetPlayerArray())
+	{
+		if(!IsValid(sPlayer)) continue
+		
+		Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_ClearScoreboardOnClient")
+		
+		thread function() : (sPlayer)
+		{
+			if(!IsValid(sPlayer)) return
+			
+			foreach(entity player in GetPlayerArray())
+			{
+				if(!IsValid(player)) continue
+
+				Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_SendProphuntHuntersScoreboardToClient", player.GetEncodedEHandle(), player.GetPlayerGameStat( PGS_KILLS ))
+				Remote_CallFunction_NonReplay(sPlayer, "ServerCallback_SendProphuntPropsScoreboardToClient", player.GetEncodedEHandle(), player.p.PROPHUNT_TimesSurvivedAsProp, player.p.PROPHUNT_SurvivalTime)
+			}
+		}()
+	}
+}
 // purpose: display the UI for randomization of tied maps at the end of voting
 void function RandomizeTiedLocations(array<int> maps)
 {

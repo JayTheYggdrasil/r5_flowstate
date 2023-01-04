@@ -2,6 +2,8 @@ global function Cl_CustomTDM_Init
 global function Cl_RegisterLocation
 global function OpenTDMWeaponSelectorUI
 global function ServerCallback_SendScoreboardToClient
+global function ServerCallback_SendProphuntPropsScoreboardToClient
+global function ServerCallback_SendProphuntHuntersScoreboardToClient
 global function ServerCallback_ClearScoreboardOnClient
 global function NotifyRingTimer
 	

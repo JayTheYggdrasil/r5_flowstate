@@ -145,15 +145,16 @@ void function ClearScoreboardOnUI()
 
 void function ClearProphuntScoreboardOnUI()
 {
-	// file.FSDM_Scoreboard.clear()
+	file.FSPROPHUNT_PropsScoreboard.clear()
+	file.FSPROPHUNT_HuntersScoreboard.clear()
 	
 	for( int i=0; i < 10; i++ )
 	{	
-		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), "" )
-		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), "" )
-		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), "" )		
-		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), "" )
-		// Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerNameHunters" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "TimesSurvived" + i ), "" )		
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "PropsKilled" + i ), "" )
 	}
 }
 
@@ -207,20 +208,27 @@ void function Set_FSDM_ProphuntScoreboardScreen()
 	{
 		SetVoteHudElems(false, true, false, false, false, false, false, false, false, false, false, true)
 
-		// while(file.FSDM_Scoreboard.len() == 0) //defensive fix
-			// WaitFrame()
+		while(file.FSPROPHUNT_HuntersScoreboard.len() == 0 && file.FSPROPHUNT_PropsScoreboard.len() == 0) //defensive fix
+			WaitFrame()
 		
-		// file.FSDM_Scoreboard.sort(ComparePlayerInfo)
+		if(file.FSPROPHUNT_HuntersScoreboard.len() != 0)
+			file.FSPROPHUNT_HuntersScoreboard.sort(CompareProphuntHuntersInfo)
 		
-		// for( int i=0; i < file.FSDM_Scoreboard.len() && i < 10; i++ )
-		// {	
-			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), file.FSDM_Scoreboard[i].name )
-			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), file.FSDM_Scoreboard[i].score.tostring() )
-			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), file.FSDM_Scoreboard[i].deaths.tostring() )		
-			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), file.FSDM_Scoreboard[i].kd.tostring() )
-			// // Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), file.FSDM_Scoreboard[i].damage.tostring() )
-			// // Hud_SetText( Hud_GetChild( file.menu, "Latency" + i ), file.FSDM_Scoreboard[i].lastLatency.tostring() )
-		// }
+		if(file.FSPROPHUNT_PropsScoreboard.len() != 0)
+			file.FSPROPHUNT_PropsScoreboard.sort(CompareProphuntPropsInfo)
+		
+		for( int i=0; i < file.FSPROPHUNT_HuntersScoreboard.len() && i < 10; i++ )
+		{	
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerNameHunters" + i ), file.FSPROPHUNT_HuntersScoreboard[i].name )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "PropsKilled" + i ), file.FSPROPHUNT_HuntersScoreboard[i].propskilled.tostring() )
+		}
+	
+		for( int i=0; i < file.FSPROPHUNT_PropsScoreboard.len() && i < 10; i++ )
+		{	
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), file.FSPROPHUNT_PropsScoreboard[i].name )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "TimesSurvived" + i ), file.FSPROPHUNT_PropsScoreboard[i].timessurvived.tostring() )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "SurvivalTime" + i ), file.FSPROPHUNT_PropsScoreboard[i].survivaltime.tostring() )
+		}
 	}()
 }
 
