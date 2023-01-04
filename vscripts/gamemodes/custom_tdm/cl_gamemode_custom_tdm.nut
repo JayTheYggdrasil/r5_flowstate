@@ -339,7 +339,10 @@ void function ServerCallback_SendScoreboardToClient(int eHandle, int score, int 
 
 void function ServerCallback_ClearScoreboardOnClient()
 {
-	RunUIScript( "ClearScoreboardOnUI")
+	if(GameRules_GetGameMode() == "custom_prophunt")
+		RunUIScript( "ClearProphuntScoreboardOnUI")
+	else
+		RunUIScript( "ClearScoreboardOnUI")
 }
 
 void function ServerCallback_OpenStatisticsUI()
@@ -469,8 +472,13 @@ void function ServerCallback_FSDM_SetScreen(int screen, int team, int mapid, int
     switch(screen)
     {
         case eFSDMScreen.ScoreboardUI: //Sets the screen to the winners screen
-			//DestroyChampionUI()
-            RunUIScript("Set_FSDM_ScoreboardScreen")
+			DestroyChampionUI()
+			
+			if(GameRules_GetGameMode() == "custom_prophunt")
+				RunUIScript("Set_FSDM_ProphuntScoreboardScreen")
+			else
+				RunUIScript("Set_FSDM_ScoreboardScreen")
+			
             break
 
         case eFSDMScreen.WinnerScreen: //Sets the screen to the winners screen

@@ -30,6 +30,7 @@ global struct PlayerInfo
 struct
 {
 	var menu
+	var prophuntMenu
 	array<PlayerInfo> FSDM_Scoreboard
 } file
 
@@ -87,6 +88,9 @@ void function Set_FSDM_ScoreboardScreen()
 	thread function() : ()	
 	{
 		SetVoteHudElems(false, true, false, false, false, false, false, false, false, false, false, true)
+
+		if(GetCurrentPlaylistName() == "custom_prophunt")
+			Hud_SetText( Hud_GetChild( file.menu, "ScoreboardText" ), "PROPHUNT SCOREBOARD")
 		
 		while(file.FSDM_Scoreboard.len() == 0) //defensive fix
 			WaitFrame()
@@ -210,7 +214,7 @@ void function Init_FSDM_VoteMenu( var newMenuArg )
 	AddButtonEventHandler( Hud_GetChild( menu, "MapVote3" ), UIE_CLICK, OnClickMap )
 	AddButtonEventHandler( Hud_GetChild( menu, "MapVote4" ), UIE_CLICK, OnClickMap )
 	
-	//Hide all server buttons
+	//Hide all scoreboard buttons
 	array<var> serverbuttons = GetElementsByClassname( file.menu, "ScoreboardUIButton" )
 	foreach ( var elem in serverbuttons )
 	{

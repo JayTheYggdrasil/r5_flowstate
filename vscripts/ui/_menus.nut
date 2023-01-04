@@ -1568,6 +1568,7 @@ void function InitMenus()
 		//Statistics
 		AddMenu( "StatisticsUI", $"scripts/resource/ui/menus/FlowstateDM/flowstate_statistics.menu", InitStatisticsUI )
 		AddMenu( "FSDMVoteMenu", $"scripts/resource/ui/menus/FlowstateDM/flowstate_menu_vote.menu", Init_FSDM_VoteMenu )
+		AddMenu( "FSProphuntScoreboardMenu", $"scripts/resource/ui/menus/FlowstateDM/flowstate_prophunt_scoreboard.menu", Init_FSDM_ProphuntScoreboardMenu )
 
 	var lobbyMenu = AddMenu( "LobbyMenu", $"resource/ui/menus/lobby.menu", InitLobbyMenu )
 	AddPanel( lobbyMenu, "PlayPanel", InitPlayPanel )

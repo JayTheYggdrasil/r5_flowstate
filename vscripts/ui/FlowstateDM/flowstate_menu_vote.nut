@@ -1,4 +1,5 @@
 global function Init_FSDM_VoteMenu
+global function Init_FSDM_ProphuntScoreboardMenu
 global function Open_FSDM_VotingPhase
 global function Close_FSDM_VoteMenu
 
@@ -6,6 +7,7 @@ global function Set_FSDM_VoteMenuNextRound
 global function Set_FSDM_VotingScreen
 global function Set_FSDM_TeamWonScreen
 global function Set_FSDM_ScoreboardScreen
+global function Set_FSDM_ProphuntScoreboardScreen
 
 global function UpdateVoteTimer_FSDM
 global function UpdateVotesUI_FSDM
@@ -15,6 +17,7 @@ global function UpdateVotedLocation_FSDM
 global function UpdateVotedLocation_FSDMTied
 global function SendScoreboardToUI
 global function ClearScoreboardOnUI
+global function ClearProphuntScoreboardOnUI
 global function Disable_MILITIAButton
 global function Disable_IMCButton
 
@@ -32,6 +35,7 @@ global struct PlayerInfo
 struct
 {
 	var menu
+	var prophuntMenu
 	array<PlayerInfo> FSDM_Scoreboard
 } file
 
@@ -56,11 +60,12 @@ void function Open_FSDM_VotingPhase()
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "APEX PROPHUNT" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment" )
 			break
-			
+
 			case "custom_tdm":
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE DM" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "©Respawn Entertainment" )
 			break
+
 			default:
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE SCRIPTS" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment." )
@@ -105,6 +110,20 @@ void function ClearScoreboardOnUI()
 	}
 }
 
+void function ClearProphuntScoreboardOnUI()
+{
+	file.FSDM_Scoreboard.clear()
+	
+	for( int i=0; i < 10; i++ )
+	{	
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), "" )		
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), "" )
+		Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), "" )
+	}
+}
+
 int function ComparePlayerInfo(PlayerInfo a, PlayerInfo b)
 {
 	if(a.score < b.score) return 1;
@@ -118,7 +137,7 @@ void function Set_FSDM_ScoreboardScreen()
 	thread function() : ()	
 	{
 		SetVoteHudElems(false, true, false, false, false, false, false, false, false, false, false, true)
-		
+
 		while(file.FSDM_Scoreboard.len() == 0) //defensive fix
 			WaitFrame()
 		
@@ -131,6 +150,29 @@ void function Set_FSDM_ScoreboardScreen()
 			Hud_SetText( Hud_GetChild( file.menu, "Deaths" + i ), file.FSDM_Scoreboard[i].deaths.tostring() )		
 			Hud_SetText( Hud_GetChild( file.menu, "KD" + i ), file.FSDM_Scoreboard[i].kd.tostring() )
 			Hud_SetText( Hud_GetChild( file.menu, "Damage" + i ), file.FSDM_Scoreboard[i].damage.tostring() )
+			// Hud_SetText( Hud_GetChild( file.menu, "Latency" + i ), file.FSDM_Scoreboard[i].lastLatency.tostring() )
+		}
+	}()
+}
+
+void function Set_FSDM_ProphuntScoreboardScreen()
+{
+	thread function() : ()	
+	{
+		SetVoteHudElems(false, true, false, false, false, false, false, false, false, false, false, true)
+
+		while(file.FSDM_Scoreboard.len() == 0) //defensive fix
+			WaitFrame()
+		
+		file.FSDM_Scoreboard.sort(ComparePlayerInfo)
+		
+		for( int i=0; i < file.FSDM_Scoreboard.len() && i < 10; i++ )
+		{	
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "PlayerName" + i ), file.FSDM_Scoreboard[i].name )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "Kills" + i ), file.FSDM_Scoreboard[i].score.tostring() )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "Deaths" + i ), file.FSDM_Scoreboard[i].deaths.tostring() )		
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "KD" + i ), file.FSDM_Scoreboard[i].kd.tostring() )
+			Hud_SetText( Hud_GetChild( file.prophuntMenu, "Damage" + i ), file.FSDM_Scoreboard[i].damage.tostring() )
 			// Hud_SetText( Hud_GetChild( file.menu, "Latency" + i ), file.FSDM_Scoreboard[i].lastLatency.tostring() )
 		}
 	}()
@@ -228,8 +270,21 @@ void function UpdateVotedLocation_FSDMTied(string map)
 	Hud_SetText( Hud_GetChild( file.menu, "TimerText2" ), "Votes Tied!")
 	Hud_SetText( Hud_GetChild( file.menu, "VotedForLbl" ), map)
 }
-
 //Inits vote menu
+void function Init_FSDM_ProphuntScoreboardMenu( var newMenuArg )
+{
+	var menu = GetMenu( "FSProphuntScoreboardMenu" )
+	file.prophuntMenu = menu
+	
+	AddMenuEventHandler( menu, eUIEvent.MENU_NAVIGATE_BACK, On_FSDM__NavigateBack )
+	
+	//Hide all scoreboard buttons
+	array<var> serverbuttons = GetElementsByClassname( file.prophuntMenu, "ScoreboardUIButton" )
+	foreach ( var elem in serverbuttons )
+	{
+		Hud_SetVisible(elem, false)
+	}	
+}
 void function Init_FSDM_VoteMenu( var newMenuArg )
 {
 	var menu = GetMenu( "FSDMVoteMenu" )
@@ -250,7 +305,7 @@ void function Init_FSDM_VoteMenu( var newMenuArg )
 	
 	//RuiSetImage( Hud_GetRui( Hud_GetChild( menu, "SelectTeamFrame" ) ), "basicImage", $"rui/flowstatecustom/prophunt_quicktext")
 	
-	//Hide all server buttons
+	//Hide all dm scoreboard buttons
 	array<var> serverbuttons = GetElementsByClassname( file.menu, "ScoreboardUIButton" )
 	foreach ( var elem in serverbuttons )
 	{
@@ -303,12 +358,39 @@ void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bo
 		Hud_SetVisible( Hud_GetChild( file.menu, "MapVoteLabelNameFrame" + i ), MapVote )
 	}
 	
-	array<var> ScoreboardUI = GetElementsByClassname( file.menu, "ScoreboardUI" )
-	foreach ( var elem in ScoreboardUI )
+	if(GetCurrentPlaylistName() != "custom_prophunt")
 	{
-		Hud_SetVisible(elem, Scoreboard)
+		array<var> ScoreboardUI = GetElementsByClassname( file.menu, "ScoreboardUI" )
+		foreach ( var elem in ScoreboardUI )
+		{
+			Hud_SetVisible(elem, Scoreboard)
+		}
+		Hud_SetVisible(Hud_GetChild( file.menu, "ScoreboardText"), Scoreboard)
 	}
-	Hud_SetVisible(Hud_GetChild( file.menu, "ScoreboardText"), Scoreboard)
+	else
+	{
+		array<var> ScoreboardUI0 = GetElementsByClassname( file.menu, "ScoreboardUI" )
+		foreach ( var elem in ScoreboardUI0 )
+		{
+			Hud_SetVisible(elem, false)
+		}
+		Hud_SetVisible(Hud_GetChild( file.menu, "ScoreboardText"), false)
+		
+		if(Scoreboard)
+			AdvanceMenu( file.prophuntMenu )
+		else
+		{
+			CloseAllMenus()
+			AdvanceMenu( file.menu )
+		}
+		
+		array<var> ScoreboardUI = GetElementsByClassname( file.prophuntMenu, "ScoreboardUI" )
+		foreach ( var elem in ScoreboardUI )
+		{
+			Hud_SetVisible(elem, Scoreboard)
+		}
+		Hud_SetVisible(Hud_GetChild( file.prophuntMenu, "ScoreboardText"), Scoreboard)		
+	}
 	
 	if(!MapVote)
 		for(int i = 1; i < 5; i++ ) {

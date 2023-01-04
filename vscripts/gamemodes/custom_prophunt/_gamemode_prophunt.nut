@@ -1134,17 +1134,17 @@ void function PROPHUNT_GameLoop()
 		
 		wait 7
 
-		// foreach( player in GetPlayerArray() )
-		// {
-			// if( !IsValid( player ) )
-				// continue
+		foreach( player in GetPlayerArray() )
+		{
+			if( !IsValid( player ) )
+				continue
 			
-			// Remote_CallFunction_NonReplay(player, "ServerCallback_FSDM_CoolCamera")
-			// Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.ScoreboardUI, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
-			// EmitSoundOnEntityOnlyToPlayer(player, player, "UI_Menu_RoundSummary_Results")
-		// }
+			Remote_CallFunction_NonReplay(player, "ServerCallback_FSDM_CoolCamera")
+			Remote_CallFunction_Replay(player, "ServerCallback_FSDM_SetScreen", eFSDMScreen.ScoreboardUI, TeamWon, eFSDMScreen.NotUsed, eFSDMScreen.NotUsed)
+			EmitSoundOnEntityOnlyToPlayer(player, player, "UI_Menu_RoundSummary_Results")
+		}
 		
-		// wait 7
+		wait 7
 
 		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(PROPHUNT_HUNTERS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
 		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, ceil(GetPlayerArray().len()/2)))
