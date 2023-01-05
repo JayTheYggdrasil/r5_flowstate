@@ -1610,7 +1610,7 @@ entity function CreateRing_PreGame(LocationSettings location)
 
     vector ringCenter = GetCenterOfCircle(spawns)
 	
-    float ringRadius = float(minint(2500 + 110*GetPlayerArray().len(), 5000))
+    float ringRadius = float(minint(2500 + 110*GetPlayerArray().len(), 4500))
 	FS_PROPHUNT.allowedRadius = ringRadius
 
 	array<LocPair> prophuntSpawns
