@@ -442,7 +442,7 @@ Scripts:
 	mp/_titan_tether.gnut
 	_hovertank.gnut
 	_health_regen.gnut
-	sh_sdk_tools.nut
+	// sh_sdk_tools.nut
 	pilot/_leeching.gnut
 	pilot/_pilot_leeching.gnut
 	pilot/_zipline.gnut
@@ -618,7 +618,7 @@ Scripts:
 	client/objects/cl_goblin_dropship.nut
 	client/objects/cl_spectre.nut
 	client/objects/cl_super_spectre.nut
-	client/objects/cl_phantom_fighter.nut
+	// client/objects/cl_phantom_fighter.nut
 	conversation/cl_conversation.gnut
 	conversation/cl_conversation_schedule.gnut
 	pilot/cl_pilot_health_hud.gnut
@@ -632,7 +632,7 @@ Scripts:
 	weapons/cl_smart_ammo.gnut
 	client/objects/cl_drone_medic.nut
 	client/objects/cl_draconis_flyin.nut
-	client/objects/cl_drone.nut
+	// client/objects/cl_drone.nut
 	client/objects/cl_drone_crypto.nut
 
 	client/rui/cl_weapon_status.gnut
@@ -875,11 +875,11 @@ Scripts:
 	weapons/mp_weapon_softball.nut
 	weapons/mp_weapon_smr.nut
 	weapons/mp_weapon_rocket_launcher.nut
-	weapons/sp_weapon_arc_tool.nut
-	weapons/mp_weapon_super_spectre.nut
-	weapons/mp_weapon_gunship_missile.nut
-	weapons/mp_weapon_droneplasma.nut
-	weapons/mp_weapon_dronerocket.nut
+	// weapons/sp_weapon_arc_tool.nut
+	// weapons/mp_weapon_super_spectre.nut
+	// weapons/mp_weapon_gunship_missile.nut
+	// weapons/mp_weapon_droneplasma.nut
+	// weapons/mp_weapon_dronerocket.nut
 
 	//CUSTOM BY COLOMBIA
 	weapons/mp_weapon_flamethrower.nut
@@ -891,7 +891,7 @@ Scripts:
 	weapons/mp_ability_birds.nut
 	weapons/mp_weapon_plasmapistol.nut
 	weapons/mp_weapon_editor.nut
-	weapons/mp_weapon_energysword.nut
+	//weapons/mp_weapon_energysword.nut
 	weapons/mp_weapon_clickweapon.nut
 	weapons/mp_weapon_grenade_gravity.nut
 	weapons/mp_ability_translocation.nut
@@ -999,20 +999,20 @@ Scripts:
 ]
 
 
-// Zipline Utility
-When: "SERVER"
-Scripts:
-[
-    mp/_zipline_utility/_zipline_utility.gnut
-    mp/_zipline_utility/_zipline_func.gnut
-    mp/_zipline_utility/_zipline_debug.gnut
-]
+// // Zipline Utility
+// When: "SERVER"
+// Scripts:
+// [
+    // mp/_zipline_utility/_zipline_utility.gnut
+    // mp/_zipline_utility/_zipline_func.gnut
+    // mp/_zipline_utility/_zipline_debug.gnut
+// ]
 
 When: "SERVER || CLIENT"
 Scripts:
 [
-	mp/_zipline_utility/sh_zipline_utility.gnut
-   	mp/_zipline_utility/sh_zipline_panel.gnut
+	// mp/_zipline_utility/sh_zipline_utility.gnut
+   	// mp/_zipline_utility/sh_zipline_panel.gnut
 	weapons/editor_modes/editor_mode_place.nut
 	weapons/editor_modes/editor_mode_delete.nut
 	weapons/editor_modes/editor_mode_toys.nut

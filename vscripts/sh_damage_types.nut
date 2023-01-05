@@ -100,10 +100,10 @@ global enum eDamageSourceId
 	mp_weapon_volt_smg
 	mp_weapon_defender
 	mp_weapon_warmachine
-	mp_weapon_car
+	//mp_weapon_car
 	mp_weapon_3030
 	mp_weapon_dragon_lmg
-	mp_weapon_energysword
+	//mp_weapon_energysword
 	mp_ability_birds
 	mp_weapon_throwingknife
 	mp_weapon_softball
@@ -112,8 +112,8 @@ global enum eDamageSourceId
 	mp_weapon_rocket_launcher
 	mp_weapon_grenade_electric_smoke
 	mp_weapon_grenade_gravity
-	mp_weapon_rspn101_og
-	sp_weapon_arc_tool
+	//mp_weapon_rspn101_og
+	//sp_weapon_arc_tool
 	//
 	melee_pilot_emptyhanded
 	melee_pilot_arena
@@ -467,7 +467,7 @@ void function DamageTypes_Init()
 
 	file.damageSourceIDToImage[eDamageSourceId.melee_shadowsquad_hands] 	<- $"rui/gamemodes/shadow_squad/shadow_icon_small"
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_volt_smg] 			<- $"rui/weapon_icons/r5/weapon_volt"
-	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_car] 				<- $"rui/weapon_icons/r5/weapon_car"
+	//file.damageSourceIDToImage[eDamageSourceId.mp_weapon_car] 				<- $"rui/weapon_icons/r5/weapon_car"
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_sentinel] 			<- $"rui/weapon_icons/r5/weapon_sentinel"
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_softball] 			<- $"r2_ui/menus/loadout_icons/primary_weapon/primary_softball"
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_epg] 				<- $"r2_ui/menus/loadout_icons/primary_weapon/primary_epg1"
@@ -476,7 +476,7 @@ void function DamageTypes_Init()
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_wingman_n]			<- $"r2_ui/menus/loadout_icons/primary_weapon/primary_wingman_elite"
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_mobile_hmg]		<- $"rui/weapon_icons/r5/weapon_rampart_turret"
 	file.damageSourceIDToImage[eDamageSourceId.mp_weapon_smart_pistol]		<- $"rui/weapon_icons/r5/weapon_smart_pistol"
-	file.damageSourceIDToImage[eDamageSourceId.sp_weapon_arc_tool]			<- $"r2_ui/menus/loadout_icons/primary_weapon/primary_arc_tool"
+	//file.damageSourceIDToImage[eDamageSourceId.sp_weapon_arc_tool]			<- $"r2_ui/menus/loadout_icons/primary_weapon/primary_arc_tool"
 
 	file.damageSourceIDToName =
 	{
@@ -624,16 +624,16 @@ void function DamageTypes_Init()
 		[ eDamageSourceId.mp_weapon_epg ] 							= "EPG",
 		[ eDamageSourceId.mp_weapon_smr ] 							= "Sidewinder SMR",
 		[ eDamageSourceId.mp_weapon_rocket_launcher ] 				= "Softball",
-		[ eDamageSourceId.mp_weapon_car ] 							= "Car SMG",
+		//[ eDamageSourceId.mp_weapon_car ] 							= "Car SMG",
 		[ eDamageSourceId.mp_ability_birds ] 						= "Arthur's Revenge",
 		[ eDamageSourceId.mp_weapon_3030 ] 							= "30-30 Repeater",
-		[ eDamageSourceId.mp_weapon_energysword ] 					= "Energy Sword",
+		//[ eDamageSourceId.mp_weapon_energysword ] 					= "Energy Sword",
 		[ eDamageSourceId.mp_weapon_dragon_lmg ] 					= "Rampage LMG",		
 		[ eDamageSourceId.mp_weapon_smart_pistol ] 	 				= "Smart Pistol",
 		[ eDamageSourceId.mp_weapon_grenade_electric_smoke ] 	 	= "Electric Smoke",
-		[ eDamageSourceId.mp_weapon_grenade_gravity ] 	 			= "Gravity Star",
-		[ eDamageSourceId.mp_weapon_rspn101_og ] 	 				= "R101",
-		[ eDamageSourceId.sp_weapon_arc_tool] 	 					= "Arc Tool"
+		[ eDamageSourceId.mp_weapon_grenade_gravity ] 	 			= "Gravity Star"
+		//[ eDamageSourceId.mp_weapon_rspn101_og ] 	 				= "R101"
+		//[ eDamageSourceId.sp_weapon_arc_tool] 	 					= "Arc Tool"
 	}
 
 	#if DEVELOPER

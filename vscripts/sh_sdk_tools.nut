@@ -24,53 +24,53 @@ void function ShSdkTools_Init()
 
 void function Precache_Sdk_Weapons()
 {
-	PrecacheWeapon( $"melee_bolo_sword" )
-	PrecacheWeapon( $"mp_weapon_bolo_sword_primary" )
-	PrecacheWeapon( $"melee_combat_katana" )
-	PrecacheWeapon( $"mp_weapon_combat_katana_primary" )
-	PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
-	PrecacheWeapon( $"melee_boxing_ring")
-	//PrecacheWeapon( $"mp_weapon_dataknife_kunai_primary") //not used in flowstate
-	//PrecacheWeapon( $"melee_dataknife_kunai")
-	PrecacheWeapon( $"melee_data_knife" )
-	//////////////////////////////////////////////////
-	PrecacheWeapon( $"mp_weapon_smr" )
-	PrecacheWeapon( $"mp_weapon_rocket_launcher" )
-	PrecacheWeapon( $"mp_weapon_epg" )
-	PrecacheWeapon( $"mp_weapon_softball" )
-	PrecacheWeapon( $"mp_weapon_sentinel" )
-	PrecacheWeapon( $"mp_weapon_volt_smg" )
-	PrecacheWeapon( $"mp_weapon_car" )
-	PrecacheWeapon( $"mp_weapon_rspn101_og" )
-	//////////////////////////////////////////////////
-	PrecacheWeapon( $"mp_weapon_defender_sustained" )
-	PrecacheWeapon( $"weapon_cubemap" )
-	//////////////////////////////////////////////////
-	PrecacheWeapon( $"mp_weapon_droneplasma" )//NPC Weapon
-	PrecacheWeapon( $"mp_weapon_dronerocket" )//NPC Weapon
-	PrecacheWeapon( $"npc_weapon_energy_shotgun" )//NPC Weapon
-	PrecacheWeapon( $"npc_weapon_hemlok" )//NPC Weapon
-	PrecacheWeapon( $"npc_weapon_lstar" )//NPC Weapon
-	//////////////////////////////////////////////////
-	PrecacheWeapon( $"mp_weapon_satchel" )
-	PrecacheWeapon( $"mp_weapon_mobile_hmg" )
-	PrecacheWeapon( $"mp_titanweapon_flightcore_rockets" )
-	PrecacheWeapon( $"mp_weapon_throwingknife" )
-	PrecacheWeapon( $"mp_weapon_wingman_n" )
-	//////////////////////////////////////////////////
-	PrecacheWeapon( $"mp_weapon_grenade_electric_smoke" )
-	PrecacheWeapon( $"mp_weapon_deployable_cover" )
-	PrecacheWeapon( $"mp_weapon_grenade_gravity" )
-	PrecacheWeapon( $"mp_weapon_clickweaponauto")
-	PrecacheWeapon( $"mp_weapon_grenade_sonar" )
-	PrecacheWeapon( $"mp_weapon_smart_pistol" )
-	PrecacheWeapon( $"mp_weapon_frag_drone" )
-	PrecacheWeapon( $"mp_weapon_clickweapon")
-	PrecacheWeapon( $"mp_weapon_mdlspawner" )
-	PrecacheWeapon( $"sp_weapon_arc_tool" )//TEMP
-	PrecacheWeapon( $"mp_ability_3dash" )
-	PrecacheWeapon( $"mp_weapon_spectre_spawner" )
-	PrecacheWeapon( $"mp_weapon_super_spectre" )
+	// PrecacheWeapon( $"melee_bolo_sword" )
+	// PrecacheWeapon( $"mp_weapon_bolo_sword_primary" )
+	// PrecacheWeapon( $"melee_combat_katana" )
+	// PrecacheWeapon( $"mp_weapon_combat_katana_primary" )
+	// PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
+	// PrecacheWeapon( $"melee_boxing_ring")
+	// //PrecacheWeapon( $"mp_weapon_dataknife_kunai_primary") //not used in flowstate
+	// //PrecacheWeapon( $"melee_dataknife_kunai")
+	// PrecacheWeapon( $"melee_data_knife" )
+	// //////////////////////////////////////////////////
+	// PrecacheWeapon( $"mp_weapon_smr" )
+	// PrecacheWeapon( $"mp_weapon_rocket_launcher" )
+	// PrecacheWeapon( $"mp_weapon_epg" )
+	// PrecacheWeapon( $"mp_weapon_softball" )
+	// PrecacheWeapon( $"mp_weapon_sentinel" )
+	// PrecacheWeapon( $"mp_weapon_volt_smg" )
+	// PrecacheWeapon( $"mp_weapon_car" )
+	// PrecacheWeapon( $"mp_weapon_rspn101_og" )
+	// //////////////////////////////////////////////////
+	// PrecacheWeapon( $"mp_weapon_defender_sustained" )
+	// PrecacheWeapon( $"weapon_cubemap" )
+	// //////////////////////////////////////////////////
+	// PrecacheWeapon( $"mp_weapon_droneplasma" )//NPC Weapon
+	// PrecacheWeapon( $"mp_weapon_dronerocket" )//NPC Weapon
+	// PrecacheWeapon( $"npc_weapon_energy_shotgun" )//NPC Weapon
+	// PrecacheWeapon( $"npc_weapon_hemlok" )//NPC Weapon
+	// PrecacheWeapon( $"npc_weapon_lstar" )//NPC Weapon
+	// //////////////////////////////////////////////////
+	// PrecacheWeapon( $"mp_weapon_satchel" )
+	// PrecacheWeapon( $"mp_weapon_mobile_hmg" )
+	// PrecacheWeapon( $"mp_titanweapon_flightcore_rockets" )
+	// PrecacheWeapon( $"mp_weapon_throwingknife" )
+	// PrecacheWeapon( $"mp_weapon_wingman_n" )
+	// //////////////////////////////////////////////////
+	// PrecacheWeapon( $"mp_weapon_grenade_electric_smoke" )
+	// PrecacheWeapon( $"mp_weapon_deployable_cover" )
+	// PrecacheWeapon( $"mp_weapon_grenade_gravity" )
+	// PrecacheWeapon( $"mp_weapon_clickweaponauto")
+	// PrecacheWeapon( $"mp_weapon_grenade_sonar" )
+	// PrecacheWeapon( $"mp_weapon_smart_pistol" )
+	// PrecacheWeapon( $"mp_weapon_frag_drone" )
+	// PrecacheWeapon( $"mp_weapon_clickweapon")
+	// PrecacheWeapon( $"mp_weapon_mdlspawner" )
+	// PrecacheWeapon( $"sp_weapon_arc_tool" )//TEMP
+	// PrecacheWeapon( $"mp_ability_3dash" )
+	// PrecacheWeapon( $"mp_weapon_spectre_spawner" )
+	// PrecacheWeapon( $"mp_weapon_super_spectre" )
 	//PrecacheWeapon( $"mp_weapon_3030" )//Disabled til we get original models
 	//PrecacheWeapon( $"mp_weapon_dragon_lmg" )
 }

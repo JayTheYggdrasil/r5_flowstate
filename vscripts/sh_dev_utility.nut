@@ -24,7 +24,7 @@ void function ShDevUtility_Init()
 
 	#if SERVER || CLIENT
 		PrecacheModel( $"mdl/Humans/class/medium/pilot_medium_empty.rmdl" ) // for spectator players
-		PrecacheModel( $"mdl/humans/pilots/imc_hero_blisk.rmdl" )
+		//PrecacheModel( $"mdl/humans/pilots/imc_hero_blisk.rmdl" )
 	#endif
 
 	#if SERVER

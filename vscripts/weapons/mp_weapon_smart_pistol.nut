@@ -14,8 +14,8 @@ const float SMART_PISTOL_TRACKER_TIME = 10.0
 
 function MpWeaponSmartPistol_Init()
 {
-	PrecacheParticleSystem( $"P_smartpistol_lockon_FP" )
-	PrecacheParticleSystem( $"P_smartpistol_lockon" )
+	// PrecacheParticleSystem( $"P_smartpistol_lockon_FP" )
+	// PrecacheParticleSystem( $"P_smartpistol_lockon" )
 	RegisterSignal("EndFixAnimThread")
 }
 
