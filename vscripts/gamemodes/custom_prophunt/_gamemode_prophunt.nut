@@ -917,8 +917,8 @@ void function PROPHUNT_GameLoop()
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 		player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
-		player.GiveWeapon( "mp_weapon_melee_boxing_ring", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
-		player.GiveOffhandWeapon( "melee_boxing_ring", OFFHAND_MELEE, [] )
+		player.GiveWeapon( "mp_weapon_bolo_sword_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
+		player.GiveOffhandWeapon( "melee_bolo_sword", OFFHAND_MELEE, [] )
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 		DeployAndEnableWeapons(player)
@@ -2194,11 +2194,8 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 		"mp_weapon_energy_ar energy_mag_l1 stock_tactical_l3 hopup_turbocharger",
 		"mp_weapon_vinson stock_tactical_l3 highcal_mag_l3",
 		"mp_weapon_rspn101 stock_tactical_l1 bullets_mag_l3 barrel_stabilizer_l2",
-		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3"
-		"mp_weapon_smr",
-		"mp_weapon_softball",
-		"mp_weapon_plasmapistol",
-		"mp_weapon_sentinel"
+		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3",
+		"mp_weapon_plasmapistol"
 	]
 	
 	array<string> Data = split(Weapons[RandomIntRange( 0, Weapons.len())], " ")
