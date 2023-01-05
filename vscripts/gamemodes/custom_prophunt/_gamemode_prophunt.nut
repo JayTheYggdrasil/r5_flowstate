@@ -2193,8 +2193,7 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 		"mp_weapon_alternator_smg optic_cq_holosight bullets_mag_l3 stock_tactical_l3 barrel_stabilizer_l3",
 		"mp_weapon_energy_ar energy_mag_l1 stock_tactical_l3 hopup_turbocharger",
 		"mp_weapon_vinson stock_tactical_l3 highcal_mag_l3",
-		"mp_weapon_rspn101 stock_tactical_l1 bullets_mag_l3 barrel_stabilizer_l2",
-		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3"
+		"mp_weapon_rspn101 stock_tactical_l1 bullets_mag_l3 barrel_stabilizer_l2"
 	]
 	
 	array<string> Data = split(Weapons[RandomIntRange( 0, Weapons.len())], " ")
