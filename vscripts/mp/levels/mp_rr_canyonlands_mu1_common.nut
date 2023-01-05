@@ -67,6 +67,70 @@ const asset RELAY_ROCK_FIX_MODEL = $"mdl/rocks/rock_white_chalk_modular_wallrun_
 // Octane fire ring
 const asset FX_OCTANE_TT_GUN_BG = $"chamber_dark_background"
 
+const float CROUCH_HEIGHT = 48
+
+const string SOUND_ACTIVATE_1P         = "Wraith_PhaseGate_FirstGate_DeviceActivate_1p" // Play (to 1p only) as soon as the "arm raise" animation for placing the first gate starts (basically as soon as the ability key is pressed and the ability successfully starts).
+const string SOUND_ACTIVATE_3P         = "Wraith_PhaseGate_FirstGate_DeviceActivate_3p" // Play (to everyone except 1p) as soon as the 3p Wraith begins activating the ability to place the first gate.
+const string SOUND_SUCCESS_1P          = "Wraith_PhaseGate_FirstGate_Place_1p" // Play (to 1p only) when the first gate (the "pre-portal" thing) gets placed.  Can be played on the gate or the player.
+const string SOUND_SUCCESS_3P          = "Wraith_PhaseGate_FirstGate_Place_3p" // Play (to everyone except 1p) when the first gate (the "pre-portal" thing) gets placed.  Should play on the gate.
+const string SOUND_PREPORTAL_LOOP      = "Wraith_PhaseGate_PrePortal_Loop" // Play (to everyone) when first gate is created.  Should play on the gate (pre-portal thing).  Should be stopped when the second gate is placed and the gates connect.
+const string SOUND_PORTAL_OPEN         = "Wraith_PhaseGate_Portal_Open" // Play (to everyone) when second gate is created and gates connect.  Should play on each gate.  (Stop Wraith_PhaseGate_PrePortal_Loop when this plays.)
+const string SOUND_PORTAL_LOOP         = "Wraith_PhaseGate_Portal_Loop" // Play (to everyone) when second gate is created and gates connect.  Should play on each gate.  Stop when gates expire.
+const string SOUND_PORTAL_CLOSE        = "Wraith_PhaseGate_Portal_Expire" // Play (to everyone) when gates expire.  Should play on each gate.
+
+const float FRAME_TIME = 0.1
+
+const asset PHASE_TUNNEL_3P_FX              = $"P_ps_gauntlet_arm_3P"
+const asset PHASE_TUNNEL_PREPLACE_FX        = $"P_phasegate_pre_portal"
+const asset PHASE_TUNNEL_FX                 = $"P_phasegate_portal"
+const asset PHASE_TUNNEL_CROUCH_FX          = $"P_phasegate_portal_rnd"
+const asset PHASE_TUNNEL_ABILITY_ACTIVE_FX  = $"P_phase_dash_start"
+const asset PHASE_TUNNEL_1P_FX              = $"P_phase_tunnel_player"
+
+const float PHASE_TUNNEL_WEAPON_DRAW_DELAY                 = 0.75
+
+const float PHASE_TUNNEL_TRIGGER_RADIUS                    = 16.0
+const float PHASE_TUNNEL_TRIGGER_HEIGHT                    = 32.0
+const float PHASE_TUNNEL_TRIGGER_HEIGHT_CROUCH             = 16.0
+const float PHASE_TUNNEL_TRIGGER_RADIUS_PROJECTILE         = 42.0
+const float PHASE_TUNNEL_TRIGGER_RADIUS_PROJECTILE_CROUCH  = 24.0
+
+//PHASE TUNNEL PLACEMENT VARS
+const float PHASE_TUNNEL_PLACEMENT_HEIGHT_STANDING         = 45.0
+const float PHASE_TUNNEL_PLACEMENT_HEIGHT_CROUCHING        = 20
+
+//PHASE TUNNEL TELEPORT TIME VARS
+const float PHASE_TUNNEL_LIFETIME                          = 60.0
+const float PHASE_TUNNEL_TELEPORT_TRAVEL_TIME_MIN          = 0.3
+const float PHASE_TUNNEL_TELEPORT_TRAVEL_TIME_MAX          = 2.0
+const float PHASE_TUNNEL_TELEPORT_DBOUNCE                  = 0.5
+const float PHASE_TUNNEL_TELEPORT_DBOUNCE_PROJECTILE       = 1.0
+const float PHASE_TUNNEL_PATH_FOLLOW_TICK                  = 0.1
+const float PHASE_TUNNEL_PATH_SNAPSHOT_INTERVAL            = 0.1
+
+const float PHASE_TUNNEL_PLACEMENT_RADIUS                  = 4098.0
+const float PHASE_TUNNEL_PLACEMENT_DIST                    = 4098.0
+const float PHASE_TUNNEL_MIN_PORTAL_DIST_SQR               = 128.0 * 128.0
+const float PHASE_TUNNEL_MIN_GEO_REVERSE_DIST              = 48.0
+
+const bool	PHASE_TUNNEL_DEBUG_DRAW_PROJECTILE_TELEPORT  = false
+const bool 	PHASE_TUNNEL_DEBUG_DRAW_PLAYER_TELEPORT      = false
+
+struct WarpTunnelNode
+{
+	vector org
+	vector ang
+	float speed
+	bool flash = false
+}
+
+struct WarpTunnelData
+{
+	array<WarpTunnelNode> nodes
+	vector endorg
+	vector endang
+}
+
 enum LeviathanState
 {
 	IDLE,
@@ -134,6 +198,11 @@ struct{
 
 	bool randomLeviathanRoarThisGame
 	bool randomLeviathanRoarNextLook
+
+	WarpTunnelData WarpTunnelDown
+	WarpTunnelData WarpTunnelUp
+
+	bool istracking = false
 } file
 
 // Use for MU1/direct MU1 spinoffs (like night map)
@@ -148,6 +217,25 @@ void function Canyonlands_MU1_CommonMapInit()
 	Survival_SetCallback_Leviathan_ConsiderLookAtEnt( Leviathan_ConsiderLookAtEnt_Callback )
 
 	InitOctaneTownTakeover()
+
+	RegisterSignal( "StopTracking" )
+	//AddClientCommandCallback( "trackpos", ClientCommand_TrackPos )
+}
+
+bool function ClientCommand_TrackPos( entity player, array<string> args )
+{
+	if(!file.istracking)
+	{
+		file.istracking = true
+		thread PhaseTunnel_StartTrackingPositions_Internal(player)
+	}
+	else
+	{
+		file.istracking = false
+		player.Signal( "StopTracking" )
+	}
+			
+	return true
 }
 
 void function MU1_EntitiesDidLoad()
@@ -159,6 +247,7 @@ void function MU1_EntitiesDidLoad()
 
 	thread InitWraithAudioLog()
 	thread PlaceOctaneTownTakeoverLoot()
+	//thread CreateWarpPortal()
 }
 
 
@@ -1901,4 +1990,347 @@ void function RecreateLeviathanDeathTriggers()
 
 }
 #endif // DEVELOPER
+
+void function CreateWarpPortal()
+{
+	waitthread SetupWarpTunnelNodesDown()
+
+	entity towertrigger = CreateEntity( "trigger_cylinder" )
+	towertrigger.SetRadius( 300 )
+	towertrigger.SetAboveHeight( 25 )
+	towertrigger.SetBelowHeight( 25 )
+	towertrigger.SetOrigin( <27344, 2168, 11080> )
+	towertrigger.SetAngles( <0,0,0> )
+	towertrigger.kv.triggerFilterNonCharacter = "0"
+	DispatchSpawn( towertrigger )
+
+	entity roomtrigger = CreateEntity( "trigger_cylinder" )
+	roomtrigger.SetRadius( 10 )
+	roomtrigger.SetAboveHeight( 25 )
+	roomtrigger.SetBelowHeight( 25 )
+	roomtrigger.SetOrigin( <27356, 8197, 2886> )
+	roomtrigger.SetAngles( <0,0,0> )
+	roomtrigger.kv.triggerFilterNonCharacter = "0"
+	DispatchSpawn( roomtrigger )
+
+	towertrigger.SetEnterCallback( OnPhaseTunnelTowerTriggerEnter )
+	roomtrigger.SetEnterCallback( OnPhaseTunnelRoomTriggerEnter )
+}
+
+void function SetupWarpTunnelNodesDown()
+{
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27328, 2160, 10568>, <74.2967, 90, -1.24786e-14>, 0.1))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27328, 2160, 4108>, <74.2967, 90, -1.24786e-14>, 2.0))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27248.8, 2526.74, 3656.01>, <0, 105.651, 0>, 0.1, true))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27088.8, 2750.74, 3504.01>, <0, 105.651, 0>, 0.3))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27112.8, 2998.74, 3376.01>, <0, 82, 0>, 0.4))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27080, 3312, 3200>, <0, 79, 0>, 0.3))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27104, 3488, 3200>, <0, 75, 0>, 0.3))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27336, 4256, 3280>, <0, 75, 0>, 0.6))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27336, 4984, 3024>, <0, 88, 0>, 0.5))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27336, 5344, 2936>, <0, 97, 0>, 0.5))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<26976, 5616, 2936>, <0, 110, 0>, 0.5))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<26988, 6712, 2936>, <0, 90, 0>, 1.0))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27340, 7032, 2944>, <0, 75, 0>, 0.5))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27352, 7168, 2952>, <0, 90, 0>, 0.3))
+	file.WarpTunnelDown.nodes.append(AddWarpNode(<27352, 7992, 2960>, <0, 90, 0>, 0.5))
+	file.WarpTunnelDown.endorg = <27352, 7840, 2968>
+	file.WarpTunnelDown.endang = <0, -90, 0>
+}
+
+WarpTunnelNode function AddWarpNode(vector org, vector ang, float speed, bool flash = false)
+{
+	WarpTunnelNode node
+	node.org = org
+	node.ang = ang
+	node.speed = speed
+	node.flash = flash
+	return node
+}
+
+void function OnPhaseTunnelTowerTriggerEnter( entity trigger, entity ent )
+{
+	if ( PhaseTunnel_ShouldPhaseEnt( ent ) )
+		thread EnteredTrigger( ent, true )
+}
+
+
+
+void function OnPhaseTunnelRoomTriggerEnter( entity trigger, entity ent )
+{
+	if ( PhaseTunnel_ShouldPhaseEnt( ent ) )
+		thread EnteredTrigger( ent, false )
+}
+
+void function EnteredTrigger(entity ent, bool tower)
+{
+	if(tower)
+		waitthread PhaseTunnel_MoveEntAlongPathDown( ent )
+	else
+		waitthread PhaseTunnel_MoveEntAlongPathUp( ent )
+}
+
+void function PhaseTunnel_MoveEntAlongPathDown( entity player )
+{
+	float speed = 0.0
+	for ( int i=0; i<file.WarpTunnelDown.nodes.len(); i++ )
+	{
+		speed += file.WarpTunnelDown.nodes[i].speed
+	}
+
+	player.Signal("Entered_WraithTT")
+
+	player.ClearTrackEntitySettings()
+	player.Solid()
+	player.UnforceStand()
+	player.e.isInPhaseTunnel = true
+	player.Zipline_Stop()
+	player.ClearTraverse()
+	player.SetPredictionEnabled( false )
+	player.FreezeControlsOnServer()
+
+	if ( !SURVIVAL_IsPlayerCarryingLoot( player ) && !Bleedout_IsBleedingOut( player )  )
+		HolsterAndDisableWeapons( player )
+
+	player.SetOrigin(file.WarpTunnelDown.nodes[0].org)
+	player.SetAngles(file.WarpTunnelDown.nodes[0].ang)
+
+	PhaseShift( player, 0.0, speed, eShiftStyle.Tunnel )
+	Remote_CallFunction_Replay( player, "ServerCallback_FlashScreenForPlayer" )
+
+	entity mover = CreateScriptMover( player.GetOrigin(), player.GetAngles() )
+	mover.EnableNonPhysicsMoveInterpolation( false ) // works around bug R5DEV-49571
+	player.SetParent( mover, "REF", false )
+	ViewConeZeroInstant( player )
+
+	float totalTime = 0
+	float totalDistanceToTravelDebug = 0
+	float totalDistanceToTravel = 6065.42 //with two first nodes = 13112.8
+	// float speed
+	float debug2
+	float ongoingTime
+	
+	for ( int i=0; i<file.WarpTunnelDown.nodes.len(); i++ )
+	{
+		
+
+		// if(file.WarpTunnelDown.nodes[i].flash)
+		// {
+			// Remote_CallFunction_Replay( player, "ServerCallback_FlashScreenForPlayer" )
+			// mover.NonPhysicsMoveTo( file.WarpTunnelDown.nodes[i+1].org, 1.0, 0, 0 )
+			// wait 0.99
+			// totalTime = Time()+7
+		// }
+		
+		// try{
+		// // printt( "Debug Capped: " + GraphCapped( Time(), startTime, totalTime, file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org))
+		// // printt( "Debug distance next node: " + Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org ))
+		// // totalDistanceToTravelDebug += Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org )
+	
+		// printt("PROPORCION: " + Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org)/totalDistanceToTravel)
+		// printt("TIME : " + ((totalTime-Time())*Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org)/totalDistanceToTravel)+1)
+		// // printt((totalTime-Time())*(Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org)/totalDistanceToTravel))
+		// debug2 += Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org)/totalDistanceToTravel
+		// // printt(" TEST VALUE : " + GraphCapped( Time(), startTime, totalTime, Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org), totalDistanceToTravel ))
+		// }catch(e420){}
+		
+
+		// mover.NonPhysicsMoveTo( file.WarpTunnelDown.nodes[i].org, speed, 0, 0 )
+		// mover.NonPhysicsRotateTo( file.WarpTunnelDown.nodes[i].ang, speed, speed/2, 0 )
+		// wait speed
+
+		if(file.WarpTunnelDown.nodes[i].flash)
+		{
+			Remote_CallFunction_Replay( player, "ServerCallback_FlashScreenForPlayer" )
+			// mover.NonPhysicsMoveTo( file.WarpTunnelDown.nodes[i].org, 1.0, 0, 0 )
+		}
+
+		if(i==0)
+		{
+			mover.NonPhysicsMoveTo( file.WarpTunnelDown.nodes[i].org, 0.1, 0, 0 )
+			mover.NonPhysicsRotateTo( file.WarpTunnelDown.nodes[i].ang, 0.1, 0.1 / 2, 0 )
+			wait 0.1 - 0.01
+			continue
+		}
+		
+		if(i==1)
+		{
+			mover.NonPhysicsMoveTo( file.WarpTunnelDown.nodes[i].org, 3.5, 0, 0 )
+			mover.NonPhysicsRotateTo( file.WarpTunnelDown.nodes[i].ang, 3.5, 3.5 / 2, 0 )
+			wait 3.5 - 0.01
+			totalTime = Time() + 8
+			ongoingTime = Time()
+			continue
+		}
+		
+		try{
+		
+		ongoingTime += (Time()-ongoingTime)			
+		totalDistanceToTravelDebug += Distance(file.WarpTunnelDown.nodes[i].org, file.WarpTunnelDown.nodes[i+1].org )}catch(e420){}
+		
+		speed = max(0.01,ongoingTime) //wait time between nodes, is not an actual speed (m/s^2)
+		
+		mover.NonPhysicsMoveTo( file.WarpTunnelDown.nodes[i].org, speed, 0, 0 )
+		mover.NonPhysicsRotateTo( file.WarpTunnelDown.nodes[i].ang, speed, speed/2, 0 )
+
+		wait speed
+	}
+	
+	player.SetPredictionEnabled( true )
+	player.e.isInPhaseTunnel = false
+
+	// TODO: DeployAndEnableWeapons should really use a stack so we don't have to do weird if-else's
+	if ( !SURVIVAL_IsPlayerCarryingLoot( player ) && !Bleedout_IsBleedingOut( player ) )
+	{
+		if ( Survival_IsPlayerHealing( player ) )
+			EnableOffhandWeapons( player )
+		else
+			DeployAndEnableWeapons( player )
+	}
+
+	player.ClearParent()
+	player.UnfreezeControlsOnServer()
+	
+	Remote_CallFunction_Replay( player, "ServerCallback_FlashScreenForPlayer" )
+
+	WaitFrame()
+
+	player.SetVelocity(<0,0,0>)
+	player.SetOrigin(file.WarpTunnelDown.endorg)
+	player.SetAngles(file.WarpTunnelDown.endang)
+
+	if ( IsValid( mover ) )
+		mover.Destroy()
+	
+	printt(totalDistanceToTravelDebug)
+	printt(debug2)
+}
+
+void function PhaseTunnel_MoveEntAlongPathUp( entity player )
+{
+	array<vector> nodesorg = [<27350, 8210, 2937>, <27350, 5417, 2937>, <27350, 4125, 3319>, <27350, 2535, 3746>, <27350, 2140, 4417>, <27350, 2140, 10972>, <27350, 2140, 12807>]
+	array<vector> nodesang = [<0,-90,0>, <0,-90,0>, <-12,-90,0>, <-20,-90,0>, <-40, -90, 0>, <-90,-90,0>, <-90,-90,0>] 
+	array<float> nodesspeed = [0.3, 1.6, 1.0, 0.5, 0.5, 2.0, 0.5]
+
+	float speed = 0.0
+	for ( int i=0; i<nodesspeed.len(); i++ )
+	{
+		speed += nodesspeed[i]
+	}
+
+	player.e.isInPhaseTunnel = true
+	player.Zipline_Stop()
+	player.ClearTraverse()
+	player.SetPredictionEnabled( false )
+	player.FreezeControlsOnServer()
+
+	if ( !SURVIVAL_IsPlayerCarryingLoot( player ) && !Bleedout_IsBleedingOut( player )  )
+		HolsterAndDisableWeapons( player )
+
+	player.SetOrigin(nodesorg[0])
+	player.SetAngles(nodesang[0])
+
+	PhaseShift( player, 0.0, speed, eShiftStyle.Tunnel )
+
+	entity mover = CreateScriptMover( player.GetOrigin(), player.GetAngles() )
+	mover.EnableNonPhysicsMoveInterpolation( false ) // works around bug R5DEV-49571
+	player.SetParent( mover, "REF", false )
+	ViewConeZeroInstant( player )
+
+	for ( int i=0; i<nodesorg.len(); i++ )
+	{
+		mover.NonPhysicsMoveTo( nodesorg[i], nodesspeed[i], 0, 0 )
+		mover.NonPhysicsRotateTo( nodesang[i], 0.5, 0.2, 0 )
+
+		wait nodesspeed[i]
+	}
+
+
+	player.SetOrigin(nodesorg[nodesorg.len() - 1])
+	player.SetAngles(nodesang[nodesang.len() - 1])
+
+
+	player.SetPredictionEnabled( true )
+	player.e.isInPhaseTunnel = false
+
+	// TODO: DeployAndEnableWeapons should really use a stack so we don't have to do weird if-else's
+	if ( !SURVIVAL_IsPlayerCarryingLoot( player ) && !Bleedout_IsBleedingOut( player ) )
+	{
+		if ( Survival_IsPlayerHealing( player ) )
+			EnableOffhandWeapons( player )
+		else
+			DeployAndEnableWeapons( player )
+	}
+
+	player.ClearParent()
+	player.UnfreezeControlsOnServer()
+
+	thread PlayerSkydiveFromCurrentPosition( player )
+
+	if ( IsValid( mover ) )
+		mover.Destroy()
+}
+
+bool function PhaseTunnel_ShouldPhaseEnt( entity target )
+{
+	if ( !target.IsPlayer() )
+		return false
+
+	if ( target.IsTitan() )
+		return false
+
+	if ( target.IsPhaseShifted() )
+		return false
+
+	if ( target.ContextAction_IsReviving() )
+		return false
+
+	if ( target.ContextAction_IsBeingRevived() )
+		return false
+
+	//We can't go through a phase tunnel while placing a phase tunnel
+	if ( StatusEffect_GetSeverity( target, eStatusEffect.placing_phase_tunnel ) )
+		return false
+
+	if ( IsSuperSpectre( target ) )
+		return false
+
+	if ( IsTurret( target ) )
+		return false
+
+	if ( IsDropship( target ) )
+		return false
+
+	if ( target.e.isInPhaseTunnel )
+		return false
+
+	return true
+}
+
+void function PhaseTunnel_StartTrackingPositions_Internal(entity player)
+{
+	EndSignal( player, "StopTracking" )
+
+	int i = 5
+
+	while ( 1 )
+	{
+		if ( !player.IsTitan() )
+		{
+			vector origin = player.GetOriginOutOfTraversal()
+			vector angles = player.GetAngles()
+			angles = <0, player.CameraAngles().y, 0>
+
+			printt("WarpTunnelNode node" + i)
+			printt("node" + i + ".org = <" + origin.x + "," + origin.y + "," + origin.z + ">")
+			printt("node" + i + ".ang = <" + angles.x + "," + angles.y + "," + angles.z + ">")
+			printt("node" + i + ".speed = 0.2")
+			printt("file.WarpTunnelDown.nodes.append(node" + i + ")")
+		}
+
+		i++
+		wait 0.2
+		//WaitFrame()
+	}
+}
 #endif // SERVER
