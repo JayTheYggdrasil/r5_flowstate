@@ -917,8 +917,8 @@ void function PROPHUNT_GameLoop()
 		player.TakeOffhandWeapon(OFFHAND_TACTICAL)
 		player.TakeOffhandWeapon(OFFHAND_ULTIMATE)
 		player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
-		player.GiveWeapon( "mp_weapon_combat_katana_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
-		player.GiveOffhandWeapon( "melee_combat_katana", OFFHAND_MELEE, [] )
+		player.GiveWeapon( "mp_weapon_melee_boxing_ring", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
+		player.GiveOffhandWeapon( "melee_boxing_ring", OFFHAND_MELEE, [] )
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
 		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 		DeployAndEnableWeapons(player)
@@ -947,7 +947,6 @@ void function PROPHUNT_GameLoop()
 	// if(!GetCurrentPlaylistVarBool("flowstatePROPHUNTDebug", false ))
 		// thread CheckForPlayersPlaying()
 
-	
 	int TeamWon
 	while( Time() <= FS_PROPHUNT.endTime )
 		{
@@ -1160,12 +1159,12 @@ void function PROPHUNT_GameLoop()
 		}
 		
 		wait 7
-
-		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(PROPHUNT_HUNTERS_AMOUNT_ALLOWED, floor(GetPlayerArray().len()/2)))
-		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = int(min(PROPHUNT_PROPS_AMOUNT_ALLOWED, ceil(GetPlayerArray().len()/2)))
+		
+		FS_PROPHUNT.maxvotesallowedforTeamIMC = int(min(ceil(float(GetPlayerArray().len()) / float(3)), 5.0))
+		FS_PROPHUNT.maxvotesallowedforTeamMILITIA = GetPlayerArray().len() - FS_PROPHUNT.maxvotesallowedforTeamIMC
 		FS_PROPHUNT.requestsforIMC = 0
 		FS_PROPHUNT.requestsforMILITIA = 0
-		
+		//printt("DEBUG MAX VOTES: " + FS_PROPHUNT.maxvotesallowedforTeamIMC + " " + FS_PROPHUNT.maxvotesallowedforTeamMILITIA)
 		// Set voting to be allowed
 		FS_PROPHUNT.votingtime = true
 
@@ -2198,7 +2197,8 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 		"mp_weapon_volt_smg energy_mag_l2 stock_tactical_l3"
 		"mp_weapon_smr",
 		"mp_weapon_softball",
-		"mp_weapon_plasmapistol"
+		"mp_weapon_plasmapistol",
+		"mp_weapon_sentinel"
 	]
 	
 	array<string> Data = split(Weapons[RandomIntRange( 0, Weapons.len())], " ")
@@ -2212,7 +2212,7 @@ void function PROPHUNT_GiveRandomPrimaryWeapon(entity player)
 	}
 	
 	entity weapon = player.GiveWeapon( weaponclass, slot, Mods )
-	try{
-	weapon.SetSkin(RandomInt(20))
-	weapon.SetCamo(RandomInt(5))}catch(e420){}
+	// try{
+	// weapon.SetSkin(RandomInt(20))
+	// weapon.SetCamo(RandomInt(5))}catch(e420){}
 }
