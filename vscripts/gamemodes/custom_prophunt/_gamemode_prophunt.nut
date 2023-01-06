@@ -1005,7 +1005,6 @@ void function PROPHUNT_GameLoop()
 					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", false, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
 				
 				Remote_CallFunction_NonReplay(Winnerplayer, "PROPHUNT_QuickText", 3, 4) //PROPS TEAM WIN
-				Winnerplayer.p.PROPHUNT_TimesSurvivedAsProp++
 				i++
 			}
 			
@@ -1017,6 +1016,9 @@ void function PROPHUNT_GameLoop()
 		
 		champion = MILITIAplayersAlive[0]
 		
+		foreach( Winnerplayer in MILITIAplayersAlive )
+			Winnerplayer.p.PROPHUNT_TimesSurvivedAsProp++
+
 		foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
 		{
 			if(!IsValid(player)) continue
