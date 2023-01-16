@@ -2,6 +2,7 @@
 //Made by @CafeFPS (Retículo Endoplasmático#5955)
 
 // AyeZee#6969 -- Ctf voting phase to work off
+// _RitzKing#1715 -- Gamemode Icon
 // everyone else -- advice
 
 global function GamemodeProphuntShared_Init
