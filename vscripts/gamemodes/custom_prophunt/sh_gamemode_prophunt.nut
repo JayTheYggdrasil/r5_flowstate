@@ -146,24 +146,24 @@ void function GamemodeProphuntShared_Init()
             )
         )
 		
-		RegisterLocationPROPHUNT(
-            NewLocationSettings(
-                "Gaunlet",
-                [
-                    NewLocPair(<-21271, -15275, 2781>, <0, 90, 0>),
-                    NewLocPair(<-22952, -13304, 2718>, <0, 5, 0>),
-                    NewLocPair(<-22467, -9567, 2949>, <0, -85, 0>),
-                    NewLocPair(<-18494, -10427, 2825>, <0, -155, 0>),
-					NewLocPair(<-22590, -7534, 3103>, <0, 0, 0>),
-					NewLocPair(<-19144.0469, -13831.9307, 2885.34009>,<0, 114.135735, 0>),
-					NewLocPair(<-21118.3496, -13426.8838, 3267.69751>,<0, 92.8888092, 0>),
-					NewLocPair(<-20688.4414, -13218.4688, 2590.52026>,<0, 119.666588, 0>),
-					NewLocPair(<-20970.3105, -12526.0381, 2604.68213>,<0, 84.2326584, 0>),
-					NewLocPair(<-21092.6875, -14138.5742, 2901.44849>,<0, 140.832993, 0>)
-                ],
-                <0, 0, 4000>,$"rui/flowstatelocations/gaunlet"
-            )
-        )
+		// RegisterLocationPROPHUNT(
+            // NewLocationSettings(
+                // "Gaunlet",
+                // [
+                    // NewLocPair(<-21271, -15275, 2781>, <0, 90, 0>),
+                    // NewLocPair(<-22952, -13304, 2718>, <0, 5, 0>),
+                    // NewLocPair(<-22467, -9567, 2949>, <0, -85, 0>),
+                    // NewLocPair(<-18494, -10427, 2825>, <0, -155, 0>),
+					// NewLocPair(<-22590, -7534, 3103>, <0, 0, 0>),
+					// NewLocPair(<-19144.0469, -13831.9307, 2885.34009>,<0, 114.135735, 0>),
+					// NewLocPair(<-21118.3496, -13426.8838, 3267.69751>,<0, 92.8888092, 0>),
+					// NewLocPair(<-20688.4414, -13218.4688, 2590.52026>,<0, 119.666588, 0>),
+					// NewLocPair(<-20970.3105, -12526.0381, 2604.68213>,<0, 84.2326584, 0>),
+					// NewLocPair(<-21092.6875, -14138.5742, 2901.44849>,<0, 140.832993, 0>)
+                // ],
+                // <0, 0, 4000>,$"rui/flowstatelocations/gaunlet"
+            // )
+        // )
 		
 		RegisterLocationPROPHUNT(
             NewLocationSettings(
@@ -313,7 +313,7 @@ void function GamemodeProphuntShared_Init()
 		
 		RegisterLocationPROPHUNT(
             NewLocationSettings(
-                "The Farm",
+                "Aeonopolis",
                 [
                     NewLocPair(<11242, 8591, 4830>, <0, 0, 0>),
                     NewLocPair(<6657, 12189, 5066>, <0, -90, 0>),
@@ -511,7 +511,7 @@ void function GamemodeProphuntShared_Init()
 			
 		RegisterLocationPROPHUNT(
                 NewLocationSettings(
-                    "Little Town",
+                    "Hammies Hideout",
                     [
                         NewLocPair(<22857, 3449, -4050>, <0, -157, 0>),
                         NewLocPair(<19559, 232, -4035>, <0, 33, 0>),
@@ -653,7 +653,7 @@ void function GamemodeProphuntShared_Init()
                         NewLocPair(<-19264, -23395, -3850>, <0, 100, 0>),
                         NewLocPair(<-16756, -20711, -3982>, <0, 180, 0>),
                         NewLocPair(<-17066, -20746, -4233>, <0, 180, 0>),
-                        NewLocPair(<-17113, -19622, -4269>, <10, -170, 0>),
+                        NewLocPair(<-17113, -19622, -4200>, <10, -170, 0>),
                         NewLocPair(<-20092, -17684, -4252>, <0, -90, 0>),
                         NewLocPair(<-23069, -20567, -4214>, <-11, 146, 0>),
                         NewLocPair(<-20109, -20675, -4252>, <0, -90, 0>)

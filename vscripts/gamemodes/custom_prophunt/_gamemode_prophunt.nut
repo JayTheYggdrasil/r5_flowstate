@@ -836,7 +836,7 @@ void function PROPHUNT_GameLoop()
 			player.GiveOffhandWeapon("mp_ability_heal", OFFHAND_TACTICAL)
 			player.GiveOffhandWeapon("mp_weapon_flashbang_fakeultimate", OFFHAND_ULTIMATE)
 			player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
-			player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
+			// player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 			DeployAndEnableWeapons(player)
 			
 			Remote_CallFunction_NonReplay(player, "Minimap_DisableDraw_Internal")
@@ -920,7 +920,7 @@ void function PROPHUNT_GameLoop()
 		player.GiveWeapon( "mp_weapon_bolo_sword_primary", WEAPON_INVENTORY_SLOT_PRIMARY_2, [] )
 		player.GiveOffhandWeapon( "melee_bolo_sword", OFFHAND_MELEE, [] )
 		player.TakeOffhandWeapon( OFFHAND_EQUIPMENT )
-		player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
+		// player.GiveOffhandWeapon( "mp_ability_emote_projector", OFFHAND_EQUIPMENT )
 		DeployAndEnableWeapons(player)
 		Survival_SetInventoryEnabled( player, false )
 		Highlight_SetFriendlyHighlight( player, "prophunt_teammate" )
@@ -999,6 +999,8 @@ void function PROPHUNT_GameLoop()
 			int i = 0
 			foreach( Winnerplayer in MILITIAplayersAlive )
 			{
+				if(!IsValid(Winnerplayer)) continue
+				
 				if(i == 0)
 					Remote_CallFunction_NonReplay(player, "PROPHUNT_AddWinningSquadData_PropTeamAddModelIndex", true, Winnerplayer.GetEncodedEHandle(), Winnerplayer.p.PROPHUNT_LastModelIndex)
 				else
@@ -1017,7 +1019,10 @@ void function PROPHUNT_GameLoop()
 		champion = MILITIAplayersAlive[0]
 		
 		foreach( Winnerplayer in MILITIAplayersAlive )
+		{
+			if(!IsValid(Winnerplayer)) continue
 			Winnerplayer.p.PROPHUNT_TimesSurvivedAsProp++
+		}
 
 		foreach(player in GetPlayerArrayOfTeam_Alive(TEAM_IMC))
 		{
