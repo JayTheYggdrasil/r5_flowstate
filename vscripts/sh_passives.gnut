@@ -516,29 +516,19 @@ void function PilotBlood_Passive_Body(entity player, int passive, bool didHave, 
 {
 	float healthRegenStartDelay = 5.0
 
-	while ( IsValid( player ) )
+	while ( IsValid( player ) && PlayerHasPassive( player, ePassives.PAS_PILOT_BLOOD ) )
 	{
 		wait( HEALTH_REGEN_TICK_TIME )
 
-		if ( !IsAlive( player ) )
+		if ( !IsAlive( player ) || Bleedout_IsBleedingOut(player) || Time() - player.p.lastDamageTime < healthRegenStartDelay || player.IsPhaseShifted())
 			continue
-
-		if ( Time() - player.p.lastDamageTime < healthRegenStartDelay )
-		{
-			continue
-		}
 
 		float healthRegenRate = 1.0
 
 
 		if ( player.GetHealth() != player.GetMaxHealth() )
 		{
-			// No regen during phase shift
-			if ( player.IsPhaseShifted() )
-				continue
-
 			player.SetHealth( min( player.GetMaxHealth(), player.GetHealth() + healthRegenRate ) )
-
 		}
 		else if(player.GetShieldHealth() != player.GetShieldHealthMax())
 		{

@@ -310,8 +310,8 @@ void function CodeCallback_MapSpawn() // original script entry point
 	//r5r base sdk
 	PrecacheWeapon( $"melee_bolo_sword" )
 	PrecacheWeapon( $"mp_weapon_bolo_sword_primary" )
-	// PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
-	// PrecacheWeapon( $"melee_boxing_ring")
+	PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
+	PrecacheWeapon( $"melee_boxing_ring")
 	// PrecacheWeapon( $"mp_weapon_throwingknife" )
 	// PrecacheWeapon( $"mp_weapon_wingman_n" )
 	// PrecacheWeapon( $"mp_weapon_softball" )
@@ -340,13 +340,13 @@ void function CodeCallback_MapSpawn() // original script entry point
 	PrecacheWeapon($"mp_ability_emote_projector" )
 	// PrecacheWeapon($"mp_ability_translocation" )
 	// PrecacheWeapon($"mp_ability_phase_rewind" )
-	// PrecacheWeapon($"mp_ability_space_elevator_tac" )
+	PrecacheWeapon($"mp_ability_space_elevator_tac" )
 	// PrecacheWeapon($"mp_ability_cloak" )
 	// PrecacheWeapon($"mp_ability_birds")
 	// PrecacheWeapon($"mp_weapon_decoy_grenade")
 
-	// PrecacheWeapon($"melee_data_knife" )
-	// PrecacheWeapon($"mp_weapon_data_knife_primary" )
+	PrecacheWeapon($"melee_data_knife" )
+	PrecacheWeapon($"mp_weapon_data_knife_primary" )
 	// PrecacheWeapon($"melee_combat_knife" )
 	// PrecacheWeapon($"mp_weapon_combat_knife_primary" )
 	// PrecacheWeapon($"melee_nessy" )
@@ -395,7 +395,7 @@ void function CodeCallback_MapSpawn() // original script entry point
 	// PrecacheWeapon($"mp_weapon_healweapon")
 	// PrecacheWeapon($"mp_weapon_gaslauncher")
 	// PrecacheWeapon($"mp_weapon_r1kraber")
-	// PrecacheWeapon($"mp_weapon_energysword")
+	PrecacheWeapon($"mp_weapon_energysword")
 	
 	switch(GameRules_GetGameMode())
 	{
@@ -427,6 +427,9 @@ void function CodeCallback_MapSpawn() // original script entry point
 	
 	//////////////////////////////////////////////
 	//////////////////////////////////////////////
+	PrecacheModel( $"mdl/vehicle/olympus_hovercraft/olympus_hovercraft_v2.rmdl" )
+	PrecacheModel( $"mdl/vehicles_r5/land/mil_tank_paladin_mkv/veh_land_mil_tank_paladin_mkv.rmdl" )
+	PrecacheModel( $"mdl/vehicles_r5/land/msc_truck_samson_v2/veh_land_msc_truck_samson_v2.rmdl" )
 	
 	SV_CL_Shared_Init()
 	ClientCommands_Init()
@@ -467,6 +470,8 @@ var function CodeCallback_ClientCommand( entity player, array<string> args )
 
 void function MapTriggers_Init()
 {
+	if(GameRules_GetGameMode() == "custom_duckhunt") return
+	
 	switch (GetMapName())
 	{
 		case "mp_rr_aqueduct_night":
