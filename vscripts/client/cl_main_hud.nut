@@ -86,7 +86,7 @@ void function ClMainHud_Init()
 
 	RegisterServerVarChangeCallback( "gameState", UpdateMainHudFromGameState )
 	AddCallback_OnPlayerLifeStateChanged( UpdateMainHudFromLifeState )
-	if(GameRules_GetGameMode() != "custom_prophunt")
+	if(GameRules_GetGameMode() != "custom_prophunt" && GameRules_GetGameMode() != "custom_duckhunt" )
 		RegisterServerVarChangeCallback( "minimapState", UpdateMinimapVisibility )
 
 	AddCinematicEventFlagChangedCallback( CE_FLAG_EMBARK, CinematicEventUpdateDoF )

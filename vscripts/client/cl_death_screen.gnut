@@ -1354,8 +1354,11 @@ void function DeathScreenCreateNonMenuBlackBars()
 
 void function ForceDestroyBlackBarRui()
 {
-	RuiDestroyIfAlive( file.blackBarRui )
-	file.blackBarRui = null
+	if(file.blackBarRui != null)
+	{
+		RuiDestroyIfAlive( file.blackBarRui )
+		file.blackBarRui = null
+	}
 }
 
 void function UpdateBlackBarRui()

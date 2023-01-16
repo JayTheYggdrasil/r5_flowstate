@@ -144,7 +144,7 @@ void function Sequence_WaitingForPlayers()
 
 	wait PreGame_GetWaitingForPlayersCountdown() + (introCountdownEnabled ? 0.0 : CharSelect_GetIntroMusicStartTime())
 		
-	if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt")
+	if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt") 
 	{	
 		SetGameState( eGameState.Playing )
 		return	
@@ -604,7 +604,7 @@ void function OnClientConnected( entity player )
 	{
 		case eGameState.WaitingForPlayers:
 		case eGameState.PickLoadout:
-			if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt") break
+			if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt") break
 		
 			entity startEnt = GetEnt( "info_player_start" )
 
@@ -673,7 +673,12 @@ void function UpdatePlayerCounts()
 		array<entity> propsAlive = GetPlayerArrayOfTeam_Alive( TEAM_MILITIA )
 		SetGlobalNetInt( "livingPlayerCount", propsAlive.len() )
 		SetGlobalNetInt( "squadsRemainingCount", propsAlive.len() )
-	}else
+	} else if(currGameMode == "custom_duckhunt")
+	{
+		array<entity> ducksAlive = GetPlayerArrayOfTeam_Alive( TEAM_MILITIA )
+		SetGlobalNetInt( "livingPlayerCount", ducksAlive.len() )
+		SetGlobalNetInt( "squadsRemainingCount", ducksAlive.len() )
+	} else
 	{
 		SetGlobalNetInt( "livingPlayerCount", GetPlayerArray_AliveConnected().len() )
 		SetGlobalNetInt( "squadsRemainingCount", GetNumTeamsRemaining() )

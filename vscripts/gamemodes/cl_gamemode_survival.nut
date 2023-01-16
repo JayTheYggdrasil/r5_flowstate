@@ -3651,8 +3651,11 @@ void function ServerCallback_DestroyEndAnnouncement()
 
 void function ForceDestroyChampionScreenRui()
 {
-	RuiDestroyIfAlive( file.victoryRui )
-	file.victoryRui = null
+	if(file.victoryRui != null)
+	{
+		RuiDestroyIfAlive( file.victoryRui )
+		file.victoryRui = null
+	}
 }
 
 void function ShowChampionVictoryScreen( int winningTeam )

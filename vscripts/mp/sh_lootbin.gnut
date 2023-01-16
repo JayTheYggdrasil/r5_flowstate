@@ -180,7 +180,7 @@ void function RefreshLootBin( entity lootBin, string lootGroup, int numLootItems
 	if ( LootBin_IsOpen( lootBin ) )
 		waitthread LootBin_PlayCloseSequence( lootBin )
 	
-	if(GameRules_GetGameMode() == "custom_prophunt") return
+	if(GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt") return
 	
 	// New refs
 	file.lootBinsLootInside[ lootBin ] = []

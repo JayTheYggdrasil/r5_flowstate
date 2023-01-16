@@ -403,6 +403,8 @@ void function CodeCallback_MapSpawn() // original script entry point
 			PrecacheWeapon( $"mp_weapon_flashbang_fakeultimate" )
 			PrecacheWeapon( $"mp_weapon_changeprops_fakeultimate" )
 			break
+		case "custom_duckhunt":
+			break
 		case "custom_tdm":
 			break
 		case "custom_aimtrainer":

@@ -77,6 +77,7 @@ void function RemoteFunctions_Init_Begin()
 		case CUSTOM_DUCKHUNT:
 			Remote_RegisterClientFunction("Minimap_EnableDraw_Internal")
 			Remote_RegisterClientFunction("Minimap_DisableDraw_Internal")
+			Remote_RegisterClientFunction("DUCKHUNT_CustomHint", "int", 0, 255, "int", INT_MIN, INT_MAX)
 			break
 		case CUSTOM_PROPHUNT:
 			Remote_RegisterClientFunction("ServerCallback_FSDM_SetScreen", "int", 0, 255, "int", 0, 255, "int", INT_MIN, INT_MAX, "int", 0, 255)
