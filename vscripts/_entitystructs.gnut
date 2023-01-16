@@ -419,6 +419,14 @@ global struct ServerEntityStruct
 	
 	//HoloSprays mp
 	array<entity> holoSpraysFX
+	
+	//Tridents
+	string LastTridentAnim
+	entity driver = null
+	entity driverDummy = null
+	entity physicsCar = null
+	bool isBoosting = false
+	bool canBoost = true
 }
 
 global struct MeritData
@@ -787,6 +795,9 @@ global struct ServerPlayerStruct
 	
 	//HoloSprays mp
 	array<entity> holoSpraysBase
+	
+	float lastRightInput = 0
+	float lastForwardInput = 0
 }
 
 global struct ChallengeScore
