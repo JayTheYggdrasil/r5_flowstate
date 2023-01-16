@@ -190,10 +190,11 @@ void function SV_CL_Init()
 	CharacterSelectNewMenu_Init()
 
 	//ShHoverBike_Init()
+	ShHoverVehicle_Init()
 	ShLootBin_Init()
 
 	ShFlyers_Init()
-
+	
 	ShGameModeShadowSquad_Init()
 
 	SV_CL_Onboarding_Init()
@@ -201,15 +202,15 @@ void function SV_CL_Init()
 	ShTutorial_Init()
 	Sh_PassiveVoices_Init()
 
-    // Zipline Utility
-        // #if SERVER
-            // ZiplineUtility_Init()
-        // #endif
+    //Zipline Utility
+        #if SERVER
+            ZiplineUtility_Init()
+        #endif
 
-        // #if SERVER || CLIENT
-            // ShZiplineUtility_Init()
-        // #endif
-    //
+        #if SERVER || CLIENT
+            ShZiplineUtility_Init()
+        #endif
+    
 
 	#if CLIENT
 		Cl_DeathScreen_Init()

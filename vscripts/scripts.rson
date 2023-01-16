@@ -891,7 +891,7 @@ Scripts:
 	weapons/mp_ability_birds.nut
 	weapons/mp_weapon_plasmapistol.nut
 	weapons/mp_weapon_editor.nut
-	//weapons/mp_weapon_energysword.nut
+	weapons/mp_weapon_energysword.nut
 	weapons/mp_weapon_clickweapon.nut
 	weapons/mp_weapon_grenade_gravity.nut
 	weapons/mp_ability_translocation.nut
@@ -952,6 +952,7 @@ Scripts:
 	gamemodes/custom_ctf/custom_ctf_settings.nut
 	gamemodes/custom_aimtrainer/sh_aimtrainer.nut
 	gamemodes/custom_prophunt/sh_gamemode_prophunt.nut
+	gamemodes/custom_duckhunt/sh_gamemode_duckhunt.nut
 	lobby/lobbyvm/sh_lobbyvm.nut
 ]
 
@@ -961,7 +962,7 @@ Scripts:
 	gamemodes/custom_tdm/_gamemode_flowstate.nut
 	gamemodes/custom_tdm/_gamemode_1v1.nut
 	gamemodes/custom_ctf/_gamemode_custom_ctf.nut
-	
+	gamemodes/custom_duckhunt/_gamemode_duckhunt.nut
 	gamemodes/custom_prophunt/_gamemode_prophunt.nut
 	
 	gamemodes/custom_surf/_gamemode_surf.nut
@@ -986,6 +987,7 @@ Scripts:
 	gamemodes/custom_tdm/cl_gamemode_custom_tdm.nut
 	gamemodes/custom_ctf/cl_gamemode_custom_ctf.nut
 	gamemodes/custom_aimtrainer/cl_aimtrainer.nut
+	gamemodes/custom_duckhunt/cl_gamemode_duckhunt.nut
 	gamemodes/custom_prophunt/cl_gamemode_prophunt.nut
 	lobby/lobbyvm/cl_lobbyvm.nut
 ]
@@ -999,21 +1001,22 @@ Scripts:
 ]
 
 
-// // Zipline Utility
-// When: "SERVER"
-// Scripts:
-// [
-    // mp/_zipline_utility/_zipline_utility.gnut
-    // mp/_zipline_utility/_zipline_func.gnut
-    // mp/_zipline_utility/_zipline_debug.gnut
-// ]
+// Zipline Utility
+When: "SERVER"
+Scripts:
+[
+    mp/_zipline_utility/_zipline_utility.gnut
+    mp/_zipline_utility/_zipline_func.gnut
+    mp/_zipline_utility/_zipline_debug.gnut
+]
 
 When: "SERVER || CLIENT"
 Scripts:
 [
-	// mp/_zipline_utility/sh_zipline_utility.gnut
-   	// mp/_zipline_utility/sh_zipline_panel.gnut
+	mp/_zipline_utility/sh_zipline_utility.gnut
+   	mp/_zipline_utility/sh_zipline_panel.gnut
 	weapons/editor_modes/editor_mode_place.nut
 	weapons/editor_modes/editor_mode_delete.nut
 	weapons/editor_modes/editor_mode_toys.nut
+	sh_hover_vehicle.gnut
 ] 

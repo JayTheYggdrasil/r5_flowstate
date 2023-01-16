@@ -23,6 +23,9 @@ global function Survival_SetCallback_Leviathan_ConsiderLookAtEnt
 global function Survival_Leviathan_ConsiderLookAtEnt
 global function CreateSurvivalDeathBoxForPlayer
 global function UpdateMatchSummaryPersistentVars
+global function EnemyDownedDialogue
+global function TakingFireDialogue
+global function GetAllDroppableItems
 
 int MAXBLOCKTIME = 2
 

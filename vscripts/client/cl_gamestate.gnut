@@ -165,6 +165,15 @@ void function SetCommonScoreRUIVars( var rui )
 		return
 	}
 	
+	if(GameRules_GetGameMode() == "custom_duckhunt"){
+		RuiSetString( rui, "gameModeString", "APEX DUCK HUNT" )
+		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+		RuiSetString( rui, "squadsRemainingTextSingular", "DUCK ALIVE" )
+		RuiSetString( rui, "squadsRemainingTextPlural", "DUCKS ALIVE" )
+		RuiSetVisible(rui, true)	
+		return
+	}	
+	
 	if ( IsSoloMode() )
 	{
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
