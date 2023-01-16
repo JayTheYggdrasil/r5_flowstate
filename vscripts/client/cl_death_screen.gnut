@@ -13,6 +13,7 @@ global function DeathScreenCreateNonMenuBlackBars
 global function DeathScreen_RespawnStatusChanged
 global function PopulatePlayerStatsRui
 global function ClearPlayerStatsRui
+global function ForceDestroyBlackBarRui
 
 global function UICallback_ShowSquadSummary
 global function UICallback_HideSquadSummary
@@ -1351,6 +1352,11 @@ void function DeathScreenCreateNonMenuBlackBars()
 	UpdateBlackBarRui()
 }
 
+void function ForceDestroyBlackBarRui()
+{
+	RuiDestroyIfAlive( file.blackBarRui )
+	file.blackBarRui = null
+}
 
 void function UpdateBlackBarRui()
 {

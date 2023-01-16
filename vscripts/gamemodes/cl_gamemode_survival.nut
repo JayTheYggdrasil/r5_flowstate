@@ -11,6 +11,7 @@ global function ServerCallback_SurvivalHint
 global function ServerCallback_PlayerBootsOnGround
 global function ServerCallback_ClearHints
 global function ServerCallback_MatchEndAnnouncement
+global function ServerCallback_DestroyEndAnnouncement
 global function ServerCallback_ShowWinningSquadSequence
 global function ServerCallback_AddWinningSquadData
 global function ServerCallback_PromptSayThanks
@@ -104,6 +105,7 @@ global function GetCompassRui
 global function CircleAnnouncementsEnable
 global function SetDpadMenuHidden
 global function FillChallengesAmogus
+global function TrackSprint
 
 global struct NextCircleDisplayCustomData
 {
@@ -3545,7 +3547,6 @@ void function UsePressed( entity player )
 	}
 }
 
-
 void function ShowPlaneTube( entity ent, var topo )
 {
 	int drawMode = RUI_DRAW_WORLD
@@ -3632,13 +3633,27 @@ void function ServerCallback_MatchEndAnnouncement( bool victory, int winningTeam
 	DeathScreenCreateNonMenuBlackBars()
 	DeathScreenUpdate()
 	entity clientPlayer = GetLocalClientPlayer()
-	Assert( IsValid( clientPlayer ) )
 
-	//
-	if ( clientPlayer.GetTeam() == winningTeam )
-		ShowChampionVictoryScreen( winningTeam )
+	if(!IsValid(clientPlayer)) return
+	
+	ShowChampionVictoryScreen( winningTeam )
 }
 
+void function ServerCallback_DestroyEndAnnouncement()
+{
+	entity clientPlayer = GetLocalClientPlayer()
+	
+	if(!IsValid(clientPlayer)) return
+	
+	ForceDestroyBlackBarRui()
+	ForceDestroyChampionScreenRui()
+}
+
+void function ForceDestroyChampionScreenRui()
+{
+	RuiDestroyIfAlive( file.victoryRui )
+	file.victoryRui = null
+}
 
 void function ShowChampionVictoryScreen( int winningTeam )
 {
@@ -3647,7 +3662,6 @@ void function ShowChampionVictoryScreen( int winningTeam )
 
 	entity clientPlayer = GetLocalClientPlayer()
 
-	//
 	HideGladiatorCardSidePane( true )
 	UpdateRespawnStatus( eRespawnStatus.NONE )
 
@@ -3660,7 +3674,6 @@ void function ShowChampionVictoryScreen( int winningTeam )
 	Chroma_VictoryScreen()
 }
 
-
 asset function GetChampionScreenRuiAsset()
 {
 	if ( file.customChampionScreenRuiAsset != $"" )
@@ -3669,20 +3682,16 @@ asset function GetChampionScreenRuiAsset()
 	return $"ui/champion_screen.rpak"
 }
 
-
 void function SetChampionScreenRuiAsset( asset ruiAsset )
 {
 	file.customChampionScreenRuiAsset = ruiAsset
 }
-
-
 
 void function ShowSquadSummary()
 {
 	entity player = GetLocalClientPlayer()
 	EndSignal( player, "OnDestroy" )
 }
-
 
 void function ServerCallback_AddWinningSquadData( int index, int eHandle, int kills, int damageDealt, int survivalTime, int revivesGiven, int respawnsGiven )
 {
@@ -3703,7 +3712,6 @@ void function ServerCallback_AddWinningSquadData( int index, int eHandle, int ki
 	file.winnerSquadSummaryData.playerData.append( data )
 	file.winnerSquadSummaryData.squadPlacement = 1
 }
-
 
 SquadSummaryData function GetSquadSummaryData()
 {
@@ -3744,13 +3752,11 @@ bool function IsSquadDataPersistenceEmpty()
 	{
 		int eHandle = player.GetPersistentVarAsInt( "lastGameSquadStats[" + i + "].eHandle" )
 
-		//
 		if ( eHandle > 0 )
 			return false
 	}
 	return true
 }
-
 
 void function SetSquadDataToLocalTeam()
 {
