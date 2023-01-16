@@ -1545,7 +1545,8 @@ entity function SURVIVAL_CreateDeathBox( entity player, bool hasCard )
 
 	box.SetOwner( player )
 	box.SetNetInt( "ownerEHI", player.GetEncodedEHandle() )
-
+	box.AllowMantle()
+	
 	if ( hasCard )
 	{
 		box.SetNetBool( "overrideRUI", false )
