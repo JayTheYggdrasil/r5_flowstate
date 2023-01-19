@@ -548,7 +548,7 @@ void function SURVIVAL_PlaceGroundItems()
 {
 	array<entity> itemEnts = GetEntArrayByClass_Expensive( "script_ref" )
 
-	if ( GetCurrentPlaylistVarBool( "ground_loot_enable", true ) && GameRules_GetGameMode() != "custom_prophunt" && GameRules_GetGameMode() != "custom_duckhunt")
+	if ( GetCurrentPlaylistVarBool( "ground_loot_enable", true ) && GameRules_GetGameMode() != "flowstate_prophunt" && GameRules_GetGameMode() != "flowstate_duckhunt")
 	{
 		foreach ( ent in itemEnts )
 		{
@@ -1427,7 +1427,7 @@ void function SURVIVAL_GiveMainWeapon( entity player, entity pickup, entity acti
 	entity weapon = player.GiveWeapon( newEquipData.baseWeapon, WEAPON_INVENTORY_SLOT_ANY, mods )
 	player.SetActiveWeaponBySlot( eActiveInventorySlot.mainHand, GetSlotForWeapon( player, weapon ) )
 	
-	if(GameRules_GetGameMode() == "custom_duckhunt" && weapon.GetWeaponClassName() == "mp_weapon_sniper" )
+	if(GameRules_GetGameMode() == "flowstate_duckhunt" && weapon.GetWeaponClassName() == "mp_weapon_sniper" )
 		weapon.AddMod("duckhunt")
 	
 	int clipCount = pickup.GetClipCount()

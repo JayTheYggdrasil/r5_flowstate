@@ -180,7 +180,7 @@ void function RefreshLootBin( entity lootBin, string lootGroup, int numLootItems
 	if ( LootBin_IsOpen( lootBin ) )
 		waitthread LootBin_PlayCloseSequence( lootBin )
 	
-	if(GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt") return
+	if(GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt") return
 	
 	// New refs
 	file.lootBinsLootInside[ lootBin ] = []
@@ -268,16 +268,16 @@ void function InitLootBin( entity lootbin )
 		DebugDrawLine( lootbin.GetOrigin(), lootbin.GetOrigin() + <0, 0, 1000>, 255, 255, 255, true, 100.0 )
 	}
 
-	if(CoinFlip() || GameRules_GetGameMode() == "custom_prophunt")
+	if(CoinFlip() || GameRules_GetGameMode() == "flowstate_prophunt")
 	{
 		lootbin.SetScriptName("smartbin")
 		lootbin.SetSkin(2)
-		if(GameRules_GetGameMode() != "custom_prophunt")
+		if(GameRules_GetGameMode() != "flowstate_prophunt")
 			AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( "data_knife_vault", 4 ) )
 		return
 	}
 	
-	if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) && GameRules_GetGameMode() != "custom_prophunt")
+	if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) && GameRules_GetGameMode() != "flowstate_prophunt")
 	{
 		AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( LootZones_GetRefForOrigin(lootbin.GetOrigin()), RandomIntRange(3,4) ) )
 	}

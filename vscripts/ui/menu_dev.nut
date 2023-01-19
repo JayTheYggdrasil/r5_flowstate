@@ -273,19 +273,19 @@ void function SetupDefaultDevCommandsMP()
 	//Player is fully connected at this point, a check was made before
 	RunClientScript("DEV_SendCheatsStateToUI")
 	
-	if(GetCurrentPlaylistName() == "map_editor")
+	if(GetCurrentPlaylistName() == "map_editor_deprecated")
 		SetupDevMenu( "Editor", SetDevMenu_Editor )
 	
-	if(GetCurrentPlaylistName() == "custom_tdm")
+	if(GetCurrentPlaylistName() == "flowstate_dm")
 		SetupDevMenu( "TDM: Change Primary weapon", SetDevMenu_TDMPrimaryWeapons )
 	
-	if(GetCurrentPlaylistName() == "custom_tdm")
+	if(GetCurrentPlaylistName() == "flowstate_dm")
 		SetupDevMenu( "TDM: Change Secondary weapon", SetDevMenu_TDMSecondaryWeapons )
 	
-	if(GetCurrentPlaylistName() == "custom_tdm")
+	if(GetCurrentPlaylistName() == "flowstate_dm")
 		SetupDevCommand( "TDM: Save Current Weapons", "saveguns" )
 
-	if(GetCurrentPlaylistName() == "custom_tdm")
+	if(GetCurrentPlaylistName() == "flowstate_dm")
 		SetupDevCommand( "TDM: Reset Saved Weapons", "resetguns" )
 
 	if(GetCheatsState()){

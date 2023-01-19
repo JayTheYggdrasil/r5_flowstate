@@ -251,7 +251,7 @@ void function Custom_KillReplayHud_Activate()
 	
 	bool isProphunt = false
 	
-	if(GameRules_GetGameMode() == "custom_prophunt")
+	if(GameRules_GetGameMode() == "flowstate_prophunt")
 		isProphunt = true
 	
 	//Open Kill Replay Hud
@@ -268,7 +268,7 @@ void function Custom_KillReplayHud_Deactivate()
 	
 	bool isProphunt = false
 	
-	if(GameRules_GetGameMode() == "custom_prophunt")
+	if(GameRules_GetGameMode() == "flowstate_prophunt")
 		isProphunt = true
 	
 	//Close the replay menu

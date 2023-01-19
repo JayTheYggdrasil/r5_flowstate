@@ -122,7 +122,7 @@ bool function ClientCommand_Save(entity player, array<string> args )
 	DevTextBufferClear()
 	DevTextBufferWrite("=== Prop Dynamic Map Editor - Made by Sal, Fireproof, Pebbers & JustANormalUser. ===\n")
 	DevTextBufferWrite("=== CreateEditorProp function is already installed. \n")
-	DevTextBufferWrite("=== PASTE THE FOLLOWING LINES IN /scripts/vscripts/_place_map_editor_props_here.nut === \n\n")
+	DevTextBufferWrite("=== PASTE THE FOLLOWING LINES IN /scripts/vscripts/_place_map_editor_deprecated_props_here.nut === \n\n")
 	
 	int i = 0
 	foreach(prop in file.allProps)

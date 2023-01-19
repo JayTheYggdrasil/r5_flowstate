@@ -91,7 +91,7 @@ void function SV_CL_Init()
 	GrappleWeaponInit()
 	//ProtoBatteryCharger_Init()
 	ShInfoCords_Init()
-	if(GameRules_GetGameMode() == "map_editor")
+	if(GameRules_GetGameMode() == "map_editor_deprecated")
 		ShAssets_Init()
 
 	//#if DEVELOPER

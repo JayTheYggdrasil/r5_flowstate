@@ -351,7 +351,7 @@ void function ServerCallback_SendProphuntHuntersScoreboardToClient(int eHandle, 
 
 void function ServerCallback_ClearScoreboardOnClient()
 {
-	if(GameRules_GetGameMode() == "custom_prophunt")
+	if(GameRules_GetGameMode() == "flowstate_prophunt")
 		RunUIScript( "ClearProphuntScoreboardOnUI")
 	else
 		RunUIScript( "ClearScoreboardOnUI")
@@ -395,7 +395,7 @@ void function CreateChampionUI(int skinindex)
     entity targetBackground = GetEntByScriptName( "target_char_sel_bg_new" )
     entity targetCamera = GetEntByScriptName( "target_char_sel_camera_new" )
 	
-	if(file.teamwon != 3 && GameRules_GetGameMode() == "custom_prophunt")
+	if(file.teamwon != 3 && GameRules_GetGameMode() == "flowstate_prophunt")
 	{
 		//Clear Winning Squad Data
 		AddWinningSquadData( -1, -1)
@@ -486,7 +486,7 @@ void function ServerCallback_FSDM_SetScreen(int screen, int team, int mapid, int
         case eFSDMScreen.ScoreboardUI: //Sets the screen to the winners screen
 			DestroyChampionUI()
 			
-			if(GameRules_GetGameMode() == "custom_prophunt")
+			if(GameRules_GetGameMode() == "flowstate_prophunt")
 				RunUIScript("Set_FSDM_ProphuntScoreboardScreen")
 			else
 				RunUIScript("Set_FSDM_ScoreboardScreen")
@@ -670,20 +670,20 @@ void function Show_FSDM_VictorySequence(int skinindex)
 
 		foreach( int i, SquadSummaryPlayerData data in file.winnerSquadSummaryData.playerData )
 		{
-			if ( i >= maxPlayersToShow && GameRules_GetGameMode() != "custom_prophunt")
+			if ( i >= maxPlayersToShow && GameRules_GetGameMode() != "flowstate_prophunt")
 				break
 			
-			if ( file.teamwon != 3 && i >= maxPlayersToShow && GameRules_GetGameMode() == "custom_prophunt")
+			if ( file.teamwon != 3 && i >= maxPlayersToShow && GameRules_GetGameMode() == "flowstate_prophunt")
 				break
 
-			if ( file.teamwon == 3 && i >= maxPropsToShow && GameRules_GetGameMode() == "custom_prophunt")
+			if ( file.teamwon == 3 && i >= maxPropsToShow && GameRules_GetGameMode() == "flowstate_prophunt")
 				break
 			
 			string playerName = ""
 			if ( EHIHasValidScriptStruct( data.eHandle ) )
 				playerName = EHI_GetName( data.eHandle )
 			
-			if(file.teamwon == 3 && GameRules_GetGameMode() == "custom_prophunt")
+			if(file.teamwon == 3 && GameRules_GetGameMode() == "flowstate_prophunt")
 				{
 					if ( !LoadoutSlot_IsReady( data.eHandle, loadoutSlotCharacter ) )
 						continue
@@ -795,7 +795,7 @@ void function Show_FSDM_VictorySequence(int skinindex)
 		
 		vector AnglesToUseCamera
 		
-		// if(file.teamwon != 3 && GameRules_GetGameMode() == "custom_prophunt")
+		// if(file.teamwon != 3 && GameRules_GetGameMode() == "flowstate_prophunt")
 			// AnglesToUseCamera = characterModel.GetAngles()
 		// else
 			AnglesToUseCamera = file.victorySequenceAngles

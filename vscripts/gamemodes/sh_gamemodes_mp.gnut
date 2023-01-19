@@ -7,11 +7,11 @@ void function GameModes_Init_SV_CL()
 
 	////////////////////////////
 	//                        //
-	//        Menufall        //
+	//        r5r_lobby        //
 	//                        //
 	////////////////////////////
 
-	gameMode = MENUFALL
+	gameMode = r5r_lobby
 	#if SERVER || CLIENT
 		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
 	#endif
@@ -91,7 +91,7 @@ void function GameModes_Init_SV_CL()
 	//                        //
 	////////////////////////////
 
-	gameMode = custom_tdm
+	gameMode = flowstate_dm
 	#if SERVER || CLIENT
 		GameMode_AddSharedInit(gameMode, Sh_CustomTDM_Init)
 		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
@@ -133,7 +133,7 @@ void function GameModes_Init_SV_CL()
 	//                        //
 	////////////////////////////
 
-	gameMode = MAP_EDITOR
+	gameMode = map_editor_deprecated
 	#if SERVER || CLIENT
 		GameMode_AddSharedInit(gameMode, Sh_MapEditor_Init)
 		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
@@ -154,7 +154,7 @@ void function GameModes_Init_SV_CL()
 	//                                  //
 	//////////////////////////////////////
 
-	gameMode = CUSTOM_AIMTRAINER
+	gameMode = flowstate_aimtrainer
 	#if SERVER || CLIENT
 		GameMode_AddSharedInit(gameMode, Sh_ChallengesByColombia_Init)
 		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
@@ -175,7 +175,7 @@ void function GameModes_Init_SV_CL()
 	//                                  //
 	//////////////////////////////////////
 
-	gameMode = CUSTOM_PROPHUNT
+	gameMode = flowstate_prophunt
 	#if SERVER || CLIENT
 		GameMode_AddSharedInit(gameMode, GamemodeProphuntShared_Init)
 		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
@@ -196,7 +196,7 @@ void function GameModes_Init_SV_CL()
 	//                                  //
 	//////////////////////////////////////
 
-	gameMode = CUSTOM_DUCKHUNT
+	gameMode = flowstate_duckhunt
 	#if SERVER || CLIENT
 		GameMode_AddSharedInit(gameMode, GamemodeDuckhuntShared_Init)
 		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
@@ -210,6 +210,29 @@ void function GameModes_Init_SV_CL()
 	GameMode_AddClientInit(gameMode, Cl_GamemodeDuckhunt_Init)
 	//GameMode_AddClientInit( gameMode, ClGamemodeSurvival_Init )
 	#endif	
+
+	//////////////////////////////////////
+	//                                  //
+	//       Custom PKKNOCKBACK	       	//
+	//                                  //
+	//////////////////////////////////////
+
+	gameMode = flowstate_pkknockback
+	#if SERVER || CLIENT
+		GameMode_AddSharedInit(gameMode, Sh_GamemodePkknockback_Init)
+		GameMode_AddSharedInit( gameMode, GamemodeSurvivalShared_Init )
+	#endif
+	#if SERVER
+	GameMode_AddServerInit(gameMode, _GamemodePkknockback_Init)
+	GameMode_SetPilotSpawnpointsRatingFunc( gameMode, RateSpawnpoints_Generic )
+	GameMode_SetTitanSpawnpointsRatingFunc( gameMode, RateSpawnpoints_Generic )
+	GameMode_SetEvacEnabled( gameMode, false )
+	#elseif CLIENT
+	GameMode_AddClientInit(gameMode, Cl_GamemodePkknockback_Init)
+	//GameMode_AddClientInit( gameMode, ClGamemodeSurvival_Init )
+	#endif	
+
+	///
 	#if DEVSCRIPTS
 		Dev_GameModes_Init_SV_CL()
 	#endif

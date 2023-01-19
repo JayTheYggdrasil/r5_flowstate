@@ -92,16 +92,17 @@ global const NPC_TITAN_PILOT_PROTOTYPE  = 0
 global const HAS_TASKLIST_SYSTEM        = false
 global const HAS_MISSIONINFO_SYSTEM     = false
 
-global const MENUFALL                   = "menufall"
+global const r5r_lobby                   = "r5r_lobby"
 global const TEAM_DEATHMATCH            = "tdm"
 global const SURVIVAL                   = "survival"
 global const FREELANCE                  = "freelance"
-global const custom_tdm                 = "custom_tdm"
+global const flowstate_dm                 = "flowstate_dm"
 global const CUSTOM_CTF                 = "custom_ctf"
-global const CUSTOM_AIMTRAINER			= "custom_aimtrainer"
-global const CUSTOM_PROPHUNT			= "custom_prophunt"
-global const CUSTOM_DUCKHUNT			= "custom_duckhunt"
-global const MAP_EDITOR					= "map_editor"
+global const flowstate_aimtrainer			= "flowstate_aimtrainer"
+global const flowstate_prophunt			= "flowstate_prophunt"
+global const flowstate_duckhunt			= "flowstate_duckhunt"
+global const flowstate_pkknockback			= "flowstate_pkknockback"
+global const map_editor_deprecated					= "map_editor_deprecated"
 
 global const FREELANCE_ENABLED          = false
 

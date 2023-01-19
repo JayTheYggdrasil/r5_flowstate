@@ -717,7 +717,7 @@ void function SURVIVAL_PopulatePlayerInfoRui( entity player, var rui )
 
 	OverwriteWithCustomPlayerInfoTreatment( player, rui )
 	
-	if(GameRules_GetGameMode() == "custom_aimtrainer" )
+	if(GameRules_GetGameMode() == "flowstate_aimtrainer" )
 	{
 		RuiSetColorAlpha( rui, "customCharacterColor", SrgbToLinear( <53, 222, 47> / 255.0 ), 1.0 )
 		RuiSetBool( rui, "useCustomCharacterColor", true )
@@ -731,7 +731,7 @@ void function SURVIVAL_PopulatePlayerInfoRui( entity player, var rui )
 	if(RGB_HUD)
 		thread RGBRui(rui)
 	
-	if( GameRules_GetGameMode() != "custom_tdm" ) return
+	if( GameRules_GetGameMode() != "flowstate_dm" ) return
 	
 	if ( IsControllerModeActive() )
 		player.ClientCommand( "controllerstate true")

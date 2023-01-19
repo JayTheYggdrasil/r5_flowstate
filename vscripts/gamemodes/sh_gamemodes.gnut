@@ -119,9 +119,9 @@ void function GameModes_Init()
 {
 	string gameMode
 
-	gameMode = MENUFALL
+	gameMode = r5r_lobby
 	GameMode_Create( gameMode )
-	GameMode_SetName( gameMode, "menufall" )
+	GameMode_SetName( gameMode, "r5r_lobby" )
 	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
 	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
 	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )
@@ -165,9 +165,9 @@ void function GameModes_Init()
 	#endif
 
 	
-	gameMode = custom_tdm
+	gameMode = flowstate_dm
 	GameMode_Create( gameMode )
-	GameMode_SetName( gameMode, "custom_tdm" )
+	GameMode_SetName( gameMode, "flowstate_dm" )
 	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
 	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
 	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )
@@ -191,9 +191,9 @@ void function GameModes_Init()
 	//GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_ASSISTS", PGS_ASSISTS, 2 )
 	GameMode_SetColor( gameMode, [212, 83, 152, 255] )
 	
-	gameMode = MAP_EDITOR
+	gameMode = map_editor_deprecated
 	GameMode_Create( gameMode )
-	GameMode_SetName( gameMode, "map_editor" )
+	GameMode_SetName( gameMode, "map_editor_deprecated" )
 	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
 	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
 	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )
@@ -204,9 +204,9 @@ void function GameModes_Init()
 	//GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_ASSISTS", PGS_ASSISTS, 2 )
 	GameMode_SetColor( gameMode, [212, 83, 152, 255] )
 	
-	gameMode = CUSTOM_AIMTRAINER
+	gameMode = flowstate_aimtrainer
 	GameMode_Create( gameMode )
-	GameMode_SetName( gameMode, "custom_aimtrainer" )
+	GameMode_SetName( gameMode, "flowstate_aimtrainer" )
 	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
 	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
 	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )
@@ -217,9 +217,9 @@ void function GameModes_Init()
 	//GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_ASSISTS", PGS_ASSISTS, 2 )
 	GameMode_SetColor( gameMode, [212, 83, 152, 255] )
 
-	gameMode = CUSTOM_PROPHUNT
+	gameMode = flowstate_prophunt
 	GameMode_Create( gameMode )
-	GameMode_SetName( gameMode, "custom_prophunt" )
+	GameMode_SetName( gameMode, "flowstate_prophunt" )
 	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
 	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
 	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )
@@ -230,9 +230,22 @@ void function GameModes_Init()
 	//GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_ASSISTS", PGS_ASSISTS, 2 )
 	GameMode_SetColor( gameMode, [212, 83, 152, 255] )
 
-	gameMode = CUSTOM_DUCKHUNT
+	gameMode = flowstate_duckhunt
 	GameMode_Create( gameMode )
-	GameMode_SetName( gameMode, "custom_duckhunt" )
+	GameMode_SetName( gameMode, "flowstate_duckhunt" )
+	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
+	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
+	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )
+	GameMode_SetDefaultScoreLimits( gameMode, 50, 0 )
+	GameMode_SetDefaultTimeLimits( gameMode, 15, 0.0 )
+	GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_KILLS", PGS_PILOT_KILLS, 2 )
+	GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_DEATHS", PGS_DEATHS, 2 )
+	//GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_ASSISTS", PGS_ASSISTS, 2 )
+	GameMode_SetColor( gameMode, [212, 83, 152, 255] )
+
+	gameMode = flowstate_pkknockback
+	GameMode_Create( gameMode )
+	GameMode_SetName( gameMode, "flowstate_pkknockback" )
 	GameMode_SetGameModeAnnouncement( gameMode, "phunt_modeDesc" )
 	GameMode_SetDesc( gameMode, "#PL_pilot_hunter_hint" )
 	GameMode_SetIcon( gameMode, $"ui/menu/playlist/tdm" )

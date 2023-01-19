@@ -84,7 +84,7 @@ void function BaseGametypeEntitiesDidLoad()
 {
 	TriggerHurtSetup()
 	
-	if(GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt" ) return
+	if(GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt" ) return
 
 	OutOfBoundsSetup()
 }

@@ -278,7 +278,7 @@ entity function GetPlayerMeleeAttackWeapon( entity player )
 #if SERVER || CLIENT
 bool function IsValidMeleeAttackTarget( entity attacker, entity inputWeaponOrNull, entity attackWeapon, entity target )
 {
-	if( GameRules_GetGameMode() == "custom_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" )
+	if( GameRules_GetGameMode() == "flowstate_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" )
 		return true
 
 	if ( attacker == target )
@@ -603,7 +603,7 @@ void function CodeCallback_OnMeleeAttackAnimEvent( entity attacker, entity melee
 	if ( !IsValid( target ) )
 		return
 	
-	if( GameRules_GetGameMode() == "custom_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" && IsValid(target.GetParent()))
+	if( GameRules_GetGameMode() == "flowstate_prophunt" && target.GetNetworkedClassName() == "prop_dynamic" && IsValid(target.GetParent()))
 	{
 		target = target.GetParent()
 	

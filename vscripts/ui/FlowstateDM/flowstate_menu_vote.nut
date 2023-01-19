@@ -73,12 +73,12 @@ void function Open_FSDM_VotingPhase()
 	{
 		switch(GetCurrentPlaylistName())
 		{
-			case "custom_prophunt":
+			case "flowstate_prophunt":
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "APEX PROPHUNT" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment" )
 			break
 
-			case "custom_tdm":
+			case "flowstate_dm":
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE DM" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "©Respawn Entertainment" )
 			break
@@ -424,7 +424,7 @@ void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bo
 		Hud_SetVisible( Hud_GetChild( file.menu, "MapVoteLabelNameFrame" + i ), MapVote )
 	}
 	
-	if(GetCurrentPlaylistName() != "custom_prophunt")
+	if(GetCurrentPlaylistName() != "flowstate_prophunt")
 	{
 		array<var> ScoreboardUI = GetElementsByClassname( file.menu, "ScoreboardUI" )
 		foreach ( var elem in ScoreboardUI )

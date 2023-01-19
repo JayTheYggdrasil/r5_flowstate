@@ -324,11 +324,11 @@ asset function GetModeEmblemImage( string playlistName )
 			Warning( "Playlist '%s' has invalid value for 'emblem': %s", playlistName, emblemKey )
 	}
 	#if CLIENT
-	if(GameRules_GetGameMode() == "custom_prophunt")
+	if(GameRules_GetGameMode() == "flowstate_prophunt")
 		emblemImage = $"rui/flowstatecustom/prophunt"
-	else if(GameRules_GetGameMode() == "custom_duckhunt")
+	else if(GameRules_GetGameMode() == "flowstate_duckhunt")
 		emblemImage = $"rui/flowstatecustom/duckhunt"
-	else if(GameRules_GetGameMode() == "custom_tdm")
+	else if(GameRules_GetGameMode() == "flowstate_dm")
 		emblemImage = $"rui/flowstatecustom/dm"
 	#endif
 		

@@ -310,7 +310,7 @@ void function ScoreboardFadeOut()
 
 void function ShowScoreboardMP()
 {
-	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "custom_aimtrainer" || GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt" ) return
+	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "flowstate_aimtrainer" || GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt" ) return
 		
 	printf("[SB] %s - %s\n", FUNC_NAME(), GameRules_GetGameMode())
 	
@@ -692,7 +692,7 @@ void function UpdateScoreboardForGamemode( entity player, var rowRui, var scoreH
 
 void function HideScoreboardMP()
 {
-	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "custom_aimtrainer" || GameRules_GetGameMode() == "custom_prophunt" ) return
+	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "flowstate_aimtrainer" || GameRules_GetGameMode() == "flowstate_prophunt" ) return
 	
 	foreach( void functionref() callbackFunc in file.scoreboardCallbacks_OnHiding )
 		callbackFunc()

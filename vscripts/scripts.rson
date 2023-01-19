@@ -953,6 +953,8 @@ Scripts:
 	gamemodes/custom_aimtrainer/sh_aimtrainer.nut
 	gamemodes/custom_prophunt/sh_gamemode_prophunt.nut
 	gamemodes/custom_duckhunt/sh_gamemode_duckhunt.nut
+	gamemodes/custom_pkknockback/sh_gamemode_pkknockback.nut
+	
 	lobby/lobbyvm/sh_lobbyvm.nut
 ]
 
@@ -964,6 +966,7 @@ Scripts:
 	gamemodes/custom_ctf/_gamemode_custom_ctf.nut
 	gamemodes/custom_duckhunt/_gamemode_duckhunt.nut
 	gamemodes/custom_prophunt/_gamemode_prophunt.nut
+	gamemodes/custom_pkknockback/_gamemode_pkknockback.nut
 	
 	gamemodes/custom_surf/_gamemode_surf.nut
 	gamemodes/custom_surf/_gamemode_surf2.nut
@@ -989,6 +992,7 @@ Scripts:
 	gamemodes/custom_aimtrainer/cl_aimtrainer.nut
 	gamemodes/custom_duckhunt/cl_gamemode_duckhunt.nut
 	gamemodes/custom_prophunt/cl_gamemode_prophunt.nut
+	gamemodes/custom_pkknockback/cl_gamemode_pkknockback.nut
 	lobby/lobbyvm/cl_lobbyvm.nut
 ]
 

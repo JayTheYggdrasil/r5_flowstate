@@ -64,19 +64,19 @@ global table<string, string> MapNames = {
 
 //Playlist to readable name
 global table<string, string> playlisttoname = {
-	[ "custom_aimtrainer" ] = "Flowstate Aim Trainer",
+	[ "flowstate_aimtrainer" ] = "Flowstate Aim Trainer",
 	[ "firingrange" ] = "Firing Range (Beta)",
 	[ "survival" ] = "Battle Royale (Beta)",
 	[ "FallLTM" ] = "ShadowFall",
 	[ "duos" ] = "Duos (Beta)",
-	[ "custom_tdm" ] = "Flowstate TDM/FFA",
+	[ "flowstate_dm" ] = "Flowstate TDM/FFA",
 	[ "custom_ctf" ] = "Capture The Flag",
 	[ "survival_dev" ] = "Survival Dev",
-	[ "custom_tdm_fiesta" ] = "Flowstate Fiesta",
-	[ "custom_tdm_gungame" ] = "Flowstate Gungame (Beta)",
-	[ "custom_prophunt" ] = "Flowstate Prophunt (Beta)",
-	[ "custom_surf" ] = "Flowstate SURF",
-	[ "map_editor" ] = "Map Editor",
+	[ "flowstate_dm_fiesta" ] = "Flowstate Fiesta",
+	[ "flowstate_dm_gungame" ] = "Flowstate Gungame (Beta)",
+	[ "flowstate_prophunt" ] = "Flowstate Prophunt (Beta)",
+	[ "flowstate_surf" ] = "Flowstate SURF",
+	[ "map_editor_deprecated" ] = "Map Editor",
 	[ "dev_default" ] = "Dev Default"
 }
 

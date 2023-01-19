@@ -144,7 +144,7 @@ void function Sequence_WaitingForPlayers()
 
 	wait PreGame_GetWaitingForPlayersCountdown() + (introCountdownEnabled ? 0.0 : CharSelect_GetIntroMusicStartTime())
 		
-	if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt") 
+	if(GameRules_GetGameMode() == "flowstate_dm" || GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt") 
 	{	
 		SetGameState( eGameState.Playing )
 		return	
@@ -432,7 +432,7 @@ void function DecideRespawnPlayer( entity player, bool giveLoadoutWeapons = true
 	// ItemFlavor playerCharacterSkin = LoadoutSlot_GetItemFlavor( ToEHI( player ), Loadout_CharacterSkin( playerCharacter ) )
 	// CharacterSkin_Apply( player, playerCharacterSkin )
 
-	if ( giveLoadoutWeapons || GameRules_GetGameMode() == "map_editor")
+	if ( giveLoadoutWeapons || GameRules_GetGameMode() == "map_editor_deprecated")
 		GiveLoadoutRelatedWeapons( player )
 
 	Survival_SetInventoryEnabled( player, giveLoadoutWeapons )
@@ -444,7 +444,7 @@ void function DecideRespawnPlayer( entity player, bool giveLoadoutWeapons = true
 
 	UpdatePlayerCounts()
 	
-	if(GameRules_GetGameMode() == "map_editor")
+	if(GameRules_GetGameMode() == "map_editor_deprecated")
 		thread (void function() : ( player )
 		{
 			if(IsValid(player.GetOffhandWeapon( OFFHAND_TACTICAL )))
@@ -604,7 +604,7 @@ void function OnClientConnected( entity player )
 	{
 		case eGameState.WaitingForPlayers:
 		case eGameState.PickLoadout:
-			if(GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_duckhunt") break
+			if(GameRules_GetGameMode() == "flowstate_dm" || GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt") break
 		
 			entity startEnt = GetEnt( "info_player_start" )
 
@@ -613,7 +613,7 @@ void function OnClientConnected( entity player )
 
 			player.FreezeControlsOnServer()
 
-			if( GameRules_GetGameMode() == "map_editor")
+			if( GameRules_GetGameMode() == "map_editor_deprecated")
 				DecideRespawnPlayer( player )
 			
 			if ( PreGame_GetWaitingForPlayersSpawningEnabled()
@@ -663,17 +663,17 @@ void function UpdatePlayerCounts()
 {
 
 	string currGameMode = GameRules_GetGameMode()
-	if(currGameMode == "custom_tdm"){
+	if(currGameMode == "flowstate_dm"){
 		array<entity> connectedPlayers = GetPlayerArray_ConnectedNotSpectatorTeam()
 		SetGlobalNetInt( "livingPlayerCount", connectedPlayers.len() )
 		SetGlobalNetInt( "squadsRemainingCount", connectedPlayers.len() )
 
-	} else if(currGameMode == "custom_prophunt")
+	} else if(currGameMode == "flowstate_prophunt")
 	{
 		array<entity> propsAlive = GetPlayerArrayOfTeam_Alive( TEAM_MILITIA )
 		SetGlobalNetInt( "livingPlayerCount", propsAlive.len() )
 		SetGlobalNetInt( "squadsRemainingCount", propsAlive.len() )
-	} else if(currGameMode == "custom_duckhunt")
+	} else if(currGameMode == "flowstate_duckhunt")
 	{
 		array<entity> ducksAlive = GetPlayerArrayOfTeam_Alive( TEAM_MILITIA )
 		SetGlobalNetInt( "livingPlayerCount", ducksAlive.len() )

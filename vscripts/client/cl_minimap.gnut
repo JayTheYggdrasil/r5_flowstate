@@ -739,7 +739,7 @@ var function Minimap_AddCustomLayer( asset ruiAsset, int sortKey = MINIMAP_Z_LAY
 void function OnPlayerCreate( entity player )
 {
 	entity viewPlayer = GetLocalViewPlayer()
-	if ( IsValid( viewPlayer ) && viewPlayer.GetTeam() == player.GetTeam() && GameRules_GetGameMode() != "custom_prophunt" && GameRules_GetGameMode() != "custom_tdm" && GameRules_GetGameMode() != "custom_aimtrainer" && GameRules_GetGameMode() != "custom_duckhunt")
+	if ( IsValid( viewPlayer ) && viewPlayer.GetTeam() == player.GetTeam() && GameRules_GetGameMode() != "flowstate_prophunt" && GameRules_GetGameMode() != "flowstate_dm" && GameRules_GetGameMode() != "flowstate_aimtrainer" && GameRules_GetGameMode() != "flowstate_duckhunt")
 		UpdateFullmapRuiTracks()
 
 	if ( player != GetLocalClientPlayer() )
@@ -1752,7 +1752,7 @@ MapFeature function SetMapFeatureItem( int priority, string titleText, string de
 const int MAX_MAP_FEATURES = 5
 void function UpdateMapFeatures()
 {
-	if ( GameRules_GetGameMode() == "custom_prophunt" || GameRules_GetGameMode() == "custom_tdm" || GameRules_GetGameMode() == "custom_aimtrainer" || GameRules_GetGameMode() == "custom_duckhunt")
+	if ( GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_dm" || GameRules_GetGameMode() == "flowstate_aimtrainer" || GameRules_GetGameMode() == "flowstate_duckhunt")
 		return
 	
 	if ( file.fullmap_legendRui == null )

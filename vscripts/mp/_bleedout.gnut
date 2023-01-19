@@ -492,7 +492,7 @@ void function PlayerAttemptRes( entity playerHealer, entity playerToRes )
 	
 	float firstAidTime = playerHealer.GetSequenceDuration( healerAnimation )
 	
-	if(GameRules_GetGameMode() == "custom_duckhunt")
+	if(GameRules_GetGameMode() == "flowstate_duckhunt")
 	{
 		playbackRate = 1.35
 		firstAidTime = firstAidTime*0.65
@@ -563,7 +563,7 @@ void function PlayerAttemptRes( entity playerHealer, entity playerToRes )
 						if(!IsValid(playerToRes)) return
 						playerToRes.UnforceStand()
 						
-						if(GameRules_GetGameMode() == "custom_duckhunt")
+						if(GameRules_GetGameMode() == "flowstate_duckhunt")
 						{
 							Highlight_SetFriendlyHighlight( playerToRes, "prophunt_teammate" )
 							GivePassive(playerToRes, ePassives.PAS_PILOT_BLOOD)

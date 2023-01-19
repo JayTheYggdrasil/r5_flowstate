@@ -337,7 +337,7 @@ void function LaunchR5RLobby( float delay = 0.0 )
 	if( delay > 0 )
 		wait delay
 
-	CreateServer( "Lobby VM", "", "mp_lobby", "menufall", eServerVisibility.OFFLINE )
+	CreateServer( "Lobby VM", "", "mp_lobby", "r5r_lobby", eServerVisibility.OFFLINE )
 
 	isLeavingMatch = false
 }

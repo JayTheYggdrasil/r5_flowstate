@@ -42,7 +42,7 @@ entity function MapEditor_CreateProp(asset a, vector pos, vector ang, bool mantl
 	e.e.gameModeId = realm
     e.SetModelScale( scale )
 
-	if( a == $"mdl/foliage/plant_leafy_02.rmdl" && GameRules_GetGameMode() == "custom_duckhunt" || a == $"mdl/foliage/plant_tropical_green_large_02.rmdl" && GameRules_GetGameMode() == "custom_duckhunt" )
+	if( a == $"mdl/foliage/plant_leafy_02.rmdl" && GameRules_GetGameMode() == "flowstate_duckhunt" && IsValid(e) || a == $"mdl/foliage/plant_tropical_green_large_02.rmdl" && GameRules_GetGameMode() == "flowstate_duckhunt" && IsValid(e) )
 	{
 		//printt("Disabled solid plant")
 		e.kv.solid = 0

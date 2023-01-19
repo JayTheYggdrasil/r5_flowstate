@@ -621,7 +621,7 @@ void function ClientCodeCallback_PlayerDidDamage( PlayerDidDamageParams params )
 	if ( victim.IsTitan() && isKillShot )
 		ClientScreenShake( 8, 10, 1, <0, 0, 0> )
 
-	if ( GameRules_GetGameMode() != "custom_prophunt" )
+	if ( GameRules_GetGameMode() != "flowstate_prophunt" )
 		BloodSprayDecals( attacker, victim, damagePosition, damageAmount, isHeadShot, isKillShot, isMelee, isExplosion, isBullet, isShotgun )
 
 	if ( isShieldBreak )
@@ -1592,7 +1592,7 @@ void function PlayShieldBreakEffect( entity ent )
 
 	int attachID = shieldEnt.LookupAttachment( "ref" )
 	
-	if ( GameRules_GetGameMode() == "custom_prophunt" )
+	if ( GameRules_GetGameMode() == "flowstate_prophunt" )
 	{
 		int shieldFXHandle = StartParticleEffectInWorldWithHandle( shieldBreakFX, ent.GetOrigin(), ent.GetAngles() )
 		EffectSetControlPointVector( shieldFXHandle, 1, shieldColor )
@@ -1621,7 +1621,7 @@ void function PlayShieldActivateEffect( entity ent )
 
 	int attachID = ent.LookupAttachment( "ref" )
 	
-	if ( GameRules_GetGameMode() == "custom_prophunt" )
+	if ( GameRules_GetGameMode() == "flowstate_prophunt" )
 	{
 		int shieldFXHandle = StartParticleEffectInWorldWithHandle( shieldBreakFX, ent.GetOrigin(), ent.GetAngles() )
 		EffectSetControlPointVector( shieldFXHandle, 1, shieldColor )
@@ -1640,7 +1640,7 @@ void function PlayIt( entity victim )
 	int shieldbodyFX = GetParticleSystemIndex( SHIELD_BODY_FX )
 	int attachID = victim.LookupAttachment( "ref" )
 	
-	if ( GameRules_GetGameMode() == "custom_prophunt" )
+	if ( GameRules_GetGameMode() == "flowstate_prophunt" )
 	{
 		int shieldFXHandle = StartParticleEffectInWorldWithHandle( shieldbodyFX, victim.GetOrigin(), victim.GetAngles() )
 		EffectSetControlPointVector( shieldFXHandle, 1, GetShieldEffectCurrentColor( 1 - shieldHealthFrac ) )
@@ -1675,7 +1675,7 @@ void function PlayShieldHitEffect( PlayerDidDamageParams params, vector shieldCo
 	int shieldbodyFX = GetParticleSystemIndex( SHIELD_BODY_FX )
 	int attachID = victim.LookupAttachment( "ref" )
 	
-	if ( GameRules_GetGameMode() == "custom_prophunt" )
+	if ( GameRules_GetGameMode() == "flowstate_prophunt" )
 	{
 		int shieldFXHandle = StartParticleEffectInWorldWithHandle( shieldbodyFX, victim.GetOrigin(), victim.GetAngles() )
 		vector color

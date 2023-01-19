@@ -519,7 +519,7 @@ void function PilotBlood_Passive_Body(entity player, int passive, bool didHave, 
 	
 	while ( IsValid( player ) && PlayerHasPassive( player, ePassives.PAS_PILOT_BLOOD ) )
 	{
-		if(GameRules_GetGameMode() == "custom_duckhunt")
+		if(GameRules_GetGameMode() == "flowstate_duckhunt")
 			wait( 0.05 )
 		else
 			wait( HEALTH_REGEN_TICK_TIME )
@@ -531,7 +531,7 @@ void function PilotBlood_Passive_Body(entity player, int passive, bool didHave, 
 		}
 		
 		healthRegenRate = 1.0
-		if(GameRules_GetGameMode() == "custom_duckhunt")
+		if(GameRules_GetGameMode() == "flowstate_duckhunt")
 			healthRegenRate = 2.0
 		
 		if ( player.GetHealth() != player.GetMaxHealth() )
