@@ -1,0 +1,8 @@
+{
+    "rpak":
+    [
+        "common_flowstate",
+		"ui_flowstate"
+    ],
+	"stbsp": "mp_rr_desertlands_64k_x_64k"
+}

@@ -472,6 +472,8 @@ void function TakingFireDialogue( entity attacker, entity victim, entity weapon 
 	bool inTime
 	foreach( player in GetPlayerArrayOfTeam( victim.GetTeam() ) )
 	{
+		if(!IsValid(player)) continue
+		
 		if( player.p.attackedTeam.len() < attackerTeam )
 			player.p.attackedTeam.resize( attackerTeam + 1, -returnTime )
 

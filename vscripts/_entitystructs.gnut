@@ -426,7 +426,10 @@ global struct ServerEntityStruct
 	entity driverDummy = null
 	entity physicsCar = null
 	bool isBoosting = false
+	bool isInAirborne = false
 	bool canBoost = true
+	TraceResults& hoverTrace
+	vector forwardSpeed
 }
 
 global struct MeritData
@@ -798,6 +801,9 @@ global struct ServerPlayerStruct
 	
 	float lastRightInput = 0
 	float lastForwardInput = 0
+	
+	//Duckhunt
+	bool wasTeleported = false
 }
 
 global struct ChallengeScore
