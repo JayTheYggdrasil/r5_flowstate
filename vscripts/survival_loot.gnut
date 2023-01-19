@@ -1426,7 +1426,10 @@ void function SURVIVAL_GiveMainWeapon( entity player, entity pickup, entity acti
 
 	entity weapon = player.GiveWeapon( newEquipData.baseWeapon, WEAPON_INVENTORY_SLOT_ANY, mods )
 	player.SetActiveWeaponBySlot( eActiveInventorySlot.mainHand, GetSlotForWeapon( player, weapon ) )
-
+	
+	if(GameRules_GetGameMode() == "custom_duckhunt" && weapon.GetWeaponClassName() == "mp_weapon_sniper" )
+		weapon.AddMod("duckhunt")
+	
 	int clipCount = pickup.GetClipCount()
 	if ( clipCount > 0 )
 	{
