@@ -326,6 +326,8 @@ asset function GetModeEmblemImage( string playlistName )
 	#if CLIENT
 	if(GameRules_GetGameMode() == "custom_prophunt")
 		emblemImage = $"rui/flowstatecustom/prophunt"
+	else if(GameRules_GetGameMode() == "custom_duckhunt")
+		emblemImage = $"rui/flowstatecustom/duckhunt"
 	else if(GameRules_GetGameMode() == "custom_tdm")
 		emblemImage = $"rui/flowstatecustom/dm"
 	#endif
