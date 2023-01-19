@@ -515,17 +515,25 @@ void function PilotBlood_Passive( entity player, int passive, bool didHave, bool
 void function PilotBlood_Passive_Body(entity player, int passive, bool didHave, bool nowHas)
 {
 	float healthRegenStartDelay = 5.0
-
+	float healthRegenRate = 1.0
+	
 	while ( IsValid( player ) && PlayerHasPassive( player, ePassives.PAS_PILOT_BLOOD ) )
 	{
-		wait( HEALTH_REGEN_TICK_TIME )
-
+		if(GameRules_GetGameMode() == "custom_duckhunt")
+			wait( 0.05 )
+		else
+			wait( HEALTH_REGEN_TICK_TIME )
+		
 		if ( !IsAlive( player ) || Bleedout_IsBleedingOut(player) || Time() - player.p.lastDamageTime < healthRegenStartDelay || player.IsPhaseShifted())
+		{
+			WaitFrame()
 			continue
-
-		float healthRegenRate = 1.0
-
-
+		}
+		
+		healthRegenRate = 1.0
+		if(GameRules_GetGameMode() == "custom_duckhunt")
+			healthRegenRate = 2.0
+		
 		if ( player.GetHealth() != player.GetMaxHealth() )
 		{
 			player.SetHealth( min( player.GetMaxHealth(), player.GetHealth() + healthRegenRate ) )
@@ -534,8 +542,6 @@ void function PilotBlood_Passive_Body(entity player, int passive, bool didHave, 
 		{
 			player.SetShieldHealth( min( player.GetShieldHealthMax(), player.GetShieldHealth() + healthRegenRate * 5 ) )
 		}
-
-		
 	}
 }
 #endif
