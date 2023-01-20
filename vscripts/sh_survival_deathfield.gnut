@@ -1114,12 +1114,9 @@ vector function SURVIVAL_FindClosestTitanDropPoint( vector center )
 		{
 			vector pos = expect vector( endPos )
 
-			// if ( SURVIVAL_IsValidCircleLocation( pos ) )
-			// {
-				trace = TraceHull( pos + <0, 0, 2000>, pos, mins, maxs, null, TRACE_MASK_TITANSOLID, TRACE_COLLISION_GROUP_NONE )
-				printt(trace.endPos)
-				return trace.endPos
-			// }
+			trace = TraceHull( pos + <0, 0, 2000>, pos, mins, maxs, null, TRACE_MASK_TITANSOLID, TRACE_COLLISION_GROUP_NONE )
+			printt(trace.endPos)
+			return trace.endPos
 		}
 
 		numTries++
