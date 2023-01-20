@@ -310,8 +310,8 @@ void function CodeCallback_MapSpawn() // original script entry point
 	//r5r base sdk
 	PrecacheWeapon( $"melee_bolo_sword" )
 	PrecacheWeapon( $"mp_weapon_bolo_sword_primary" )
-	PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
-	PrecacheWeapon( $"melee_boxing_ring")
+	// PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
+	// PrecacheWeapon( $"melee_boxing_ring")
 	// PrecacheWeapon( $"mp_weapon_throwingknife" )
 	// PrecacheWeapon( $"mp_weapon_wingman_n" )
 	// PrecacheWeapon( $"mp_weapon_softball" )
@@ -399,19 +399,19 @@ void function CodeCallback_MapSpawn() // original script entry point
 	
 	switch(GameRules_GetGameMode())
 	{
-		case "custom_prophunt":
+		case "flowstate_prophunt":
 			PrecacheWeapon( $"mp_weapon_flashbang_fakeultimate" )
 			PrecacheWeapon( $"mp_weapon_changeprops_fakeultimate" )
 			break
-		case "custom_duckhunt":
+		case "flowstate_duckhunt":
 			break
-		case "custom_tdm":
+		case "flowstate_dm":
 			break
-		case "custom_aimtrainer":
+		case "flowstate_aimtrainer":
 			PrecacheWeapon( $"mp_weapon_clickweapon")
 			PrecacheWeapon( $"mp_weapon_clickweaponauto")
 			break
-		case "map_editor":
+		case "map_editor_deprecated":
 			PrecacheWeapon( $"mp_weapon_editor" )
 			if ( GetCurrentPlaylistVarBool( "movement_map_enable", false ) )
 				_CheckPoints_Init()
@@ -424,7 +424,7 @@ void function CodeCallback_MapSpawn() // original script entry point
 			break
 	}
 	
-	if(GameRules_GetGameMode() == "map_editor" )
+	if(GameRules_GetGameMode() == "map_editor_deprecated" )
 		PutLoadedPropsIntoSaveArray() //needs to be called after the props were loaded
 	
 	//////////////////////////////////////////////
@@ -472,7 +472,7 @@ var function CodeCallback_ClientCommand( entity player, array<string> args )
 
 void function MapTriggers_Init()
 {
-	if(GameRules_GetGameMode() == "custom_duckhunt") return
+	if(GameRules_GetGameMode() == "flowstate_duckhunt") return
 	
 	switch (GetMapName())
 	{
