@@ -431,11 +431,11 @@ void function SURVIVAL_RunArenaDeathField()
 		lastCenter   = <GetPlayerArray()[0].GetOrigin().x, GetPlayerArray()[0].GetOrigin().y, 0>
 	
 	if(GameRules_GetGameMode() == "flowstate_pkknockback")
-		lastCenter   = <GetPlayerArray()[0].GetOrigin().x, GetPlayerArray()[0].GetOrigin().y, 0>
+		lastCenter   = <ReturnCenterOfSelectedLocation().x, ReturnCenterOfSelectedLocation().y, OriginToGround(ReturnCenterOfSelectedLocation()).z >
 		
 	data.center = lastCenter
 	data.nextCenter = lastCenter
-
+	printt("debug center " + lastCenter)
 	float radius = min( 65536.0, data.startRadius )
 
 	entity deathField = CreateEntity( "prop_script" )
@@ -594,6 +594,9 @@ void function SURVIVAL_RunArenaDeathField()
 		//StatsHook_SetDeathCircle( data.center, data.startRadius, "start_circle_close" )
 
 		vector finalPosition = < data.nextCenter.x, data.nextCenter.y, Survival_GetMapFloorZ( data.nextCenter ) >
+		
+		if(GameRules_GetGameMode() == "flowstate_pkknockback")
+			finalPosition = data.center
 
 		mover.NonPhysicsMoveTo( finalPosition, stage.shrinkDuration, 0, 0 )
 
@@ -623,14 +626,9 @@ void function SURVIVAL_RunArenaDeathField()
 		{
 			DeathFieldStageData nextStage = file.deathFieldStages[deathFieldStage + 1]
 			float frac                    = 1.0 - (nextStage.endRadius / stage.endRadius)
-			if(GetCurrentPlaylistVarBool( "dummies_horde_enabled", false ) || GameRules_GetGameMode() == "flowstate_pkknockback")
+			if(GetCurrentPlaylistVarBool( "dummies_horde_enabled", false ))
 			{
-				// if(CoinFlip())
-				// {
-					data.nextCenter = GetRandomCenter( data.center, 0, data.currentRadius * frac )
-				// } else {
-					// data.nextCenter = GetRandomCenterBiasedToEdge( data.center, 0, data.currentRadius * frac )
-				// }
+				data.nextCenter = GetRandomCenter( data.center, 0, data.currentRadius * frac )
 			}
 			else
 				data.nextCenter = nextStage.endPos // GetRandomCenter( data.center, 0, data.currentRadius * frac )
@@ -687,7 +685,12 @@ void function FinalizeDeathfieldSpawn( DeathFieldData data, entity deathField, e
 {
 	deathField.SetParent( mover )
 	DispatchSpawn( deathField )
-	thread DeathFieldDamage( data, deathField )
+	
+	if(GameRules_GetGameMode() == "flowstate_pkknockback")
+		thread DeathFieldDamage_PkKnockback( data, deathField )
+	else
+		thread DeathFieldDamage( data, deathField )	
+	
 	thread DeathFieldKeepCodeUpdated_THREAD( data, deathField )
 
 	file.deathField = deathField
@@ -750,7 +753,7 @@ void function CleanupOutsideCircle( vector startPos, float startRadius )
 void function DeathFieldDamage( DeathFieldData data, entity deathField )
 {
 	deathField.EndSignal( "OnDestroy" )
-
+	
 	const float DAMAGE_CHECK_STEP_TIME = 1.5
 
 	while ( GamePlaying() )
@@ -763,30 +766,50 @@ void function DeathFieldDamage( DeathFieldData data, entity deathField )
 				continue
 			
 			float playerDist = Distance2D( player.GetOrigin(), data.center )
-			if(GameRules_GetGameMode() == "flowstate_pkknockback")
-				currentRadius += 20
+
+			if ( playerDist > currentRadius )
+			{
+				Remote_CallFunction_Replay( player, "ServerCallback_PlayerTookDamage", 0, 0, 0, 0, DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, eDamageSourceId.deathField, null )
+				player.TakeDamage( int( data.percentDamagePerTick * float( player.GetMaxHealth() ) ), null, null, { scriptType = DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, damageSourceId = eDamageSourceId.deathField } )
+			}
+		}
+
+		wait DAMAGE_CHECK_STEP_TIME
+	}
+}
+
+void function DeathFieldDamage_PkKnockback( DeathFieldData data, entity deathField )
+{
+	deathField.EndSignal( "OnDestroy" )
+	
+	const float DAMAGE_CHECK_STEP_TIME = 1.5
+
+	while ( GamePlaying() )
+	{
+		float currentRadius = data.currentRadius
+		
+		if(data.currentRadius == 0 )
+			currentRadius = GetCurrentPlaylistVarFloat( "deathfield_radius_0", -1.0 )
+		
+		foreach ( player in GetPlayerArray_Alive() )
+		{
+			if( !IsValid(player) ) continue
+			
+			if ( player.IsPhaseShifted() )	continue
+			
+			float playerDist = Distance2D( player.GetOrigin(), data.center )
+			currentRadius += 5
 			
 			if ( playerDist > currentRadius )
 			{
-				if(GameRules_GetGameMode() == "flowstate_pkknockback")
-				{
-					if(IsValid(player.e.lastAttacker))
-						player.Die( player.e.lastAttacker, player.e.lastAttacker, { damageSourceId = eDamageSourceId.mp_weapon_energy_shotgun } )
-					else
-						player.Die( null, null, { damageSourceId = eDamageSourceId.deathField } )
-				}
+				if(IsValid(player.e.lastAttacker))
+					player.Die( player.e.lastAttacker, player.e.lastAttacker, { damageSourceId = eDamageSourceId.mp_weapon_energy_shotgun } )
 				else
-				{
-					Remote_CallFunction_Replay( player, "ServerCallback_PlayerTookDamage", 0, 0, 0, 0, DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, eDamageSourceId.deathField, null )
-					player.TakeDamage( int( data.percentDamagePerTick * float( player.GetMaxHealth() ) ), null, null, { scriptType = DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, damageSourceId = eDamageSourceId.deathField } )
-				}
+					player.Die( null, null, { damageSourceId = eDamageSourceId.deathField } )
 			}
 		}
 		
-		if(GameRules_GetGameMode() == "flowstate_pkknockback")
-			WaitFrame()
-		else
-			wait DAMAGE_CHECK_STEP_TIME
+		WaitFrame()
 	}
 }
 
