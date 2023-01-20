@@ -1,6 +1,6 @@
 // Credits
 // AyeZee#6969 -- ctf gamemode and ui
-// sal#3261 -- base flowstate_dm mode to work off
+// sal#3261 -- base custom_tdm mode to work off
 // Retículo Endoplasmático#5955 -- giving me the ctf sound names
 // everyone else -- advice
 
