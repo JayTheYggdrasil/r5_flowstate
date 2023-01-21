@@ -79,6 +79,18 @@ void function RemoteFunctions_Init_Begin()
 			Remote_RegisterClientFunction("Minimap_DisableDraw_Internal")
 			Remote_RegisterClientFunction("DUCKHUNT_CustomHint", "int", 0, 255, "int", INT_MIN, INT_MAX)
 			break
+		case flowstate_pkknockback:
+			Remote_RegisterClientFunction("Minimap_EnableDraw_Internal")
+			Remote_RegisterClientFunction("Minimap_DisableDraw_Internal")
+			Remote_RegisterClientFunction("UpdateRingSizeFromServer", "float", 0.0, 99999.0, 32)
+			Remote_RegisterClientFunction("ServerCallback_FSDM_SetScreen", "int", 0, 255, "int", 0, 255, "int", INT_MIN, INT_MAX, "int", 0, 255)
+			Remote_RegisterClientFunction("ServerCallback_FSDM_OpenVotingPhase", "bool")
+			Remote_RegisterClientFunction("ServerCallback_FSDM_ChampionScreenHandle", "bool", "int", INT_MIN, INT_MAX, "int", INT_MIN, INT_MAX )
+			Remote_RegisterClientFunction("ServerCallback_FSDM_UpdateVotingMaps", "int", 0, 255, "int", 0, 255, "int", 0, 255, "int", 0, 255)
+			Remote_RegisterClientFunction("ServerCallback_FSDM_UpdateMapVotesClient", "int", 0, 255, "int", 0, 255, "int", 0, 255, "int", 0, 255)
+			Remote_RegisterClientFunction("ServerCallback_CoolCameraOnMenu")
+			Remote_RegisterClientFunction("ServerCallback_FSDM_CoolCamera")
+			break
 		case flowstate_prophunt:
 			Remote_RegisterClientFunction("ServerCallback_FSDM_SetScreen", "int", 0, 255, "int", 0, 255, "int", INT_MIN, INT_MAX, "int", 0, 255)
 			Remote_RegisterClientFunction("ServerCallback_FSDM_OpenVotingPhase", "bool")

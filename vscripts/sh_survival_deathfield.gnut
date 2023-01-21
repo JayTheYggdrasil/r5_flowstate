@@ -432,7 +432,7 @@ void function SURVIVAL_RunArenaDeathField()
 		lastCenter   = <GetPlayerArray()[0].GetOrigin().x, GetPlayerArray()[0].GetOrigin().y, 0>
 	
 	if(GameRules_GetGameMode() == "flowstate_pkknockback")
-		lastCenter   = <ReturnCenterOfSelectedLocation().x, ReturnCenterOfSelectedLocation().y, SURVIVAL_FindClosestTitanDropPoint(ReturnCenterOfSelectedLocation()).z >
+		lastCenter   = <ReturnCenterOfSelectedLocation().x, ReturnCenterOfSelectedLocation().y, ReturnCenterOfSelectedLocation().z >
 	
 	data.center = lastCenter
 	data.nextCenter = lastCenter
@@ -799,7 +799,7 @@ void function DeathFieldDamage_PkKnockback( DeathFieldData data, entity deathFie
 			if ( player.IsPhaseShifted() )	continue
 			
 			float playerDist = Distance2D( player.GetOrigin(), data.center )
-			currentRadius += 5
+			currentRadius += 1
 			
 			if ( playerDist > currentRadius )
 			{
@@ -1088,8 +1088,8 @@ vector function SURVIVAL_FindClosestTitanDropPoint( vector center )
 
 	int numTries      = 0
 	int timesToTry    = 20
-	float radius      = 1000.0
-	float minDistance = 0.0
+	float radius      = 2000
+	float minDistance = 500
 
 	while ( !foundSpot )
 	{
@@ -1105,10 +1105,10 @@ vector function SURVIVAL_FindClosestTitanDropPoint( vector center )
 
 		vector startPos = GetRandomCenter( center, minDistance, radius, 0.0, 360.0 )
 
-		vector maxs          = <40, 40, 256>//bigger than model to compensate for large effect
-		vector mins          = <-40, -40, 0>
+		vector maxs          = <1000,1000,1000>//bigger than model to compensate for large effect
+		vector mins          = <1000,1000,1000>
 		TraceResults trace   = TraceHull( <startPos.x, startPos.y, 10000>, <startPos.x, startPos.y, -10000>, mins, maxs, null, TRACE_MASK_TITANSOLID, TRACE_COLLISION_GROUP_NONE )
-		vector ornull endPos = NavMesh_ClampPointForHullWithExtents( trace.endPos + <0, 0, 10>, HULL_TITAN, <200, 200, 200> )
+		vector ornull endPos = NavMesh_ClampPointForHullWithExtents( trace.endPos + <0, 0, 10>, HULL_TITAN, <1000,1000,1000>)
 
 		if ( endPos != null )
 		{

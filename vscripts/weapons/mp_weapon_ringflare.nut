@@ -368,13 +368,17 @@ void function DeathFieldDamage( entity circle, entity owner)
 		wait DAMAGE_CHECK_STEP_TIME
 	}
 }
-#endif
 
-#if SERVER
 void function DeathFieldEnter(entity trigger, entity ent)
 {
 	if(!ent.IsPlayer()) return
 	Remote_CallFunction_NonReplay( ent, "EnterTriggerRF", ent)
+}
+
+void function DeathFieldExit(entity trigger, entity ent)
+{
+	if(!ent.IsPlayer()) return
+	Remote_CallFunction_NonReplay( ent, "ExitTriggerRF", ent)
 }
 #endif
 
@@ -390,17 +394,7 @@ void function EnterTriggerRF(entity ent)
 			EffectSetIsWithCockpit( file.fxonscreen, true )	
 		}
 }
-#endif	
 
-#if SERVER
-void function DeathFieldExit(entity trigger, entity ent)
-{
-	if(!ent.IsPlayer()) return
-	Remote_CallFunction_NonReplay( ent, "ExitTriggerRF", ent)
-}
-#endif
-
-#if CLIENT
 void function ExitTriggerRF(entity ent)
 {
 	if ( EffectDoesExist( file.fxonscreen ) )
@@ -410,9 +404,7 @@ void function ExitTriggerRF(entity ent)
 			Chroma_LeftRing()
 		}
 }
-#endif
 
-#if CLIENT
 void function OnBeginPlacingRingFlare( entity player, int statusEffect, bool actuallyChanged )
 {
 	if ( player != GetLocalViewPlayer() )

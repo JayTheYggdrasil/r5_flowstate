@@ -144,7 +144,7 @@ void function Sequence_WaitingForPlayers()
 
 	wait PreGame_GetWaitingForPlayersCountdown() + (introCountdownEnabled ? 0.0 : CharSelect_GetIntroMusicStartTime())
 		
-	if(GameRules_GetGameMode() == "flowstate_dm" || GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt") 
+	if(GameRules_GetGameMode() != SURVIVAL) 
 	{	
 		SetGameState( eGameState.Playing )
 		return	

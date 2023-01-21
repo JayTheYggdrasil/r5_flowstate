@@ -474,6 +474,9 @@ void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bo
 	Hud_SetVisible( Hud_GetChild( file.menu, "MapVoteFrame2" ), MapVoteFrame2 )
 	Hud_SetVisible( Hud_GetChild( file.menu, "VotedForLbl" ), VotedForLbl )
 	
+	if(GetCurrentPlaylistName() != "flowstate_prophunt")
+		MapVote = false	
+	
 	Hud_SetVisible( Hud_GetChild( file.menu, "SelectTeamText" ), MapVote )
 	Hud_SetEnabled( Hud_GetChild( file.menu, "SelectTeamText" ), MapVote )
 	
@@ -484,8 +487,8 @@ void function SetVoteHudElems(bool MapVote, bool TimerFrame, bool TimerText2, bo
 	Hud_SetEnabled( Hud_GetChild( file.menu, "TeamPropsButton" ), MapVote )
 	
 	Hud_SetVisible( Hud_GetChild( file.menu, "TeamSeekersButton" ), MapVote )
-	Hud_SetEnabled( Hud_GetChild( file.menu, "TeamSeekersButton" ), MapVote )
-	
+	Hud_SetEnabled( Hud_GetChild( file.menu, "TeamSeekersButton" ), MapVote )	
+		
 	if(MapVote)
 	{
 		RuiSetInt( Hud_GetRui( Hud_GetChild( file.menu, "TeamSeekersButton")), "status", eFriendStatus.ONLINE_AWAY )

@@ -59,7 +59,6 @@
 		{
 			ControlName				RuiPanel
 			rui                     "ui/basic_border_box.rpak"
-			visible					1
 			drawColor				"0 0 0 50"
 			"wide"						"250"
 			"tall"						"200"

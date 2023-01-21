@@ -560,7 +560,7 @@ void function ClientCodeCallback_PlayerDidDamage( PlayerDidDamageParams params )
 		playHitSound = true
 		showCrosshairHitIndicator = true
 	}
-	else if ( isOvershieldShot )
+	else if ( isOvershieldShot || GameRules_GetGameMode() == "flowstate_pkknockback")
 	{
 		PlayShieldHitEffect( params, OVERSHIELD_COLOR )
 		showCrosshairHitIndicator = true
