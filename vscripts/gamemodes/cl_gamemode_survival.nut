@@ -938,49 +938,23 @@ void function MinimapPackage_ObjectiveAreaInit( entity ent, var rui )
 	{
 		case "safeZone":
 			RuiTrackFloat3( rui, "playerPos", GetLocalViewPlayer(), RUI_TRACK_ABSORIGIN_FOLLOW )
-			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( SAFE_ZONE_COLOR ), SAFE_ZONE_ALPHA )  //
+			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( SAFE_ZONE_COLOR ), SAFE_ZONE_ALPHA )
 			RuiSetBool( rui, "drawLine", true )
 			break
 
 		case "safeZone_noline":
-			//
-			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( SAFE_ZONE_COLOR ), SAFE_ZONE_ALPHA )  //
-			//
+			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( SAFE_ZONE_COLOR ), SAFE_ZONE_ALPHA )
 			break
 
 		case "surveyZone":
 			RuiSetBool( rui, "blink", false )
-			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( TEAM_COLOR_PARTY / 255.0 ), 0.05 )  //
+			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( TEAM_COLOR_PARTY / 255.0 ), 0.05 )
 			break
-
-#if(true)
 
 		case "trainIcon":
-			//
-			//
 			RuiSetBool( rui, "blink", false )
-			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( TEAM_COLOR_PARTY / 255.0 ), 1.0 )  //
+			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( TEAM_COLOR_PARTY / 255.0 ), 1.0 )
 			break
-#endif
-
-#if(false)
-
-
-
-
-
-
-//
-
-
-
-
-
-
-
-//
-
-#endif
 
 		case "hotZone":
 			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( <128, 188, 255> / 255.0 ), 0.25 )
@@ -988,9 +962,14 @@ void function MinimapPackage_ObjectiveAreaInit( entity ent, var rui )
 			RuiSetBool( rui, "blink", true )
 			RuiSetBool( rui, "borderBlink", true )
 			break
+		case "ringFlare":
+			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( <252, 65, 3> / 255.0 ), 0.25 )
+			RuiSetColorAlpha( rui, "objBorderColor", SrgbToLinear( <163, 54, 18> / 255.0 ), 0.5 )
+			RuiSetBool( rui, "blink", true )
+			RuiSetBool( rui, "borderBlink", true )
+			break
 	}
 }
-
 
 void function CLSurvival_RegisterNetworkFunctions()
 {
