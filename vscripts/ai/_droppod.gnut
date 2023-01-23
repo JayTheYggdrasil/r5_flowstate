@@ -6,6 +6,7 @@ global function CreateDropPod
 global function LaunchAnimDropPod
 global function GetDropPodAnimDuration
 global function CreateDropPodSmokeTrail
+global function ReturnCarePackagesNewArray
 
 //const droppod_fireteam_collision = $"models/vehicle/droppod_fireteam/droppod_fireteam_collision.mdl"
 global const DROPPOD_MODEL = $"mdl/vehicle/droppod_fireteam/droppod_fireteam.rmdl"
@@ -27,6 +28,7 @@ struct
     #endif
 	array<entity>                 lootBinList
 	int                           numLootBins
+	array<entity>                 carePackagesNew
 } file
 
 
@@ -34,23 +36,35 @@ void function AirdropItems( vector origin, vector angles, array<string> contents
 {
 	entity dropPod = CreateDropPod( origin, angles, sourceWeaponClassName )
 	dropPod.SetSkin( skin )
-    
+    file.carePackagesNew.append(dropPod)
+	
+	EndSignal(dropPod, "OnDestroy")
+	
     entity threatProxy = CreateDropPodThreatIndicator(origin, angles)
     thread DropPodBeamWaitForUse(dropPod, origin, angles)
+	
+	OnThreadEnd(
+		function() : ( threatProxy, fxToStop )
+		{
+			if(IsValid(fxToStop))
+				fxToStop.Destroy()
+			
+			if(IsValid(threatProxy))
+				threatProxy.Destroy()
+		}    
+	)
 	
     thread WaitForDropFX(dropPod, animationName, origin, angles)
 	
 	waitthread LaunchAnimDropPod( dropPod, animationName, OriginToGround( origin ), angles )
-	    if(IsValid(threatProxy))
-        threatProxy.Destroy()
-
-	InitDropPod( dropPod )
-    
-    if(IsValid(fxToStop))
-        fxToStop.Destroy()
 	
+	InitDropPod( dropPod )
 	AddMultipleLootItemsToDropPod(dropPod, contents)
+}
 
+array<entity> function ReturnCarePackagesNewArray()
+{
+	return file.carePackagesNew
 }
 
 void function AirDropFireteam( vector origin, vector angles, string animationName, int skin, string sourceWeaponClassName, entity player )
@@ -61,23 +75,23 @@ void function AirDropFireteam( vector origin, vector angles, string animationNam
     entity threatProxy = CreateDropPodThreatIndicator(origin, angles)
 
 	waitthread LaunchAnimDropPod2( dropPod, animationName, OriginToGround( origin ), angles, player )
-	
-	//thread WaitForDropFX(dropPod, animationName, OriginToGround( origin ), angles) 
 
     if(IsValid(threatProxy))
         threatProxy.Destroy()
 
-	//InitDropPod( dropPod )
 	wait 5
-	if(IsValidPlayer(player)){
-	player.p.isPlayerSpawningInDroppod = false
-	}
+	if(IsValid(player))
+		player.p.isPlayerSpawningInDroppod = false
 }
 
 void function WaitForDropFX(entity dropPod, string animationName, vector origin, vector angles)
 { 
+	dropPod.EndSignal( "OnDestroy" )
+	
     float scaledTime = dropPod.GetSequenceDuration(animationName) * 0.95
+	
 	wait scaledTime
+	
     DropPodOnImpactFXAndShake(dropPod, origin, angles)
 }
 
@@ -206,7 +220,9 @@ void function DropPodThreatIndicator(entity dropPod)
 #endif
 void function DropPodBeamWaitForUse(entity dropPod, vector origin, vector angles)
 {
-    dropPod.EndSignal( "OnUse" )
+	dropPod.EndSignal( "OnDestroy" )	
+	dropPod.EndSignal( "OnUse" )
+	
     entity trailFXHandle = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( FAR_SPAWN_FX ), origin, angles)
     
     OnThreadEnd(
@@ -454,6 +470,8 @@ function CheckPlayersIntersectingPod( pod, targetOrigin )
 
 	foreach ( player in playerList )
 	{
+		if(!IsValid(player)) continue
+		
 		local playerOrigin = player.GetOrigin()
 		if ( DistanceSqr( targetOrigin, playerOrigin ) > safeRadiusSqr )
         {
@@ -545,9 +563,10 @@ void function PushPlayerAndCreateDropPodCollision( entity pod, vector targetOrig
 		}
 	)
 
-	while ( CheckPlayersIntersectingPod( pod, targetOrigin ) )
-		wait( 0.1 )
-
+	while ( IsValid(pod) && CheckPlayersIntersectingPod( pod, targetOrigin ) )
+		WaitFrame()
+	
+	if(IsValid(pod))
 	pod.Solid()
 }
 
@@ -567,6 +586,7 @@ void function DropPodOnImpactFXAndShake( entity droppod, vector origin, vector a
 	local flags = 2 // 11
 	local impactOrigin = origin + Vector( 0,0,10 )
 	local impactRadius = 192
+
 	thread PushPlayerAndCreateDropPodCollision( droppod, origin )
 }
 
