@@ -234,7 +234,7 @@ void function JumpPadPushEnt( entity trigger, entity ent, vector origin, vector 
 			entity jumpPad = trigger.GetOwner()
 			if ( IsValid( jumpPad ) )
 			{
-				if ( !Bleedout_IsBleedingOut( ent ) )
+				if ( !Bleedout_IsBleedingOut( ent ) && GameRules_GetGameMode() != "flowstate_duckhunt")
 				{
 					thread JumpPad_GiveDoubleJump( ent )
 				}
