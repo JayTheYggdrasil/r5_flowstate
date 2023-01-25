@@ -58,7 +58,7 @@ void function OnClientConnected( entity player )
 	printt("Flowstate DEBUG - The gamemode running is: " + GameRules_GetGameMode())
 	//Wraith Q fix. Colombia
 	player.SetForceVisibleInPhaseShift(true)
-	player.SetPlayerNetInt( "skyDiveTrailOverrideIndex", 2 )
+	//player.SetPlayerNetInt( "skyDiveTrailOverrideIndex", 2 )
 	
 	//Phase Rewind Record Positions. Colombia
 	thread RecordPositions(player)

@@ -499,6 +499,11 @@ void function ServerCallback_FSDM_SetScreen(int screen, int team, int mapid, int
 
         case eFSDMScreen.VoteScreen: //Sets the screen to the vote screen
 			DestroyChampionUI()
+			
+			hasvoted = false
+			isvoting = true
+			roundover = true
+			
             EmitSoundOnEntity( GetLocalClientPlayer(), "UI_PostGame_CoinMove" )
             thread UpdateUIVoteTimer()
             RunUIScript("Set_FSDM_VotingScreen")
