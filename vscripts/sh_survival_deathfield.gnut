@@ -1088,7 +1088,7 @@ vector function SURVIVAL_FindClosestTitanDropPoint( vector center )
 
 	int numTries      = 0
 	int timesToTry    = 20
-	float radius      = 2000
+	float radius      = 500
 	float minDistance = 500
 
 	while ( !foundSpot )
@@ -1096,7 +1096,7 @@ vector function SURVIVAL_FindClosestTitanDropPoint( vector center )
 		if ( numTries > timesToTry )
 		{
 			numTries = 0
-			radius += 500.0
+			radius += 200.0
 			if ( radius > 5000.0 )
 			{
 				radius = 5000.0
@@ -1259,7 +1259,7 @@ void function Deathfield_Destroy()
 				file.deathField.Minimap_Hide( 0, player )
 		}
 		
-		if ( IsValid( file.deathField.GetParent() ) )
+		if ( IsValid( file.deathField) && IsValid( file.deathField.GetParent() ) )
 			file.deathField.GetParent().Destroy()
 		
 		if ( IsValid( file.deathField ) )
@@ -1526,7 +1526,7 @@ void function OnPropScriptCreated( entity prop )
 		AddEntityDestroyedCallback( prop, SurveyZoneCleanupOnDestroy )
 	}
 
-	if ( prop.GetTargetName() == "deathField" )
+	if ( prop.GetTargetName() == "deathField")
 	{
 		file.deathField = prop
 		thread Cl_DeathFieldThink( prop )
@@ -1596,6 +1596,10 @@ void function Cl_DeathFieldThink( entity deathField )
 	int currentDeathFieldStage = -1
 	float lastStartTime        = 0.0
 	float lastEndTime          = 0.0
+	
+	if(file.deathFieldStages.len() == 0)
+		return
+	
 	while ( 1 )
 	{
 		int stage       = SURVIVAL_GetCurrentDeathFieldStage()
@@ -1851,6 +1855,8 @@ vector function SURVIVAL_GetDeathFieldCenter()
 float function SURVIVAL_GetDeathFieldCurrentRadius()
 {
 	#if CLIENT
+		if(file.deathFieldStages.len() == 0) return GetCurrentPlaylistVarFloat( "survival_death_field_start_radius", 65000 )
+			
 		float startRadius = file.deathFieldData.currentRadius
 
 		int i = SURVIVAL_GetCurrentDeathFieldStage()
