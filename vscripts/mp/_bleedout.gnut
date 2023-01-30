@@ -135,7 +135,10 @@ void function Bleedout_StartPlayerBleedout( entity player, entity attacker )
 	file.lastAttacker[ player ] = attacker
 	
 	thread Bleedout_DeathProtection( player )
-	SetPlayerEliminated( player )
+	
+	if(GameRules_GetGameMode() != "flowstate_duckhunt")
+		SetPlayerEliminated( player )
+		
 	player.SetPlayerNetInt( "bleedoutType", EquipmentSlot_GetEquipmentTier( player, "incapshield" ) )
 	player.SetHealth( 100 )
 	
@@ -624,7 +627,7 @@ void function PlayerAttemptRes( entity playerHealer, entity playerToRes )
 	playerToRes.SetHealth( playerToRes.GetMaxHealth() * firstAidHealPercent )
 	file.isBleeding[ playerToRes ] = false
 	file.lastAttacker[ playerToRes ] = svGlobal.worldspawn
-	if ( IsPilotEliminationBased() )
+	if ( IsPilotEliminationBased() && GameRules_GetGameMode() != "flowstate_duckhunt" )
 		ClearPlayerEliminated( playerToRes )
 
 	if ( IsValid( file.Callback_OnPlayerGiveFirstAid ) )
