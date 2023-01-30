@@ -96,12 +96,16 @@ global const r5r_lobby                   = "r5r_lobby"
 global const TEAM_DEATHMATCH            = "tdm"
 global const SURVIVAL                   = "survival"
 global const FREELANCE                  = "freelance"
-global const flowstate_dm                 = "flowstate_dm"
 global const CUSTOM_CTF                 = "custom_ctf"
+
+//gamemodes by @CafeFPS
+global const flowstate_dm                 	= "flowstate_dm"
 global const flowstate_aimtrainer			= "flowstate_aimtrainer"
-global const flowstate_prophunt			= "flowstate_prophunt"
-global const flowstate_duckhunt			= "flowstate_duckhunt"
+global const flowstate_prophunt				= "flowstate_prophunt"
+global const flowstate_duckhunt				= "flowstate_duckhunt"
 global const flowstate_pkknockback			= "flowstate_pkknockback"
+global const flowstate_infection			= "flowstate_infection"
+
 global const map_editor_deprecated					= "map_editor_deprecated"
 
 global const FREELANCE_ENABLED          = false
