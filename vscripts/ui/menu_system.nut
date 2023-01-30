@@ -2,7 +2,7 @@ global function InitSystemMenu
 global function InitSystemPanelMain
 global function InitSystemPanel
 global function UpdateSystemPanel
-
+global function ToggleSetHunter
 global function OpenSystemMenu
 
 global function ShouldDisplayOptInOptions
@@ -35,7 +35,9 @@ struct
 	table<var, ButtonData > endmatchButtonData
 	table<var, ButtonData > spectateButtonData
 	table<var, ButtonData > respawnButtonData
+	table<var, ButtonData > SetHunterButtonData
 	InputDef& qaFooter
+	bool SETHUNTERALLOWED
 } file
 
 void function InitSystemMenu( var newMenuArg ) //
@@ -91,6 +93,11 @@ void function SignalExitChallenge()
 	RunClientScript("ExitChallengeClient")
 }
 
+void function SetHunterFunct()
+{
+	ClientCommand( "sethunter" )
+}
+
 void function OpenWeaponSelector()
 {
 	RunClientScript("OpenTDMWeaponSelectorUI")
@@ -127,6 +134,7 @@ void function InitSystemPanel( var panel )
 	file.spectateButtonData[ panel ] <- clone data
 	file.respawnButtonData[ panel ] <- clone data
 	file.TDM_ChangeWeapons[ panel ] <- clone data
+	file.SetHunterButtonData[ panel ] <- clone data
 	
 	file.ExitChallengeButtonData[ panel ].label = "FINISH CHALLENGE"
 	file.ExitChallengeButtonData[ panel ].activateFunc = SignalExitChallenge
@@ -134,6 +142,9 @@ void function InitSystemPanel( var panel )
 	file.settingsButtonData[ panel ].label = "#SETTINGS"
 	file.settingsButtonData[ panel ].activateFunc = OpenSettingsMenu
 	
+	file.SetHunterButtonData[ panel ].label = "SET HUNTER"
+	file.SetHunterButtonData[ panel ].activateFunc = SetHunterFunct
+		
 	file.TDM_ChangeWeapons[ panel ].label = "CHANGE WEAPON"
 	file.TDM_ChangeWeapons[ panel ].activateFunc = OpenWeaponSelector
 	
@@ -187,26 +198,28 @@ void function OnSystemMenu_Open()
 }
 
 
-void function UpdateSystemPanel( var panel )
+void function UpdateSystemPanel( var panel ) //TODO clean up this
 {
 	//temp workaround, not the best place for this tbh
-	if(IsConnected() && !GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false ))
+	if( IsConnected() && GetCurrentPlaylistName() != "flowstate_aimtrainer" )
 		file.lobbyReturnButtonData[ panel ].label = "#RETURN_TO_LOBBY"
-	else if(IsConnected() && GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false ))
+	else if( IsConnected() && GetCurrentPlaylistName() == "flowstate_aimtrainer" )
 		file.lobbyReturnButtonData[ panel ].label = "EXIT AIM TRAINER"
+	
 	file.lobbyReturnButtonData[ panel ].activateFunc = LeaveDialog
 
 	foreach ( index, button in file.buttons[ panel ] )
 		SetButtonData( panel, index, file.nullButtonData[ panel ] )
 
 	int buttonIndex = 0
-	if ( IsConnected() && !IsLobby() )
+	if ( IsConnected() && !IsLobby() ) 
 	{
 		UISize screenSize = GetScreenSize()
 		SetCursorPosition( <1920.0 * 0.5, 1080.0 * 0.5, 0> )
 
 		SetButtonData( panel, buttonIndex++, file.settingsButtonData[ panel ] )
-		if(!GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false ))
+		
+		if( GetCurrentPlaylistName() != "flowstate_aimtrainer" )
 		{
 			if ( IsSurvivalTraining() || IsFiringRangeGameMode() )
 				SetButtonData( panel, buttonIndex++, file.lobbyReturnButtonData[ panel ] )
@@ -214,12 +227,13 @@ void function UpdateSystemPanel( var panel )
 				SetButtonData( panel, buttonIndex++, file.leaveMatchButtonData[ panel ] )
 		} else
 		{
-			if(ISAIMTRAINER)
+			if(ISAIMTRAINER) //aim trainer menu?
 				SetButtonData( panel, buttonIndex++, file.lobbyReturnButtonData[ panel ] )
-			else
+			else //aim trainer challenge is running?
 				SetButtonData( panel, buttonIndex++, file.ExitChallengeButtonData[ panel ] )
 		}
-		if ( IsFiringRangeGameMode() && !GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false ))
+		
+		if ( IsFiringRangeGameMode() )
 		{
 			SetButtonData( panel, buttonIndex++, file.changeCharacterButtonData[ panel ] ) // !FIXME
 			//SetButtonData( panel, buttonIndex++, file.thirdPersonButtonData[ panel ] )
@@ -227,13 +241,19 @@ void function UpdateSystemPanel( var panel )
 			if ( (GetTeamSize( GetTeam() ) > 1) && FiringRangeHasFriendlyFire() )
 				SetButtonData( panel, buttonIndex++, file.friendlyFireButtonData[ panel ] )
 		}
-		if( GetCurrentPlaylistName() == "flowstate_dm" && IsConnected() && !GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
+		
+		if( GetCurrentPlaylistName() == "flowstate_dm" && !GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
 		{
 			SetButtonData( panel, buttonIndex++, file.spectateButtonData[ panel ] )
 			SetButtonData( panel, buttonIndex++, file.respawnButtonData[ panel ] )
 			SetButtonData( panel, buttonIndex++, file.TDM_ChangeWeapons[ panel ] )
 			if( GetCurrentPlaylistVarBool( "character_reselect_enabled", false ) )
 				SetButtonData( panel, buttonIndex++, file.changeCharacterButtonData[ panel ] )
+		}
+		
+		if( GetCurrentPlaylistName() == "flowstate_duckhunt" && IsConnected() && file.SETHUNTERALLOWED )
+		{
+			SetButtonData( panel, buttonIndex++, file.SetHunterButtonData[ panel ] )
 		}
 	}
 	else
@@ -261,10 +281,15 @@ void function UpdateSystemPanel( var panel )
 	}
 
 	var dataCenterElem = Hud_GetChild( panel, "DataCenter" )
-	if(GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false ))
+	if(IsConnected() && GetCurrentPlaylistName() == "flowstate_aimtrainer")
 		Hud_SetText( dataCenterElem, "Flowstate Aim Trainer by @CafeFPS")
 	else
 		Hud_SetText( dataCenterElem, "R5Reloaded Server: " + MyPing() + " ms.")
+}
+
+void function ToggleSetHunter(bool enable)
+{
+	file.SETHUNTERALLOWED = enable
 }
 
 void function SetButtonData( var panel, int buttonIndex, ButtonData buttonData )
@@ -283,7 +308,7 @@ void function SetButtonData( var panel, int buttonIndex, ButtonData buttonData )
 
 void function OnSystemMenu_Close()
 {
-	if(ISAIMTRAINER && IsConnected() && GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false )){
+	if(ISAIMTRAINER && IsConnected() && GetCurrentPlaylistName() == "flowstate_aimtrainer"){
 		CloseAllMenus()
 		RunClientScript("ServerCallback_OpenFRChallengesMainMenu", PlayerKillsForChallengesUI)
 	}
@@ -294,7 +319,7 @@ void function OnSystemMenu_NavigateBack()
 {
 	Assert( GetActiveMenu() == file.menu )
 	CloseActiveMenu()
-	if(ISAIMTRAINER && IsConnected() && GetCurrentPlaylistVarBool( "firingrange_aimtrainerbycolombia", false )){
+	if(ISAIMTRAINER && IsConnected() && GetCurrentPlaylistName() == "flowstate_aimtrainer"){
 		CloseAllMenus()
 		RunClientScript("ServerCallback_OpenFRChallengesMainMenu", PlayerKillsForChallengesUI)
 	}
