@@ -1697,6 +1697,7 @@ void function PlayerInWindTunnel( entity player )
 				printt( "OUT!" )
 			if ( IsValid( player ) )
 			{
+				player.MovementEnable()
 				player.SetOneHandedWeaponUsageOff()
 				FadeOutSoundOnEntity( player, "Beacon_WindBuffet_Player", 1.0 )
 
@@ -1717,7 +1718,7 @@ void function PlayerInWindTunnel( entity player )
 	while( player.e.inWindTunnel )
 	{
 		//player.GetViewModelEntity().SetPoseParameter( poseIndex, player.e.windTunnelStrength )
-
+		player.MovementDisable()
 		if ( player.e.windTunnelStrength > 0 )
 		{
 			player.SetOneHandedWeaponUsageOn()
