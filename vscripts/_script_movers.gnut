@@ -1693,10 +1693,12 @@ void function PlayerInWindTunnel( entity player )
 	OnThreadEnd(
 		function() : ( player )
 		{
-			if ( FAN_DEBUG )
-				printt( "OUT!" )
+			//if ( FAN_DEBUG )
+			printt( player + " OUT!" )
+			
 			if ( IsValid( player ) )
 			{
+				player.MovementEnable()
 				player.SetOneHandedWeaponUsageOff()
 				FadeOutSoundOnEntity( player, "Beacon_WindBuffet_Player", 1.0 )
 
@@ -1706,8 +1708,8 @@ void function PlayerInWindTunnel( entity player )
 		}
 	)
 
-	if ( FAN_DEBUG )
-		printt( "IN!" )
+	//if ( FAN_DEBUG )
+	printt( player + " IN!" )
 
 	bool playingWindBuffet = false
 
@@ -1717,7 +1719,7 @@ void function PlayerInWindTunnel( entity player )
 	while( player.e.inWindTunnel )
 	{
 		//player.GetViewModelEntity().SetPoseParameter( poseIndex, player.e.windTunnelStrength )
-
+		player.MovementDisable()
 		if ( player.e.windTunnelStrength > 0 )
 		{
 			player.SetOneHandedWeaponUsageOn()
