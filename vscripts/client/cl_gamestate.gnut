@@ -143,25 +143,36 @@ void function Hud_SetModeEmblem()
 	RuiSetAsset( file.gamestateRui, "emblemImage", GetModeEmblemImage( GetCurrentPlaylistName() ) )
 }
 
-void function SetCommonScoreRUIVars( var rui )
+void function SetCommonScoreRUIVars( var rui ) //TODO CHANGE THIS TO SWITCH CASE
 {
+	if ( GameRules_GetGameMode() == "flowstate_infection")
+	{
+		RuiSetString( rui, "gameModeString", "APEX INFECTION" )
+		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+		RuiSetString( rui, "squadsRemainingTextSingular", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
+		RuiSetString( rui, "squadsRemainingTextPlural", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
+		RuiSetString( rui, "squadsRemaining2TextSingular", "INFECTED" )
+		RuiSetString( rui, "squadsRemaining2TextPlural", "INFECTED" )
+		return
+	}
+	
 	if ( IsFallLTM() )
 	{
-		RuiSetString( rui, "gameModeString", "" ) //
+		RuiSetString( rui, "gameModeString", "" )
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
 		RuiSetString( rui, "squadsRemainingTextSingular", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
 		RuiSetString( rui, "squadsRemainingTextPlural", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
 		RuiSetString( rui, "squadsRemaining2TextSingular", "#SHADOW_SQUAD_SHADOW_PLAYERS_REMAIN" )
 		RuiSetString( rui, "squadsRemaining2TextPlural", "#SHADOW_SQUAD_SHADOW_PLAYERS_REMAIN" )
 		return
-	}
-	
+	}	
+
 	if(GameRules_GetGameMode() == "flowstate_prophunt"){
 		RuiSetString( rui, "gameModeString", "APEX PROPHUNT" )
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
 		RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
 		RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
-		RuiSetVisible(rui, true)	
+		RuiSetVisible(rui, true)
 		return
 	}
 	
