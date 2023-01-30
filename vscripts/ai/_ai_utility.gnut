@@ -74,25 +74,6 @@ void function InfiniteJumpTest()
     }
 }
 
-void function DEV_SpawnItemsAirdropAtCrosshair()
-//By Colombia
-{
-    entity player = GetPlayerArray()[ 0 ]
-    
-    vector origin = GetPlayerCrosshairOrigin( player )
-    vector angles = player.GetAngles()*-1
-
-    // entity fx = StartParticleEffectInWorld_ReturnEntity(GetParticleSystemIndex( $"P_ar_loot_drop_point" ), origin, angles)
-            // fx.kv.renderamt = 255
-            // fx.kv.rendermode = 0
-            // fx.kv.rendercolor = "255 255 255 50"
-            // fx.kv.VisibilityFlags = ENTITY_VISIBLE_TO_EVERYONE
-        
-    // EffectSetControlPointVector(fx, 2, <255,255,255>)
-        
-    thread AirdropItems( origin, angles,  ["mp_weapon_guidedmissile", "mp_weapon_sniper", "mp_weapon_sniper" ], null, "droppod_loot_drop_lifeline", player, 0, "mp_ability_care_package" )
-}
-
 void function SpawnDoubleDoorAtCrosshair()
 {
 //By Colombia
