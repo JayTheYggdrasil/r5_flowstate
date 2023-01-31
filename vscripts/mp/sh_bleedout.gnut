@@ -173,7 +173,7 @@ bool function Bleedout_CanRevivePlayer( entity reviver, entity victim )
 	if ( !Bleedout_PlayerCanBeRessed( victim ) )
 		return false
 
-	bool tryingToRevive = (IsFriendlyTeam( reviver.GetTeam(), victim.GetTeam() ) || IsRecruitMode())
+	bool tryingToRevive = ( IsFriendlyTeam( reviver.GetTeam(), victim.GetTeam() ) )
 
 	vector victimPos          = victim.GetOrigin()
 	vector revivorEyePos      = reviver.EyePosition()

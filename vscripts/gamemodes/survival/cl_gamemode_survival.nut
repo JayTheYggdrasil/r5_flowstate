@@ -84,11 +84,16 @@ global function AddCallback_OnSquadMuteChanged
 global function AddCallback_ShouldRunCharacterSelection
 
 global function OverwriteWithCustomPlayerInfoTreatment
+
 global function SetCustomPlayerInfoCharacterIcon
 global function SetCustomPlayerInfoTreatment
 global function SetCustomPlayerInfoColor
-global function GetPlayerInfoColor
+
 global function ClearCustomPlayerInfoColor
+global function ClearCustomPlayerInfoTreatment
+global function ClearCustomPlayerInfoCharacterIcon
+
+global function GetPlayerInfoColor
 
 global function SetNextCircleDisplayCustomStarting
 global function SetNextCircleDisplayCustomClosing
@@ -781,6 +786,17 @@ void function SetCustomPlayerInfoCharacterIcon( entity player, asset customIcon 
 		RuiSetImage( file.pilotRui, "playerIcon", file.customCharacterIcon[player] )
 }
 
+void function ClearCustomPlayerInfoCharacterIcon(entity player)
+{
+	if ( player in file.customCharacterIcon )
+	{
+		delete file.customCharacterIcon[player]
+		ItemFlavor character = LoadoutSlot_WaitForItemFlavor( ToEHI( player ), Loadout_CharacterClass() )
+		asset classIcon      = CharacterClass_GetGalleryPortrait( character )
+		RuiSetImage( file.pilotRui, "playerIcon", classIcon )	
+	}
+}
+
 void function SetCustomPlayerInfoTreatment( entity player, asset treatmentImage )
 {
 	if ( !(player in file.customPlayerInfoTreatment) )
@@ -788,6 +804,15 @@ void function SetCustomPlayerInfoTreatment( entity player, asset treatmentImage 
 	file.customPlayerInfoTreatment[player] = treatmentImage
 	if ( file.pilotRui != null )
 		RuiSetImage( file.pilotRui, "customTreatment", file.customPlayerInfoTreatment[player] )
+}
+
+void function ClearCustomPlayerInfoTreatment(entity player)
+{
+	if ( player in file.customPlayerInfoTreatment )
+	{
+		delete file.customPlayerInfoTreatment[player]
+		RuiSetImage( file.pilotRui, "customTreatment", $"" )
+	}
 }
 
 void function SetCustomPlayerInfoColor( entity player, vector characterColor )
@@ -990,7 +1015,7 @@ void function ScorebarInitTracking( entity player, var statusRui )
 	RuiTrackFloat( statusRui, "deathfieldDistance", player, RUI_TRACK_DEATHFIELD_DISTANCE )
 	RuiTrackInt( statusRui, "teamMemberIndex", player, RUI_TRACK_PLAYER_TEAM_MEMBER_INDEX )
 
-	if ( GetCurrentPlaylistVarBool( "second_scorebar_enabled", false ) == true )
+	if ( GetCurrentPlaylistVarBool( "second_scorebar_enabled", false ) == true || GameRules_GetGameMode() == "flowstate_infection")
 	{
 		RuiTrackInt( statusRui, "squadsRemainingCount", null, RUI_TRACK_SCRIPT_NETWORK_VAR_GLOBAL_INT, GetNetworkedVariableIndex( "livingPlayerCount" ) )
 		RuiTrackInt( statusRui, "squadsRemainingCount2", null, RUI_TRACK_SCRIPT_NETWORK_VAR_GLOBAL_INT, GetNetworkedVariableIndex( "livingShadowPlayerCount" ) )

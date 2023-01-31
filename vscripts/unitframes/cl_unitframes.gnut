@@ -41,9 +41,6 @@ void function ClUnitFrames_Init()
 	AddOnSpectatorTargetChangedCallback( OnSpectatorTargetChanged )
 	AddCallback_OnViewPlayerChanged( OnViewPlayerChanged )
 	AddCallback_GameStateEnter( eGameState.Playing, OnGameStateEnterPlaying )
-
-	if ( IsRecruitMode() )
-		CL_RecruitModeUnitFrames_Init()
 }
 
 

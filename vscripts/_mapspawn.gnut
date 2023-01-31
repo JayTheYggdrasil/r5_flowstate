@@ -310,6 +310,9 @@ void function CodeCallback_MapSpawn() // original script entry point
 	//r5r base sdk
 	PrecacheWeapon( $"melee_bolo_sword" )
 	PrecacheWeapon( $"mp_weapon_bolo_sword_primary" )
+	PrecacheWeapon( $"melee_shadowsquad_hands" )
+	PrecacheWeapon( $"mp_weapon_shadow_squad_hands_primary" )
+	
 	// PrecacheWeapon( $"mp_weapon_melee_boxing_ring")
 	// PrecacheWeapon( $"melee_boxing_ring")
 	// PrecacheWeapon( $"mp_weapon_throwingknife" )
@@ -396,6 +399,7 @@ void function CodeCallback_MapSpawn() // original script entry point
 	// PrecacheWeapon($"mp_weapon_gaslauncher")
 	// PrecacheWeapon($"mp_weapon_r1kraber")
 	PrecacheWeapon($"mp_weapon_energysword")
+	PrecacheWeapon($"mp_weapon_gravstar_gun")
 	
 	switch(GameRules_GetGameMode())
 	{

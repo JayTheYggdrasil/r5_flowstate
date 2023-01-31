@@ -34,6 +34,11 @@ struct
 
 void function AirdropItems( vector origin, vector angles, array<string> contents, entity fxToStop, string animationName, entity owner, int skin, string sourceWeaponClassName )
 {
+	if(ReturnLocationName() == "Shipment")
+	{
+		origin = <11224.8115, 24494.2285, 247.695862>
+	}
+	
 	entity dropPod = CreateDropPod( origin, angles, sourceWeaponClassName )
 	dropPod.SetSkin( skin )
     file.carePackagesNew.append(dropPod)
@@ -56,7 +61,12 @@ void function AirdropItems( vector origin, vector angles, array<string> contents
 	
     thread WaitForDropFX(dropPod, animationName, origin, angles)
 	
-	waitthread LaunchAnimDropPod( dropPod, animationName, OriginToGround( origin ), angles )
+	if(ReturnLocationName() == "Shipment")
+	{
+		waitthread LaunchAnimDropPod( dropPod, animationName, origin, angles )
+	}
+	else
+		waitthread LaunchAnimDropPod( dropPod, animationName, OriginToGround( origin ), angles )
 	
 	InitDropPod( dropPod )
 	AddMultipleLootItemsToDropPod(dropPod, contents)

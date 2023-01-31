@@ -269,10 +269,6 @@ void function GameModes_Init()
 	//GameMode_AddScoreboardColumnData( gameMode, "#SCOREBOARD_ASSISTS", PGS_ASSISTS, 2 )
 	GameMode_SetColor( gameMode, [212, 83, 152, 255] )
 
-	#if DEVSCRIPTS
-	DevGameModes_Init()
-	#endif
-
 	#if SERVER || CLIENT
 	GameModes_Init_SV_CL()
 	#endif

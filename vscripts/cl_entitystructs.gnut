@@ -183,6 +183,7 @@ global struct ClientPlayerStruct
 	bool isAttackersAbilityEnabled = false
 	bool isRoundTimerEnabled = false
 	int savedAbilityTimer = 0
+	array<int> shadowFxHandles
 }
 
 

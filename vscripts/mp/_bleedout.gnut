@@ -318,7 +318,7 @@ void function EnablePlayerRes( entity player )
 
 			player.UnsetUsable()
 
-			bool tryingToRevive = (IsFriendlyTeam( playerUser.GetTeam(), player.GetTeam() ) || IsRecruitMode())
+			bool tryingToRevive = (IsFriendlyTeam( playerUser.GetTeam(), player.GetTeam() ))
 
 			if ( tryingToRevive )
 			{

@@ -807,6 +807,11 @@ global struct ServerPlayerStruct
 	
 	//Duckhunt
 	bool wasTeleported = false
+	
+	bool lastFloorCheckPoint = false
+	bool askedForHunter = false
+	
+	array<entity> shadowAttachedEntities
 }
 
 global struct ChallengeScore

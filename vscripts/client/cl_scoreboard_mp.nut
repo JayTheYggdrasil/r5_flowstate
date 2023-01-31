@@ -310,7 +310,7 @@ void function ScoreboardFadeOut()
 
 void function ShowScoreboardMP()
 {
-	if(GameRules_GetGameMode() == SURVIVAL || GameRules_GetGameMode() == "flowstate_aimtrainer" || GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_duckhunt" ) return
+	if(GameRules_GetGameMode() != "flowstate_dm" ) return
 		
 	printf("[SB] %s - %s\n", FUNC_NAME(), GameRules_GetGameMode())
 	

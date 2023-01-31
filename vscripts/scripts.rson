@@ -72,10 +72,9 @@ Scripts:
 When: "SERVER || CLIENT"
 Scripts:
 [
-	gamemodes/sh_dev_gamemodes_mp.gnut // DEVSCRIPTS REMOVE
 	gamemodes/sh_gamemodes_mp.gnut
 
-  pilot/sh_pilot_tracking_vision.gnut
+	pilot/sh_pilot_tracking_vision.gnut
 	sh_bird_cluster.nut
 
 	sh_extended_use.gnut
@@ -124,7 +123,6 @@ Scripts:
 
 	sh_persistent_data.gnut
 	gamemodes/sh_gamemodes.gnut
-	gamemodes/sh_dev_gamemodes.gnut // DEVSCRIPTS REMOVE
 	sh_mp_utility_all.gnut
 	sh_stats_internals.gnut
 	sh_stats.gnut
@@ -142,18 +140,6 @@ When: "CLIENT"
 Scripts:
 [
 	loot_ceremony_lighting_rig.gnut
-]
-
-When: "SERVER"
-Scripts:
-[
-	dev/_devstats.gnut
-]
-
-When: "SERVER && DEV"
-Scripts:
-[
-  _smoke_test.gnut
 ]
 
 When: "SERVER"
@@ -209,11 +195,10 @@ Scripts:
 	_utility_shared.nut
 	sh_damage_types.nut
 	sh_passive_utility.gnut
-	gamemodes/_frontline.gnut
+	gamemodes/util/_frontline.gnut
 	mp/sh_teams.gnut
 	pilot/sh_pilot_gun_shield.gnut
 	pilot/sh_pilot_leeching.gnut
-	sentry_turrets/sh_sentry_turrets.gnut
 	sh_anim_aliases.gnut
 	sh_codecallbacks.gnut
 	sh_damage_utility.gnut
@@ -318,9 +303,6 @@ Scripts:
 	sh_mp_utility.gnut
 	sh_score.gnut
 	sh_elite_streak.gnut
-
-	gamemodes/sh_gamemode_tdm.nut
-	gamemodes/sh_gamemode_recruit.nut
 ]
 
 When: "SERVER || CLIENT || UI"
@@ -330,7 +312,7 @@ Scripts:
 	
 	melee/sh_melee.gnut
 	melee/sh_melee_synced.gnut
-	gamemodes/sh_gamemode_survival.nut
+	gamemodes/survival/sh_gamemode_survival.nut
 
 	sh_ping.gnut
 ]
@@ -366,8 +348,8 @@ Scripts:
 
 	_ultimates.gnut
 	sh_survival_persistentdamagelayer.gnut
-	gamemodes/sh_gamemode_shadow_squad.nut
-	
+	gamemodes/shadowfall/sh_gamemode_shadow_squad.nut
+	gamemodes/shadowfall/sh_gamemode_shadow_squad_precache.nut
 ]
 
 When: "SERVER"
@@ -399,7 +381,6 @@ Scripts:
 	_threat_tracker.gnut
 	ai/_ai_chatter.gnut
 	ai/_ai_goliath.gnut
-	ai/_ai_stationary_firing_positions.gnut // DEVSCRIPTS remove
 	ai/_ai_drone.gnut
 	ai/_ai_personal_shield.gnut
 	ai/_ai_gunship.gnut
@@ -441,14 +422,12 @@ Scripts:
 	mp/player_cloak.nut
 	mp/_titan_tether.gnut
 	_hovertank.gnut
-	_health_regen.gnut
-	// sh_sdk_tools.nut
+	_health_regen.gnut	
 	pilot/_leeching.gnut
 	pilot/_pilot_leeching.gnut
 	pilot/_zipline.gnut
-	pilot/class_wallrun.gnut
-	superbar/smokescreen.nut
-
+	pilot/class_wallrun.gnut	
+	titan/smokescreen.nut
 	titan/_replacement_titans_drop.gnut
 	titan/_titan_commands.gnut
 	titan/_titan_health.gnut
@@ -460,11 +439,11 @@ Scripts:
 	weapons/_ball_lightning.gnut
 	weapons/_cloaker.gnut
 	weapons/_particle_wall.gnut
-
 	mp/_mobility_experiments.gnut
 	mp/_model_viewer.nut
-
+	
 	mp/_base_cmds.gnut
+	// sh_sdk_tools.nut
 ]
 
 When: "SERVER"
@@ -485,16 +464,15 @@ Scripts:
 	conversation/_spectre_chatter_mp.gnut
 	conversation/_survival_commentary.gnut
 
-	gamemodes/_gamemode_tdm.nut
-	gamemodes/_gamemode_survival.nut
+	gamemodes/survival/_gamemode_survival.nut
 	mp/_base_gametype_mp.gnut
 	mp/_playlist.gnut
-  mp/_bombardment_utility.gnut
-  mp/_bleedout.gnut
+	mp/_bombardment_utility.gnut
+	mp/_bleedout.gnut
 	mp/_staging_area.gnut
 	_sneak_peek.gnut
 
-  ai/_ai_mortar_spectres.gnut
+	ai/_ai_mortar_spectres.gnut
 	survival_loot.gnut
 	survival_ship.gnut
 	mp/_loot_ticks.nut
@@ -574,7 +552,7 @@ Scripts:
 
 	//cinematic_mp/_ai_skits_clientdebugging.nut
 	//cinematic_mp/_cinematic_mp_client.nut
-	gamemodes/cl_gamemode_survival.nut
+	gamemodes/survival/cl_gamemode_survival.nut
 
 	cl_survival_loot.nut
 	cl_survival_inventory.nut
@@ -623,7 +601,7 @@ Scripts:
 	conversation/cl_conversation_schedule.gnut
 	pilot/cl_pilot_health_hud.gnut
 	pilot/cl_pilot_jumpjet.gnut
-	spawnslot/cl_spawnslot_system.gnut
+	client/cl_spawnslot_system.gnut
 	titan/cl_titan_dialogue.gnut
 	titan/cl_titan_enemy_tracker.gnut
 	titan/cl_titan_hud.gnut
@@ -830,8 +808,6 @@ Scripts:
 	ai/sh_dev_npc_settings.gnut
 ]
 
-// DEVSCRIPTS CONTENT
-
 When: "SERVER || CLIENT"
 Scripts:
 [
@@ -934,26 +910,22 @@ Scripts:
 	sh_dev_utility.nut // For convenience
 ]
 
-When: "DEV && CLIENT"
-Scripts:
-[
+//
+// CUSTOM
+//
 
-]
-
-// END DEVSCRIPTS CONTENT
-
-// Custom
 When: "SERVER || CLIENT"
 Scripts:
 [
-	gamemodes/custom_tdm/sh_gamemode_custom_tdm.nut
-	gamemodes/custom_tdm/custom_tdm_settings.nut
+	gamemodes/fs_tdm/sh_gamemode_fsdm.nut
+	gamemodes/fs_tdm/fsdm_settings.nut
 	gamemodes/custom_ctf/sh_gamemode_custom_ctf.nut
 	gamemodes/custom_ctf/custom_ctf_settings.nut
-	gamemodes/custom_aimtrainer/sh_aimtrainer.nut
-	gamemodes/custom_prophunt/sh_gamemode_prophunt.nut
-	gamemodes/custom_duckhunt/sh_gamemode_duckhunt.nut
-	gamemodes/custom_pkknockback/sh_gamemode_pkknockback.nut
+	gamemodes/fs_aimtrainer/sh_gamemode_aimtrainer.nut
+	gamemodes/fs_prophunt/sh_gamemode_prophunt.nut
+	gamemodes/fs_duckhunt/sh_gamemode_duckhunt.nut
+	gamemodes/fs_pkknockback/sh_gamemode_pkknockback.nut
+	gamemodes/fs_infection/sh_gamemode_infection.nut
 	
 	lobby/lobbyvm/sh_lobbyvm.nut
 ]
@@ -961,17 +933,18 @@ Scripts:
 When: "SERVER"
 Scripts:
 [
-	gamemodes/custom_tdm/_gamemode_flowstate.nut
-	gamemodes/custom_tdm/_gamemode_1v1.nut
+	gamemodes/fs_tdm/_gamemode_fsdm.nut
+	gamemodes/fs_1v1/_gamemode_1v1.nut
 	gamemodes/custom_ctf/_gamemode_custom_ctf.nut
-	gamemodes/custom_duckhunt/_gamemode_duckhunt.nut
-	gamemodes/custom_prophunt/_gamemode_prophunt.nut
-	gamemodes/custom_pkknockback/_gamemode_pkknockback.nut
+	gamemodes/fs_duckhunt/_gamemode_duckhunt.nut
+	gamemodes/fs_prophunt/_gamemode_prophunt.nut
+	gamemodes/fs_pkknockback/_gamemode_pkknockback.nut
+	gamemodes/fs_infection/_gamemode_infection.nut
 	
-	gamemodes/custom_surf/_gamemode_surf.nut
-	gamemodes/custom_surf/_gamemode_surf2.nut
+	gamemodes/fs_surf/_gamemode_surf.nut
+	gamemodes/fs_surf/_gamemode_surf2.nut
 	
-	gamemodes/custom_aimtrainer/_aimtrainer.nut
+	gamemodes/fs_aimtrainer/_gamemode_aimtrainer.nut
 	
 	lobby/lobbyvm/_lobbyvm.nut
 	
@@ -987,23 +960,15 @@ Scripts:
 When: "CLIENT"
 Scripts:
 [
-	gamemodes/custom_tdm/cl_gamemode_custom_tdm.nut
+	gamemodes/fs_tdm/cl_gamemode_fsdm.nut
 	gamemodes/custom_ctf/cl_gamemode_custom_ctf.nut
-	gamemodes/custom_aimtrainer/cl_aimtrainer.nut
-	gamemodes/custom_duckhunt/cl_gamemode_duckhunt.nut
-	gamemodes/custom_prophunt/cl_gamemode_prophunt.nut
-	gamemodes/custom_pkknockback/cl_gamemode_pkknockback.nut
+	gamemodes/fs_aimtrainer/cl_gamemode_aimtrainer.nut
+	gamemodes/fs_duckhunt/cl_gamemode_duckhunt.nut
+	gamemodes/fs_prophunt/cl_gamemode_prophunt.nut
+	gamemodes/fs_pkknockback/cl_gamemode_pkknockback.nut
+	gamemodes/fs_infection/cl_gamemode_infection.nut
 	lobby/lobbyvm/cl_lobbyvm.nut
 ]
-
-
-// Freelance
-When: "SERVER"
-Scripts:
-[
-	freelance/_freelance.gnut
-]
-
 
 // Zipline Utility
 When: "SERVER"

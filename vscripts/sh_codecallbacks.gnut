@@ -711,8 +711,6 @@ void function ServerCallback_PlayerChangedTeams( entity player, int oldTeam, int
 			//teamString = "FRIENDLY"
 		}
 
-		//if ( !IsRecruitMode() )
-		//	Obituary_Print( playerName, "CHANGED TEAMS TO", teamString, playerNameColor, OBITUARY_COLOR_WEAPON, playerNameColor )
 	#endif
 	//"Switching " + player.GetPlayerNameWithClanTag() + " from " + GetTeamStr( team1 ) + " to " + GetTeamStr( team2 )
 }
