@@ -1440,7 +1440,13 @@ void function Minimap_DisableDraw_Internal()
 
 	foreach ( var rui in file.minimapOtherRuis )
 	{
-		RuiSetVisible( rui, false )
+		try
+		{
+			RuiSetVisible( rui, false )
+		}catch(e420)
+		{
+			file.minimapOtherRuis.removebyvalue(rui)
+		}
 	}
 }
 
@@ -1752,7 +1758,7 @@ MapFeature function SetMapFeatureItem( int priority, string titleText, string de
 const int MAX_MAP_FEATURES = 5
 void function UpdateMapFeatures()
 {
-	if ( GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_dm" || GameRules_GetGameMode() == "flowstate_aimtrainer" || GameRules_GetGameMode() == "flowstate_duckhunt")
+	if ( GameRules_GetGameMode() != SURVIVAL )
 		return
 	
 	if ( file.fullmap_legendRui == null )
