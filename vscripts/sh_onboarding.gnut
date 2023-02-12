@@ -704,6 +704,12 @@ void function UpdatePlayerCounts() //TODO CHANGE THIS TO SWITCH CASE
 		SetGlobalNetInt( "livingPlayerCount", propsAlive.len() )
 		SetGlobalNetInt( "squadsRemainingCount", propsAlive.len() )		
 		break
+
+		case "flowstate_pkknockback":
+		array<entity> playersAlive = GetPlayerArray_Alive()
+		SetGlobalNetInt( "livingPlayerCount", playersAlive.len() )
+		SetGlobalNetInt( "squadsRemainingCount", playersAlive.len() )		
+		break
 		
 		case "flowstate_duckhunt":
 		array<entity> ducksAlive = GetPlayerArrayOfTeam_Alive( TEAM_MILITIA )

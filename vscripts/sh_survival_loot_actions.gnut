@@ -1,5 +1,6 @@
 global function SURVIVAL_LootActions_InitShared
 global function GetLootActionData
+global function TryPickupItem
 
 global function SURVIVAL_GetStringForLootAction
 global function SURVIVAL_ApplyLootAction

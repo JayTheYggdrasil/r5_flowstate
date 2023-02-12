@@ -338,9 +338,9 @@ asset function GetModeEmblemImage( string playlistName )
 		emblemImage = $"rui/flowstatecustom/dm"
 		break
 
-		case "flowstate_pkknockback":
-		emblemImage = $"rui/flowstatecustom/pkknockback"
-		break
+		// case "flowstate_pkknockback":
+		// emblemImage = $"rui/flowstatecustom/pkknockback"
+		// break
 		
 		// case "flowstate_infection":
 		// emblemImage = $"rui/flowstatecustom/infection"
