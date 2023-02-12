@@ -355,7 +355,7 @@ void function OnRespawnChamberSpawned( entity ent )
 
 	ent.Destroy()
 
-	if ( GetRespawnStyle() != eRespawnStyle.RESPAWN_CHAMBERS )
+	if ( GetRespawnStyle() != eRespawnStyle.RESPAWN_CHAMBERS || GameRules_GetGameMode() != SURVIVAL )
 		return
 
 	// spawn a new one with the correct targetname
