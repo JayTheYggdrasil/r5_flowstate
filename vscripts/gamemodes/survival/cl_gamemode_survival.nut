@@ -993,6 +993,12 @@ void function MinimapPackage_ObjectiveAreaInit( entity ent, var rui )
 			RuiSetBool( rui, "blink", true )
 			RuiSetBool( rui, "borderBlink", true )
 			break
+		case "boostZone":
+			RuiSetColorAlpha( rui, "objColor", SrgbToLinear( <87, 199, 8> / 255.0 ), 0.25 )
+			RuiSetColorAlpha( rui, "objBorderColor", SrgbToLinear( <48, 110, 4> / 255.0 ), 0.5 )
+			RuiSetBool( rui, "blink", true )
+			RuiSetBool( rui, "borderBlink", true )
+			break
 	}
 }
 
@@ -3683,6 +3689,9 @@ void function ShowChampionVictoryScreen( int winningTeam )
 
 asset function GetChampionScreenRuiAsset()
 {
+	if(GameRules_GetGameMode() == "flowstate_infection")
+		return $"ui/shadowfall_legend_champion_screen.rpak"
+
 	if ( file.customChampionScreenRuiAsset != $"" )
 		return file.customChampionScreenRuiAsset
 
