@@ -292,7 +292,10 @@ void function InitDeathFieldDataAndStageData()
 		file.deathFieldStartStage = file.deathFieldStages.len()
 
 	float startRadius = GetCurrentPlaylistVarFloat( "survival_death_field_start_radius", 65000 )
-
+	
+	// if(ReturnSelectedLocationName() == "Shipment")
+		// startRadius = 3500
+	
 	file.deathFieldData.currentRadius = startRadius
 	file.deathFieldData.startRadius = startRadius
 	file.deathFieldData.endRadius = startRadius
@@ -688,7 +691,10 @@ void function FinalizeDeathfieldSpawn( DeathFieldData data, entity deathField, e
 	DispatchSpawn( deathField )
 	
 	if(GameRules_GetGameMode() == "flowstate_pkknockback")
+	{
 		thread DeathFieldDamage_PkKnockback( data, deathField )
+		thread DeathFieldDistanceToGivePoints_PkKnockback( data, deathField )
+	}
 	else
 		thread DeathFieldDamage( data, deathField )	
 	
@@ -767,7 +773,7 @@ void function DeathFieldDamage( DeathFieldData data, entity deathField )
 				continue
 			
 			float playerDist = Distance2D( player.GetOrigin(), data.center )
-
+			
 			if ( playerDist > currentRadius )
 			{
 				Remote_CallFunction_Replay( player, "ServerCallback_PlayerTookDamage", 0, 0, 0, 0, DF_BYPASS_SHIELD | DF_DOOMED_HEALTH_LOSS, eDamageSourceId.deathField, null )
@@ -796,11 +802,11 @@ void function DeathFieldDamage_PkKnockback( DeathFieldData data, entity deathFie
 		{
 			if( !IsValid(player) ) continue
 			
-			if ( player.IsPhaseShifted() )	continue
+			// if ( player.IsPhaseShifted() )	continue
 			
 			float playerDist = Distance2D( player.GetOrigin(), data.center )
 			currentRadius += 1
-			
+
 			if ( playerDist > currentRadius )
 			{
 				if(IsValid(player.e.lastAttacker))
@@ -811,6 +817,66 @@ void function DeathFieldDamage_PkKnockback( DeathFieldData data, entity deathFie
 		}
 		
 		WaitFrame()
+	}
+}
+
+void function DeathFieldDistanceToGivePoints_PkKnockback( DeathFieldData data, entity deathField )
+{
+	deathField.EndSignal( "OnDestroy" )
+	
+	const float DAMAGE_CHECK_STEP_TIME = 1.5
+	float playerDist
+	float distToRing
+	int pointsEarned = 1
+	
+	OnThreadEnd(
+		function() : ( )
+		{
+			foreach ( player in GetPlayerArray() )
+			{
+				Remote_CallFunction_NonReplay( player, "DestroyKnockbacsRUI" )
+			}
+		}
+	)
+	
+	while ( GamePlaying() )
+	{
+		float currentRadius = data.currentRadius
+		
+		if(data.currentRadius == 0 )
+			currentRadius = GetCurrentPlaylistVarFloat( "deathfield_radius_0", -1.0 )
+		
+		foreach ( player in GetPlayerArray_Alive() )
+		{
+			if( !IsValid(player) ) continue
+
+			playerDist = Distance2D( player.GetOrigin(), data.center )
+			distToRing = (currentRadius - playerDist)  / 39.3701 //dist to the ring border in meters
+			
+			if ( playerDist <= currentRadius )
+			{
+				if(distToRing > 0 && distToRing <= 10)
+				{
+					player.p.roundPlayerPoints+=10
+					pointsEarned = 10
+				}
+				else if(distToRing > 10 && distToRing <= 50)
+				{
+					pointsEarned = 5
+					player.p.roundPlayerPoints+=5
+				}
+				else if(distToRing > 50)
+				{
+					player.p.roundPlayerPoints+=1
+					pointsEarned = 1
+				}
+				Remote_CallFunction_NonReplay( player, "MakeKnockbacksRUI", pointsEarned, distToRing)
+			}
+		}
+		
+		thread UpdatePlayersClientUI()
+		
+		wait 1
 	}
 }
 
@@ -1116,7 +1182,7 @@ vector function SURVIVAL_FindClosestTitanDropPoint( vector center )
 
 			trace = TraceHull( pos + <0, 0, 2000>, pos, mins, maxs, null, TRACE_MASK_TITANSOLID, TRACE_COLLISION_GROUP_NONE )
 			printt(trace.endPos)
-			return trace.endPos
+			return OriginToGround(trace.endPos)
 		}
 
 		numTries++
