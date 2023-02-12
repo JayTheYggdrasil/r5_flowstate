@@ -366,7 +366,10 @@ void function ServerCallback_OpenStatisticsUI()
 void function ServerCallback_FSDM_OpenVotingPhase(bool shouldOpen)
 {
 	if(shouldOpen)
+	{
+		//try { GetLocalClientPlayer().ClearMenuCameraEntity(); GetWinnerPropCameraEntities()[0].ClearParent(); GetWinnerPropCameraEntities()[0].Destroy(); GetWinnerPropCameraEntities()[1].Destroy() } catch (exceptio2n){ }
 		RunUIScript( "Open_FSDM_VotingPhase" )
+	}
 	else
 		thread FSDM_CloseVotingPhase()
 	
@@ -395,7 +398,7 @@ void function CreateChampionUI(int skinindex)
     entity targetBackground = GetEntByScriptName( "target_char_sel_bg_new" )
     entity targetCamera = GetEntByScriptName( "target_char_sel_camera_new" )
 	
-	if(file.teamwon != 3 && GameRules_GetGameMode() == "flowstate_prophunt")
+	if(file.teamwon != 3 && GameRules_GetGameMode() == "flowstate_prophunt" || GameRules_GetGameMode() == "flowstate_pkknockback")
 	{
 		//Clear Winning Squad Data
 		AddWinningSquadData( -1, -1)
