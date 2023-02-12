@@ -59,80 +59,11 @@ struct {
 } file
 #endif 
 
-// #if SERVER
-// entity function DEV_GetCharm()
-// {
-	// entity player = file.owner
-	// entity charm  = null
-	// if ( IsValid( player ) )
-	// {
-		// entity weapon = player.GetActiveWeapon( eActiveInventorySlot.mainHand )
-		// if ( IsValid( weapon ) )
-			// charm = weapon.GetCurrentWeaponCharm()
-		// else
-			// printt( "Error: No active wpeaon to get the current charm." )
-	// }
-	// else
-	// {
-		// printt( "Error: No valid local player. Can't get charm for the active wepaon." )
-	// }
-	// return charm
-// }
-// #endif
-
 void function OnWeaponActivate_needler( entity weapon )
 {
 	file.owner = weapon.GetWeaponOwner()
 	
 	weapon.PlayWeaponEffect( $"P_wat_hand_elec_CP" , $"P_wat_hand_elec_CP", "shell" )
-	// #if SERVER
-	// array<vector> test = NavMesh_RandomPositions(file.owner.GetOrigin(), 0, 30, 9900, 10000)
-	// foreach(originai in test)
-	// {
-		// printt(originai)
-	// }
-	// #endif
-	
-	//mejor intento hasta ahora ha sido con charms
-	/* #if SERVER
-	entity test = null
-	test = weapon.SetWeaponCharm( $"mdl/currency/crafting/currency_crafting_epic.rmdl", "CHARM" )
-	printt(test)
-	int test2 = weapon.LookupWorldModelAttachment("CHARM")
-	int test3 = weapon.LookupViewModelAttachment("CHARM")
-	string test4 = weapon.GetCharmModelName()
-
-printt(test2 + " - " + test3 + " - " + test4)
-// entity test = DEV_GetCharm()
-	
-	// printt(test)
-	//entity test = weapon.GetChil
-	#endif */
-	
-	
-	//printt(test)
-// #if CLIENT
-
-// // //entity viewModel = file.owner.GetFirstPersonProxy()
-// entity model = CreateClientSidePropDynamic( weapon.GetOrigin(), weapon.GetAngles(), $"mdl/currency/crafting/currency_crafting_epic.rmdl" )
-// model.MakeSafeForUIScriptHack()
-// // entity mover = CreateClientsideScriptMover( $"mdl/dev/empty_model.rmdl", weapon.GetOrigin(), weapon.GetAngles() )
-// model.SetParent(weapon)
-
-// // model.SetVisibleForLocalPlayer( 1 )
-// // model.SetParent(mover)
-
- // #endif
-
-#if SERVER
-// entity viewModelEntity = file.owner.GetViewModelEntity()
-
-// entity model = CreatePropDynamic( $"mdl/currency/crafting/currency_crafting_epic.rmdl", weapon.GetOrigin(), weapon.GetAngles() )
-// model.SetParent(weapon, "CHARM")
-// model.SetOrigin(weapon.GetOrigin())
-// model.kv.modelscale = 0.5
-// printt(model + " - " + viewModelEntity)
- #endif
 
 	if ( !( "initialized" in weapon.s ) )
 	{
