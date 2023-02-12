@@ -83,7 +83,8 @@ void function ClMainHud_Init()
 	RegisterSignal( "ClearDoF" )
 
 	AddCreateCallback( "titan_cockpit", CockpitHudInit )
-
+	PrecacheParticleSystem($"P_player_boost_screen")
+	
 	RegisterServerVarChangeCallback( "gameState", UpdateMainHudFromGameState )
 	AddCallback_OnPlayerLifeStateChanged( UpdateMainHudFromLifeState )
 	if(GameRules_GetGameMode() != "flowstate_prophunt" && GameRules_GetGameMode() != "flowstate_duckhunt" )
@@ -207,7 +208,7 @@ void function UpdatePilotDamageAmpFX( entity player )
 
 	if ( StatusEffect_GetSeverity( player, eStatusEffect.damageAmpFXOnly ) > 0 )
 	{
-		cockpit.s.pilotDamageAmpFXHandle = StartParticleEffectOnEntity( cockpit, GetParticleSystemIndex( $"P_core_DMG_boost_screen" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1 )
+		cockpit.s.pilotDamageAmpFXHandle = StartParticleEffectOnEntity( cockpit, GetParticleSystemIndex( $"P_player_boost_screen" ), FX_PATTACH_ABSORIGIN_FOLLOW, -1 )
 	}
 }
 
