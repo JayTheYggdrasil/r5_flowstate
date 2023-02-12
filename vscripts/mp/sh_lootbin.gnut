@@ -71,6 +71,7 @@ void function ShLootBin_Init()
 	PrecacheModel( LOOT_BIN_MODEL )
 
 	RegisterSignal( "TryRefreshLootbinHighlights_Internal" )
+
 	#if SERVER
 		AddSpawnCallback_ScriptName( LOOT_BIN_MARKER_SCRIPTNAME, InitLootBinFromMap )
 
@@ -113,6 +114,20 @@ void function EntitiesDidLoad()
 
 void function InitLootBinFromMap( entity lootbin )
 {
+	if(GameRules_GetGameMode() == "flowstate_infection")
+	{
+		if ( file.lootBinList.contains( lootbin ) )
+			return
+		lootbin.SetScriptName(MYSTERY_BOX_SCRIPT_NAME)
+		AddMysteryBox(lootbin)
+		SetMysteryBoxUsable(lootbin)
+		file.numLootBins++
+		file.lootBinList.append( lootbin )
+	
+		printt( "new infected lootbin" )
+		return
+	}
+	
 	SURVIVAL_AddLootBin( lootbin )
 
 	if ( IsValid( lootbin ) )
@@ -121,6 +136,8 @@ void function InitLootBinFromMap( entity lootbin )
 		InitLootBin( lootbin )
 	}
 }
+
+
 #endif
 
 #if SERVER
@@ -272,12 +289,12 @@ void function InitLootBin( entity lootbin )
 	{
 		lootbin.SetScriptName("smartbin")
 		lootbin.SetSkin(2)
-		if(GameRules_GetGameMode() != "flowstate_prophunt")
+		if(GameRules_GetGameMode() != "flowstate_prophunt" && GameRules_GetGameMode() != "flowstate_pkknockback")
 			AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( "data_knife_vault", 4 ) )
 		return
 	}
 	
-	if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) && GameRules_GetGameMode() != "flowstate_prophunt")
+	if( GetCurrentPlaylistVarBool("lootbin_loot_enable", true) && GameRules_GetGameMode() != "flowstate_prophunt" && GameRules_GetGameMode() != "flowstate_pkknockback")
 	{
 		AddMultipleLootItemsToLootBin( lootbin, SURVIVAL_GetMultipleWeightedItemsFromGroup( LootZones_GetRefForOrigin(lootbin.GetOrigin()), RandomIntRange(3,4) ) )
 	}
@@ -635,6 +652,14 @@ bool function LootBin_IsBusy( entity lootbin )
 #if CLIENT
 void function OnPropDynamicCreated( entity lootbin )
 {
+	if(GameRules_GetGameMode() == "flowstate_infection")
+	{
+		AddMysteryBox( lootbin )
+		SetMysteryBoxUsable( lootbin )		
+		file.lootBinList.append( lootbin )
+		return
+	}
+	
 	if ( lootbin.GetScriptName() != LOOT_BIN_SCRIPTNAME && lootbin.GetScriptName() != "smartbin")
 		return
 
