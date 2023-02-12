@@ -440,77 +440,77 @@ int function ConvertBucketStringToEnum( string bucketName )
 		case "BEGIN_ROUND_FINAL":
 			return eSurvivalCommentaryBucket.BEGIN_ROUND_FINAL
 
-	if ( GetMapName() == "mp_rr_canyonlands_mu1_night" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx" )
-	{
-		switch( bucketName )
+		if ( IsFallLTM() )
 		{
-		case "VICTORY_LEGEND_SOLO":
-			return eSurvivalCommentaryBucket.VICTORY_LEGEND_SOLO
+			switch( bucketName )
+			{
+				case "VICTORY_LEGEND_SOLO":
+					return eSurvivalCommentaryBucket.VICTORY_LEGEND_SOLO
 
-		case "VICTORY_SHADOWSQUAD":
-			return eSurvivalCommentaryBucket.VICTORY_SHADOWSQUAD
+				case "VICTORY_SHADOWSQUAD":
+					return eSurvivalCommentaryBucket.VICTORY_SHADOWSQUAD
 
-		case "VICTORY_APEX_CHAMP_SOLO":
-			return eSurvivalCommentaryBucket.VICTORY_APEX_CHAMP_SOLO
+				case "VICTORY_APEX_CHAMP_SOLO":
+					return eSurvivalCommentaryBucket.VICTORY_APEX_CHAMP_SOLO
 
-		case "VICTORY_APEX_CHAMP_SQUAD":
-			return eSurvivalCommentaryBucket.VICTORY_APEX_CHAMP_SQUAD
+				case "VICTORY_APEX_CHAMP_SQUAD":
+					return eSurvivalCommentaryBucket.VICTORY_APEX_CHAMP_SQUAD
 
-		case "SHADOW_PLAYER_RESPAWN":
-			return eSurvivalCommentaryBucket.SHADOW_PLAYER_RESPAWN
+				case "SHADOW_PLAYER_RESPAWN":
+					return eSurvivalCommentaryBucket.SHADOW_PLAYER_RESPAWN
 
-		case "SHADOW_PLAYER_DEATH_FINAL":
-			return eSurvivalCommentaryBucket.SHADOW_PLAYER_DEATH_FINAL
+				case "SHADOW_PLAYER_DEATH_FINAL":
+					return eSurvivalCommentaryBucket.SHADOW_PLAYER_DEATH_FINAL
 
-		case "SHADOWS_PLAYER_JOIN":
-			return eSurvivalCommentaryBucket.SHADOWS_PLAYER_JOIN
+				case "SHADOWS_PLAYER_JOIN":
+					return eSurvivalCommentaryBucket.SHADOWS_PLAYER_JOIN
 
-		case "SHADOWSQUAD_GROW":
-			return eSurvivalCommentaryBucket.SHADOWSQUAD_GROW
+				case "SHADOWSQUAD_GROW":
+					return eSurvivalCommentaryBucket.SHADOWSQUAD_GROW
 
-		case "SHADOWSQUAD_SPAWNS":
-			return eSurvivalCommentaryBucket.SHADOWSQUAD_SPAWNS
+				case "SHADOWSQUAD_SPAWNS":
+					return eSurvivalCommentaryBucket.SHADOWSQUAD_SPAWNS
 
-		case "SKYDIVE_TAUNT":
-			return eSurvivalCommentaryBucket.SKYDIVE_TAUNT
+				case "SKYDIVE_TAUNT":
+					return eSurvivalCommentaryBucket.SKYDIVE_TAUNT
 
-		case "STREAK_NEW_KILL_LEADER":
-			return eSurvivalCommentaryBucket.STREAK_NEW_KILL_LEADER
+				case "STREAK_NEW_KILL_LEADER":
+					return eSurvivalCommentaryBucket.STREAK_NEW_KILL_LEADER
 
-		case "CHAMP_DIED_NO_TOP5_STREAK":
-			return eSurvivalCommentaryBucket.CHAMP_DIED_NO_TOP5_STREAK
+				case "CHAMP_DIED_NO_TOP5_STREAK":
+					return eSurvivalCommentaryBucket.CHAMP_DIED_NO_TOP5_STREAK
 
-		case "STREAK_LOST_CHAMP":
-			return eSurvivalCommentaryBucket.STREAK_LOST_CHAMP
+				case "STREAK_LOST_CHAMP":
+					return eSurvivalCommentaryBucket.STREAK_LOST_CHAMP
 
-		case "STREAK_LOST_APEX_PRED":
-			return eSurvivalCommentaryBucket.STREAK_LOST_APEX_PRED
+				case "STREAK_LOST_APEX_PRED":
+					return eSurvivalCommentaryBucket.STREAK_LOST_APEX_PRED
 
-		case "GAMECHANGER_ACTIVATE":
-			return eSurvivalCommentaryBucket.GAMECHANGER_ACTIVATE
+				case "GAMECHANGER_ACTIVATE":
+					return eSurvivalCommentaryBucket.GAMECHANGER_ACTIVATE
 
-		case "GAMECHANGER_ACTIVATE_SHADOWS":
-			return eSurvivalCommentaryBucket.GAMECHANGER_ACTIVATE_SHADOWS
+				case "GAMECHANGER_ACTIVATE_SHADOWS":
+					return eSurvivalCommentaryBucket.GAMECHANGER_ACTIVATE_SHADOWS
 
-		case "EVAC_SHIP_INCOMING":
-			return eSurvivalCommentaryBucket.EVAC_SHIP_INCOMING
+				case "EVAC_SHIP_INCOMING":
+					return eSurvivalCommentaryBucket.EVAC_SHIP_INCOMING
 
-		case "EVAC_SHIP_INCOMING_SHADOWS":
-			return eSurvivalCommentaryBucket.EVAC_SHIP_INCOMING_SHADOWS
+				case "EVAC_SHIP_INCOMING_SHADOWS":
+					return eSurvivalCommentaryBucket.EVAC_SHIP_INCOMING_SHADOWS
 
-		case "PRE_VICTORY_LEGENDS_SINGLE":
-			return eSurvivalCommentaryBucket.PRE_VICTORY_LEGENDS_SINGLE
+				case "PRE_VICTORY_LEGENDS_SINGLE":
+					return eSurvivalCommentaryBucket.PRE_VICTORY_LEGENDS_SINGLE
 
-		case "PRE_VICTORY_LEGENDS_MULTIPLE":
-			return eSurvivalCommentaryBucket.PRE_VICTORY_LEGENDS_MULTIPLE
+				case "PRE_VICTORY_LEGENDS_MULTIPLE":
+					return eSurvivalCommentaryBucket.PRE_VICTORY_LEGENDS_MULTIPLE
 
-		case "PRE_VICTORY_SHADOWS":
-			return eSurvivalCommentaryBucket.PRE_VICTORY_SHADOWS
+				case "PRE_VICTORY_SHADOWS":
+					return eSurvivalCommentaryBucket.PRE_VICTORY_SHADOWS
 
-		case "SHADOW_REVENGE_KILL":
-			return eSurvivalCommentaryBucket.SHADOW_REVENGE_KILL
-	}
-}
+				case "SHADOW_REVENGE_KILL":
+					return eSurvivalCommentaryBucket.SHADOW_REVENGE_KILL
+			}
+		}
 		default:
 			//Warning( "Bucket not registered" )
 			return -1
