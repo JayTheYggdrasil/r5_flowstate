@@ -143,28 +143,37 @@ void function Hud_SetModeEmblem()
 	RuiSetAsset( file.gamestateRui, "emblemImage", GetModeEmblemImage( GetCurrentPlaylistName() ) )
 }
 
-void function SetCommonScoreRUIVars( var rui ) //TODO CHANGE THIS TO SWITCH CASE
+void function SetCommonScoreRUIVars( var rui )
 {
-	// if ( GameRules_GetGameMode() == "flowstate_pkknockback")
-	// {
-		// RuiSetString( rui, "gameModeString", "PK PUSHBACK" )
-		// RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		// RuiSetString( rui, "squadsRemainingTextSingular", "PLAYER ONLINE" )
-		// RuiSetString( rui, "squadsRemainingTextPlural", "PLAYERS ONLINE" )
-		// RuiSetVisible(rui, true)	
-		// return
-	// }
-	
-	if ( GameRules_GetGameMode() == "flowstate_infection")
+	switch( GameRules_GetGameMode() )
 	{
-		RuiSetString( rui, "gameModeString", "APEX INFECTION" )
-		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
-		RuiSetString( rui, "squadsRemainingTextPlural", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
-		RuiSetString( rui, "squadsRemaining2TextSingular", "INFECTED" )
-		RuiSetString( rui, "squadsRemaining2TextPlural", "INFECTED" )
-		return
+		case "flowstate_infection":
+			RuiSetString( rui, "gameModeString", "APEX INFECTION" )
+			RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+			RuiSetString( rui, "squadsRemainingTextSingular", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
+			RuiSetString( rui, "squadsRemainingTextPlural", "#SHADOW_SQUAD_PLAYERS_REMAIN" )
+			RuiSetString( rui, "squadsRemaining2TextSingular", "INFECTED" )
+			RuiSetString( rui, "squadsRemaining2TextPlural", "INFECTED" )
+			return
+		
+		case "flowstate_prophunt":
+			RuiSetString( rui, "gameModeString", "APEX PROPHUNT" )
+			RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+			RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
+			RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
+			RuiSetVisible(rui, true)
+			return
+			
+		case "flowstate_duckhunt":
+			RuiSetString( rui, "gameModeString", "APEX DUCK HUNT" )
+			RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
+			RuiSetString( rui, "squadsRemainingTextSingular", "DUCK ALIVE" )
+			RuiSetString( rui, "squadsRemainingTextPlural", "DUCKS ALIVE" )
+			RuiSetVisible(rui, true)	
+			return
 	}
+
+	//Legacy, clean up this later ?
 	
 	if ( IsFallLTM() )
 	{
@@ -176,38 +185,25 @@ void function SetCommonScoreRUIVars( var rui ) //TODO CHANGE THIS TO SWITCH CASE
 		RuiSetString( rui, "squadsRemaining2TextPlural", "#SHADOW_SQUAD_SHADOW_PLAYERS_REMAIN" )
 		return
 	}	
-
-	if(GameRules_GetGameMode() == "flowstate_prophunt"){
-		RuiSetString( rui, "gameModeString", "APEX PROPHUNT" )
-		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", "PROP ALIVE" )
-		RuiSetString( rui, "squadsRemainingTextPlural", "PROPS ALIVE" )
-		RuiSetVisible(rui, true)
-		return
-	}
-	
-	if(GameRules_GetGameMode() == "flowstate_duckhunt"){
-		RuiSetString( rui, "gameModeString", "APEX DUCK HUNT" )
-		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", "DUCK ALIVE" )
-		RuiSetString( rui, "squadsRemainingTextPlural", "DUCKS ALIVE" )
-		RuiSetVisible(rui, true)	
-		return
-	}	
 	
 	if ( IsSoloMode() )
 	{
 		RuiSetBool( rui, "shouldDisplayLivingPlayerCount", false )
-		RuiSetString( rui, "squadsRemainingTextSingular", GameRules_GetGameMode() == "flowstate_dm" ? "PLAYER ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
-		RuiSetString( rui, "squadsRemainingTextPlural", GameRules_GetGameMode() == "flowstate_dm" ? "PLAYERS ONLINE" : "#SURVIVAL_PLAYERS_REMAIN" )
-		// if( GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
-		// {
-			// RuiSetString( rui, "gameModeString", "APEX 1v1" )
-			// return
-		// }
+		RuiSetString( rui, "squadsRemainingTextSingular", "PLAYER ONLINE" )
+		RuiSetString( rui, "squadsRemainingTextPlural", "PLAYERS ONLINE" )
 		
+		// if( GetCurrentPlaylistVarBool("flowstate_1v1mode", false) )
+			// RuiSetString( rui, "gameModeString", "APEX 1v1" )
+
 		if(GameRules_GetGameMode() == "flowstate_dm")
 			RuiSetString( rui, "gameModeString", "APEX DM" )
+	
+		if(GameRules_GetGameMode() == "flowstate_pkknockback")
+		{
+			RuiSetString( rui, "squadsRemainingTextSingular", "PLAYER ALIVE" )
+			RuiSetString( rui, "squadsRemainingTextPlural", "PLAYERS ALIVE" )
+			RuiSetString( rui, "gameModeString", "PK PUSHBACK" )
+		}
 	}
 	else if(GetCurrentPlaylistVarBool( "dummies_horde_enabled", false )){
 		RuiSetString( rui, "gameModeString", "DUMMIES HORDE" )
