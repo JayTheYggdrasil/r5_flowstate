@@ -548,7 +548,7 @@ void function SURVIVAL_PlaceGroundItems()
 {
 	array<entity> itemEnts = GetEntArrayByClass_Expensive( "script_ref" )
 
-	if ( GetCurrentPlaylistVarBool( "ground_loot_enable", true ) && GameRules_GetGameMode() != "flowstate_prophunt" && GameRules_GetGameMode() != "flowstate_duckhunt")
+	if ( GetCurrentPlaylistVarBool( "ground_loot_enable", true ) && GameRules_GetGameMode() == SURVIVAL)
 	{
 		foreach ( ent in itemEnts )
 		{
