@@ -41,34 +41,16 @@ WeaponData
 	"fx_muzzle_flash_world"							""
 	"fx_muzzle_flash_attach"						""
 	
-	//Sounds
-	"sound_dryfire"									"Weapon_Vinson_Trigger"
-	"sound_pickup"									"wpn_pickup_Rifle_1P"
-	"sound_trigger_pull"							"Weapon_Vinson_Trigger"
-	"fire_sound_1_player_1p"						"Vinson_shell"
-	"fire_sound_1_player_3p"						"Weapon_bulletCasings.Bounce"
-	"fire_sound_2_player_1p"						"Weapon_Vinson_SecondShot_1P"
-	"fire_sound_2_player_3p"						""
-	"fire_sound_2_npc"								"Weapon_Vinson_SecondShot_NPC"
-//	"fire_sound_3_player_1p"						"Weapon_HemlokSMG_Fire_First_1P"
-//	"fire_sound_3_player_3p"						"Weapon_HemlokSMG_Fire_First_3P"
-	"sound_zoom_in"									"Weapon_R101_ADS_In"
-	"sound_zoom_out"								"Weapon_R101_ADS_Out"
-
-	"burst_or_looping_fire_sound_start_1p"			"Weapon_Vinson_FirstShot_1P"
-	"burst_or_looping_fire_sound_middle_1p"			"Weapon_Vinson_Loop_1P"
-	"burst_or_looping_fire_sound_end_1p"			"Weapon_Vinson_LoopEnd_1P"
-
-	"burst_or_looping_fire_sound_start_3p"			""
-	"burst_or_looping_fire_sound_middle_3p"			"Weapon_Vinson_Loop_3P"
-	"burst_or_looping_fire_sound_end_3p"			"Weapon_Vinson_LoopEnd_3P"
-
-	"burst_or_looping_fire_sound_start_npc"			""
-	"burst_or_looping_fire_sound_middle_npc"		"Weapon_Vinson_Loop_3p_NPC_a"
-	"burst_or_looping_fire_sound_end_npc"			"Weapon_Vinson_LoopEnd_NPC"
-
-	"looping_sounds"								"1"
-
+	// Sound
+	"fire_sound_1_player_1p"						"weapon_smartpistol_firesuppressed_1p"
+	"fire_sound_1_player_3p"						"weapon_smartpistol_firesuppressed_3p"
+	"fire_sound_2_npc"								"Weapon_RE45Auto_secondshot_npc"
+	"looping_sounds"								"0"
+	
+	// Effects
+	"impact_effect_table" 							"exp_plasma_LG"
+	"projectile_trail_effect_0" 					"P_plasma_proj_SM"	
+	
 	"low_ammo_sound_name_1"							"Vinson_LowAmmo_Shot1"
 
 	// Ammo

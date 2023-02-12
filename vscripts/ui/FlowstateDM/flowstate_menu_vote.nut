@@ -82,7 +82,17 @@ void function Open_FSDM_VotingPhase()
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE DM" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "©Respawn Entertainment" )
 			break
-
+			
+			case "flowstate_pkknockback":
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "PK PUSHBACK" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment" )
+			break
+						
+			case "flowstate_infection":
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "APEX INFECTION" )
+				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment" )
+			break
+			
 			default:
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits2" ), "FLOWSTATE SCRIPTS" )
 				Hud_SetText( Hud_GetChild( file.menu, "TextCredits" ), "Made by @CafeFPS - ©Respawn Entertainment." )

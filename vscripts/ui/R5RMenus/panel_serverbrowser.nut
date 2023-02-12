@@ -476,5 +476,5 @@ void function ServerBrowser_StartConnection(int id)
 
 	Hud_SetVisible(Hud_GetChild( file.menu, "R5RConnectingPanel"), false)
 
-	SetEncKeyAndConnect(id)
+	//SetEncKeyAndConnect(id)
 }
