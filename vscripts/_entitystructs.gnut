@@ -806,12 +806,20 @@ global struct ServerPlayerStruct
 	float lastForwardInput = 0
 	
 	//Duckhunt
-	bool wasTeleported = false
-	
+	bool wasTeleported = false	
 	bool lastFloorCheckPoint = false
 	bool askedForHunter = false
 	
+	//knockbacks
+	int roundPlayerPoints
+	int ampedDamageBonus
+	float lastTimeGrabberBoostZonePoints
+	
+	//infection	
 	array<entity> shadowAttachedEntities
+	float allowedTimeForNextKill
+	bool isLastManStanding
+	bool amIAlphaZombie
 }
 
 global struct ChallengeScore

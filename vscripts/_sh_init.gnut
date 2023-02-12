@@ -181,9 +181,9 @@ void function SV_CL_Init()
 	ShLootDrones_Init()
 
 	if(GetMapName() == "mp_rr_desertlands_64k_x_64k" || GetMapName() == "mp_rr_desertlands_64k_x_64k_nx" ){
-	ShLootRollers_Init()
+		ShLootRollers_Init()
 	} else if (GetMapName() == "mp_rr_canyonlands_mu1" || GetMapName() == "mp_rr_canyonlands_mu1_night" || GetMapName() == "mp_rr_canyonlands_64k_x_64k"){
-	ShFlyersDeathboxes_Init()
+		ShFlyersDeathboxes_Init()
 	}	
 
 
@@ -208,6 +208,7 @@ void function SV_CL_Init()
         #endif
 
         #if SERVER || CLIENT
+			ShZombieMysteryBox_Init()
             ShZiplineUtility_Init()
         #endif
     

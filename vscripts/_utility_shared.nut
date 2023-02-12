@@ -118,6 +118,7 @@ void function InitWeaponScripts()
 	
 	//Custom
 	// MpWeaponNeedler_Init()
+	MpWeaponRayGun_Init()
 	MpWeaponEmoteProjector_Init()
 	// MpWeaponGuidedMissile_Init()
 	MpWeaponFanatic_Init()

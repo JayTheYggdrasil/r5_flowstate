@@ -97,6 +97,7 @@ global struct ClientEntityStruct
 	float lastGrappleTime
 	bool firsttime = true
 	int shieldTier
+
 }
 
 
@@ -184,6 +185,7 @@ global struct ClientPlayerStruct
 	bool isRoundTimerEnabled = false
 	int savedAbilityTimer = 0
 	array<int> shadowFxHandles
+	int roundPlayerPoints
 }
 
 
