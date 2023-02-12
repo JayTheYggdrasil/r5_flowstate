@@ -883,7 +883,7 @@ Scripts:
 	weapons/mp_weapon_jumppadsweapon.nut
 	weapons/mp_weapon_ziplinesweapon.nut
 	weapons/mp_weapon_grenade_cryonade.nut
-
+	weapons/mp_weapon_raygun.nut
 ]
 
 When: "SERVER || CLIENT"
@@ -926,7 +926,8 @@ Scripts:
 	gamemodes/fs_duckhunt/sh_gamemode_duckhunt.nut
 	gamemodes/fs_pkknockback/sh_gamemode_pkknockback.nut
 	gamemodes/fs_infection/sh_gamemode_infection.nut
-	
+	gamemodes/util/sh_custom_zombie_mystery_box.nut
+	gamemodes/util/sh_custom_zombie_mystery_box_weapon.nut
 	lobby/lobbyvm/sh_lobbyvm.nut
 ]
 
