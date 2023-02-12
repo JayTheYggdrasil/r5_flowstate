@@ -8,7 +8,7 @@ global typedef EntitySet table<entity, void>
 
 global typedef IntFromEntityCompare int functionref( entity, entity )
 
-global const bool DEVSCRIPTS 		= false
+global const bool DEVSCRIPTS 		= true
 
 global const bool PRE_RELEASE_DEMO 	= false
 
