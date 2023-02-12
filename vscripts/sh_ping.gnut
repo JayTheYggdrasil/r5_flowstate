@@ -165,6 +165,8 @@ global enum ePingType
 		SHADOWFALL_NEMESIS,
 
 		EDITOR_MODE,
+		
+	BOOSTZONE
 	_count
 }
 
@@ -292,7 +294,8 @@ string function Ping_GetSoundForLocationPing( int pingType, bool isOurs, bool is
 		case ePingType.ENEMY_TELEPORTER:
 		case ePingType.ENEMY_SHIELD:
 			return (isOurs ? PING_SOUND_ENEMY_1P : PING_SOUND_ENEMY_3P)
-
+		
+		case ePingType.BOOSTZONE:
 		case ePingType.ABILITY_DOMESHIELD:
 		case ePingType.ABILITY_DRONEMEDIC:
 		case ePingType.ABILITY_WORMHOLE:
@@ -1172,7 +1175,11 @@ array<int> function GetReplyOptionsForWaypoint( entity player, entity wp )
 				//DoClickAsOwner( player, wp )
 				switch ( pingType )
 				{
+					case ePingType.SHADOWFALL_LEGEND_DEATH:
+					case ePingType.SHADOWFALL_SHADOW_DEATH:
+					case ePingType.SHADOWFALL_NEMESIS:
 					case ePingType.ENEMY_SPECIFIC:
+					case ePingType.BOOSTZONE:
 						results.append( ePingReply.BLANK )
 						break
 
@@ -1194,6 +1201,13 @@ array<int> function GetReplyOptionsForWaypoint( entity player, entity wp )
 			{
 				switch ( pingType )
 				{
+					case ePingType.SHADOWFALL_LEGEND_DEATH:
+					case ePingType.SHADOWFALL_SHADOW_DEATH:
+					case ePingType.SHADOWFALL_NEMESIS:
+					case ePingType.BOOSTZONE:
+						results.append( ePingReply.BLANK )
+						break
+						
 					case ePingType.ENEMY_SPECIFIC:
 						results.append( ePingReply.OK )
 						break
@@ -2633,6 +2647,7 @@ int function GetCommsActionForPing( entity pingingPlayer, int pingType, entity p
 		case ePingType.ABILITY_DRONEMEDIC:
 			return eCommsAction.SPAWN_DRONEMEDIC
 
+		case ePingType.BOOSTZONE:
 		case ePingType.ABILITY_DOMESHIELD:
 		case ePingType.ABILITY_JUMPPAD:
 		case ePingType.BLEEDOUT:
@@ -2739,13 +2754,14 @@ asset function Ping_IconForPing_Hud( entity player, int pingType, entity pingedE
 			}
 
 			return RESPAWN_BEACON_ICON
-
+		
 		case ePingType.ABILITY_DOMESHIELD:
 			return $"rui/hud/tactical_icons/tactical_gibraltar"
-
+	
+		case ePingType.BOOSTZONE:
 		case ePingType.SELF_REVIVE:
 			return $"rui/hud/gametype_icons/hunted/bleedout_selfrevive_icon"
-
+	
 		case ePingType.ABILITY_JUMPPAD:
 			return $"rui/hud/ultimate_icons/ultimate_octane_in_world"
 	}
@@ -2762,6 +2778,7 @@ asset function Ping_IconForPing_Minimap( entity player, int pingType, entity pin
 		case ePingType.RESPAWN_CARD: //Should probably use the triangle icon
 		case ePingType.BLEEDOUT:
 		case ePingType.RESPAWN_BANNER:
+		case ePingType.BOOSTZONE:
 			return $"rui/hud/unitframes/frame_status_mask"
 	}
 
@@ -2775,6 +2792,7 @@ asset function Ping_IconForPing_Bigmap( entity player, int pingType, entity ping
 		case ePingType.RESPAWN_CARD: //Should probably use the triangle icon
 		case ePingType.BLEEDOUT:
 		case ePingType.RESPAWN_BANNER:
+		case ePingType.BOOSTZONE:
 			return $"rui/hud/unitframes/frame_status_mask"
 	}
 
@@ -2816,6 +2834,7 @@ asset function Ping_RuiForPing_Hud( entity player, int pingType, entity pingedEn
 			return $"ui/waypoint_ping_entpos.rpak"
 
 		case ePingType.BLEEDOUT:
+		case ePingType.BOOSTZONE:
 		case ePingType.RESPAWN_BANNER:
 
 			return $"ui/waypoint_status_timer_entpos.rpak"
@@ -2903,7 +2922,11 @@ vector function Ping_IconColorForPing_Hud( int pingType, bool isSameTeam )
 		case ePingType.RESPAWN_BANNER:
 			color = SrgbToLinear( GetKeyColor( COLORID_HUD_HEAL_COLOR ) / 255.0 )
 			break
-
+			
+		case ePingType.BOOSTZONE:
+			color = SrgbToLinear( Vector(0, 179, 255) / 255.0 )
+			break
+			
 		default:
 			color = <1.0, 1.0, 1.0>
 	}
